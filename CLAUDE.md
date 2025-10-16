@@ -486,6 +486,40 @@ CREATE TABLE users (
 - **Type Checking:** TypeScript (use strict mode)
 - **Testing:** Jest + React Testing Library (frontend), Anchor test framework (contracts)
 
+## Design & Branding Guidelines
+
+### MonkeDAO Brand Kit
+
+**Reference:** https://monkedao.io/brand-kit
+
+**Important:** When working on frontend, brand, or design elements, always reference the MonkeDAO brand kit to ensure consistency with hackathon track sponsor branding.
+
+**Brand Colors (Extracted from CSS):**
+- Primary Green: `#0d2a13` (dark forest green)
+- Accent Green: `#174622`
+- Cream/Off-white: `#f2eecb`
+- Neon Green: `#00ff4d` (highlight/accent)
+- Border Accent: `#f3efcd`
+
+**Typography:**
+- Primary Font: Inter (sans-serif)
+- Secondary Font: Poppins (supports Devanagari, Latin-ext, Latin)
+- Tertiary Font: Taviraj (supports Thai, Vietnamese, Latin)
+
+**Design Elements:**
+- Gradient backgrounds using green tones
+- Border radius: 8px for rounded corners
+- MonkeDAO aesthetic: Forest/jungle green palette with cream accents
+
+**Usage Guidelines:**
+- Incorporate MonkeDAO branding where appropriate (footer, about page, sponsorship acknowledgment)
+- Maintain brand color harmony if using MonkeDAO colors in UI
+- Reference full brand kit page for logo files and complete guidelines
+- Ensure proper attribution to MonkeDAO as hackathon track sponsor
+
+**Asset Downloads:**
+- Visit https://monkedao.io/brand-kit directly for downloadable logos, graphics, and complete brand guidelines
+
 ## Workflow Guidelines
 
 ### Starting Implementation (Day 1-3)

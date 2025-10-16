@@ -214,6 +214,11 @@ Alhamdulillah, this is a **HIGH-OPPORTUNITY** hackathon track with excellent ROI
 ### Frontend
 - **Framework:** Next.js 14+ with App Router
 - **Styling:** Tailwind CSS (utility-first, rapid development)
+- **Brand Guidelines:** MonkeDAO Brand Kit (https://monkedao.io/brand-kit)
+  - **Colors:** Primary Green `#0d2a13`, Accent Green `#174622`, Cream `#f2eecb`, Neon Green `#00ff4d`
+  - **Fonts:** Inter (primary), Poppins (secondary), Taviraj (tertiary)
+  - **Design:** Forest/jungle aesthetic, 8px border radius, gradient backgrounds
+  - **Usage:** Incorporate MonkeDAO branding in footer, about page, sponsorship acknowledgment
 - **State Management:** Zustand or React Context
 - **UI Library:** shadcn/ui or Radix UI (accessible components)
 
@@ -304,6 +309,7 @@ Alhamdulillah, this is a **HIGH-OPPORTUNITY** hackathon track with excellent ROI
 - No gas fee confusion (sponsored transactions)
 - No crypto jargon (consumer-friendly language)
 - Mobile-first design (90% of Groupon traffic is mobile)
+- **MonkeDAO Brand Integration:** Use sponsor branding to show alignment and professionalism (colors, fonts from brand kit)
 
 ### 2. Real-World Deal Integrations
 **High Impact, Low Competition:**
@@ -413,6 +419,7 @@ Alhamdulillah, this is a **HIGH-OPPORTUNITY** hackathon track with excellent ROI
 - ✅ Merchant analytics dashboard
 - ✅ On-chain reputation system
 - ✅ Exceptional UX (Web3 invisible)
+- ✅ MonkeDAO brand integration (colors, fonts, acknowledgment)
 - ✅ Compelling demo + documentation
 
 ---
