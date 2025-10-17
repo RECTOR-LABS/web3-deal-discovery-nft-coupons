@@ -1,0 +1,22 @@
+[toolchain]
+package_manager = "npm"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.devnet]
+nft_coupon = "REC6VwdAzaaNdrUCWbXmqqN8ryoSAphQkft2BX1P1b1"
+
+[programs.localnet]
+nft_coupon = "REC6VwdAzaaNdrUCWbXmqqN8ryoSAphQkft2BX1P1b1"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "devnet"
+wallet = "/Users/rz/.config/solana/REC-devnet.json"
+
+[scripts]
+test = "npx ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
