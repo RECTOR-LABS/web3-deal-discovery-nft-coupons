@@ -1,0 +1,508 @@
+'use client';
+
+import { useState } from 'react';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useRouter } from 'next/navigation';
+import {
+  PlusCircle,
+  Image as ImageIcon,
+  Loader2,
+  AlertCircle,
+  Calendar,
+  Percent,
+  Tag,
+  FileText,
+  Eye,
+} from 'lucide-react';
+
+interface DealFormData {
+  title: string;
+  description: string;
+  discountPercentage: string;
+  expiryDate: string;
+  quantity: string;
+  category: string;
+  imageFile: File | null;
+  imagePreview: string;
+}
+
+const CATEGORIES = [
+  'Food & Beverage',
+  'Retail',
+  'Services',
+  'Travel',
+  'Entertainment',
+  'Other',
+];
+
+export default function CreateDealPage() {
+  const { publicKey, connected } = useWallet();
+  const router = useRouter();
+  const [step, setStep] = useState<'form' | 'preview' | 'minting'>('form');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState<DealFormData>({
+    title: '',
+    description: '',
+    discountPercentage: '',
+    expiryDate: '',
+    quantity: '1',
+    category: '',
+    imageFile: null,
+    imagePreview: '',
+  });
+
+  // Form validation
+  const validateForm = (): string | null => {
+    if (!formData.title.trim()) return 'Title is required';
+    if (formData.title.length > 100) return 'Title must be 100 characters or less';
+    if (!formData.description.trim()) return 'Description is required';
+    if (formData.description.length > 500)
+      return 'Description must be 500 characters or less';
+
+    const discount = parseInt(formData.discountPercentage);
+    if (isNaN(discount) || discount < 1 || discount > 100) {
+      return 'Discount must be between 1 and 100';
+    }
+
+    if (!formData.expiryDate) return 'Expiry date is required';
+    const expiryDate = new Date(formData.expiryDate);
+    if (expiryDate <= new Date()) return 'Expiry date must be in the future';
+
+    if (!formData.category) return 'Category is required';
+
+    return null;
+  };
+
+  // Handle image upload
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('Please upload an image file (PNG, JPG, WebP)');
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size must be less than 5MB');
+      return;
+    }
+
+    // Create preview URL
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData({
+        ...formData,
+        imageFile: file,
+        imagePreview: reader.result as string,
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setError(null);
+    setStep('preview');
+  };
+
+  // Handle minting
+  const handleMint = async () => {
+    if (!publicKey) {
+      setError('Please connect your wallet');
+      return;
+    }
+
+    setStep('minting');
+    setLoading(true);
+    setError(null);
+
+    try {
+      // TODO: Implement actual NFT minting logic
+      // Steps:
+      // 1. Upload image to Arweave/IPFS or Supabase Storage
+      // 2. Create metadata JSON
+      // 3. Upload metadata to Arweave/IPFS
+      // 4. Call smart contract create_coupon instruction
+      // 5. Insert deal into database
+
+      // Placeholder for now
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Simulate success
+      router.push('/dashboard/deals');
+    } catch (err) {
+      console.error('Minting error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to mint coupon');
+      setStep('form');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Render preview
+  if (step === 'preview') {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-monke-primary mb-2">
+            Preview Your Deal
+          </h1>
+          <p className="text-foreground/60">
+            Review your deal before minting it as an NFT
+          </p>
+        </div>
+
+        {/* Deal Card Preview */}
+        <div className="bg-white border-2 border-monke-border rounded-lg overflow-hidden shadow-lg">
+          {/* Deal Image */}
+          {formData.imagePreview && (
+            <div className="aspect-video w-full overflow-hidden bg-gray-100">
+              <img
+                src={formData.imagePreview}
+                alt={formData.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+
+          {/* Deal Details */}
+          <div className="p-6 space-y-4">
+            {/* Discount Badge */}
+            <div className="inline-flex items-center px-4 py-2 bg-monke-neon text-white font-bold rounded-lg text-2xl">
+              {formData.discountPercentage}% OFF
+            </div>
+
+            {/* Title */}
+            <h2 className="text-2xl font-bold text-monke-primary">
+              {formData.title}
+            </h2>
+
+            {/* Description */}
+            <p className="text-foreground/70">{formData.description}</p>
+
+            {/* Metadata Grid */}
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t-2 border-monke-border">
+              <div>
+                <p className="text-sm text-foreground/50">Category</p>
+                <p className="font-medium text-monke-primary">{formData.category}</p>
+              </div>
+              <div>
+                <p className="text-sm text-foreground/50">Expires</p>
+                <p className="font-medium text-monke-primary">
+                  {new Date(formData.expiryDate).toLocaleDateString()}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-foreground/50">Quantity</p>
+                <p className="font-medium text-monke-primary">{formData.quantity}</p>
+              </div>
+              <div>
+                <p className="text-sm text-foreground/50">Redemptions</p>
+                <p className="font-medium text-monke-primary">Single-use</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex items-center justify-between mt-8">
+          <button
+            onClick={() => setStep('form')}
+            className="px-6 py-3 border-2 border-monke-border text-monke-primary font-medium rounded-lg hover:bg-monke-cream transition-colors"
+          >
+            ← Back to Edit
+          </button>
+          <button
+            onClick={handleMint}
+            disabled={loading}
+            className="px-8 py-3 bg-monke-primary text-white font-bold rounded-lg hover:bg-monke-accent transition-colors disabled:opacity-50 flex items-center space-x-2"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="animate-spin" size={20} />
+                <span>Minting...</span>
+              </>
+            ) : (
+              <>
+                <PlusCircle size={20} />
+                <span>Confirm & Mint NFT</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        {error && (
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start space-x-2">
+            <AlertCircle size={20} className="text-red-600 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Render form
+  return (
+    <div className="max-w-3xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-monke-primary mb-2">
+          Create New Deal
+        </h1>
+        <p className="text-foreground/60">
+          Mint a new NFT coupon for your customers to purchase and redeem
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Deal Title */}
+        <div className="bg-white border-2 border-monke-border rounded-lg p-6">
+          <div className="flex items-center space-x-2 mb-4">
+            <FileText size={20} className="text-monke-primary" />
+            <h2 className="text-lg font-bold text-monke-primary">Deal Information</h2>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-foreground/80 mb-2"
+              >
+                Deal Title <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors"
+                placeholder="e.g., 50% Off All Coffee Beans"
+                maxLength={100}
+              />
+              <p className="text-xs text-foreground/50 mt-1">
+                {formData.title.length}/100 characters
+              </p>
+            </div>
+
+            <div>
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-foreground/80 mb-2"
+              >
+                Description <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                rows={4}
+                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors resize-none"
+                placeholder="Describe your deal in detail..."
+                maxLength={500}
+              />
+              <p className="text-xs text-foreground/50 mt-1">
+                {formData.description.length}/500 characters
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Deal Terms */}
+        <div className="bg-white border-2 border-monke-border rounded-lg p-6">
+          <div className="flex items-center space-x-2 mb-4">
+            <Tag size={20} className="text-monke-primary" />
+            <h2 className="text-lg font-bold text-monke-primary">Deal Terms</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label
+                htmlFor="discount"
+                className="block text-sm font-medium text-foreground/80 mb-2"
+              >
+                Discount Percentage <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <Percent
+                  size={20}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40"
+                />
+                <input
+                  type="number"
+                  id="discount"
+                  value={formData.discountPercentage}
+                  onChange={(e) =>
+                    setFormData({ ...formData, discountPercentage: e.target.value })
+                  }
+                  className="w-full pl-10 pr-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors"
+                  placeholder="50"
+                  min="1"
+                  max="100"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="expiry"
+                className="block text-sm font-medium text-foreground/80 mb-2"
+              >
+                Expiry Date <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <Calendar
+                  size={20}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40"
+                />
+                <input
+                  type="date"
+                  id="expiry"
+                  value={formData.expiryDate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, expiryDate: e.target.value })
+                  }
+                  className="w-full pl-10 pr-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors"
+                  min={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="category"
+                className="block text-sm font-medium text-foreground/80 mb-2"
+              >
+                Category <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="category"
+                value={formData.category}
+                onChange={(e) =>
+                  setFormData({ ...formData, category: e.target.value })
+                }
+                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors bg-white"
+              >
+                <option value="">Select category...</option>
+                {CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label
+                htmlFor="quantity"
+                className="block text-sm font-medium text-foreground/80 mb-2"
+              >
+                Quantity (Optional)
+              </label>
+              <input
+                type="number"
+                id="quantity"
+                value={formData.quantity}
+                onChange={(e) =>
+                  setFormData({ ...formData, quantity: e.target.value })
+                }
+                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors"
+                placeholder="Unlimited"
+                min="1"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Image Upload */}
+        <div className="bg-white border-2 border-monke-border rounded-lg p-6">
+          <div className="flex items-center space-x-2 mb-4">
+            <ImageIcon size={20} className="text-monke-primary" />
+            <h2 className="text-lg font-bold text-monke-primary">Deal Image</h2>
+          </div>
+
+          <div className="space-y-4">
+            {/* Image Preview */}
+            {formData.imagePreview && (
+              <div className="relative aspect-video w-full overflow-hidden bg-gray-100 rounded-lg border-2 border-monke-border">
+                <img
+                  src={formData.imagePreview}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData({ ...formData, imageFile: null, imagePreview: '' })
+                  }
+                  className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+
+            {/* Upload Button */}
+            {!formData.imagePreview && (
+              <label className="block">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+                <div className="border-2 border-dashed border-monke-border rounded-lg p-12 text-center cursor-pointer hover:border-monke-primary hover:bg-monke-cream/50 transition-colors">
+                  <ImageIcon size={48} className="mx-auto text-monke-primary mb-4" />
+                  <p className="text-lg font-medium text-monke-primary mb-2">
+                    Upload Deal Image
+                  </p>
+                  <p className="text-sm text-foreground/60">
+                    PNG, JPG, WebP • Max 5MB • Recommended: 16:9 aspect ratio
+                  </p>
+                </div>
+              </label>
+            )}
+          </div>
+        </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start space-x-2">
+            <AlertCircle size={20} className="text-red-600 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
+
+        {/* Submit Button */}
+        <div className="flex justify-end space-x-4">
+          <button
+            type="button"
+            onClick={() => router.push('/dashboard')}
+            className="px-6 py-3 border-2 border-monke-border text-monke-primary font-medium rounded-lg hover:bg-monke-cream transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-8 py-3 bg-monke-primary text-white font-bold rounded-lg hover:bg-monke-accent transition-colors flex items-center space-x-2"
+          >
+            <Eye size={20} />
+            <span>Preview Deal</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
