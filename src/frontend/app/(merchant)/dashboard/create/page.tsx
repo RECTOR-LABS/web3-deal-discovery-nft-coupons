@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useState, useEffect } from 'react';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   PlusCircle,
   Image as ImageIcon,
@@ -13,7 +14,11 @@ import {
   Tag,
   FileText,
   Eye,
+  ExternalLink,
+  CheckCircle2,
+  Package,
 } from 'lucide-react';
+import { mintCoupon } from '@/lib/solana/mint';
 
 interface DealFormData {
   title: string;
@@ -36,11 +41,15 @@ const CATEGORIES = [
 ];
 
 export default function CreateDealPage() {
-  const { publicKey, connected } = useWallet();
+  const { publicKey, connected, signTransaction, signAllTransactions } = useWallet();
+  const { connection } = useConnection();
   const router = useRouter();
-  const [step, setStep] = useState<'form' | 'preview' | 'minting'>('form');
+  const [step, setStep] = useState<'form' | 'preview' | 'minting' | 'success'>('form');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [merchantId, setMerchantId] = useState<string>('');
+  const [txSignature, setTxSignature] = useState<string>('');
+  const [nftMint, setNftMint] = useState<string>('');
   const [formData, setFormData] = useState<DealFormData>({
     title: '',
     description: '',
@@ -51,6 +60,30 @@ export default function CreateDealPage() {
     imageFile: null,
     imagePreview: '',
   });
+
+  // Fetch merchant ID on mount
+  useEffect(() => {
+    const fetchMerchantId = async () => {
+      if (!publicKey) return;
+
+      try {
+        const response = await fetch(
+          `/api/merchant/profile?wallet=${publicKey.toBase58()}`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.merchant) {
+            setMerchantId(data.merchant.id);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching merchant ID:', error);
+      }
+    };
+
+    fetchMerchantId();
+  }, [publicKey]);
 
   // Form validation
   const validateForm = (): string | null => {
@@ -119,8 +152,13 @@ export default function CreateDealPage() {
 
   // Handle minting
   const handleMint = async () => {
-    if (!publicKey) {
+    if (!publicKey || !signTransaction || !signAllTransactions) {
       setError('Please connect your wallet');
+      return;
+    }
+
+    if (!merchantId) {
+      setError('Merchant profile not found');
       return;
     }
 
@@ -129,27 +167,132 @@ export default function CreateDealPage() {
     setError(null);
 
     try {
-      // TODO: Implement actual NFT minting logic
-      // Steps:
-      // 1. Upload image to Arweave/IPFS or Supabase Storage
-      // 2. Create metadata JSON
-      // 3. Upload metadata to Arweave/IPFS
-      // 4. Call smart contract create_coupon instruction
-      // 5. Insert deal into database
+      // Mint NFT coupon
+      const result = await mintCoupon(
+        connection,
+        { publicKey, signTransaction, signAllTransactions },
+        {
+          title: formData.title,
+          description: formData.description,
+          discountPercentage: parseInt(formData.discountPercentage),
+          expiryDate: formData.expiryDate,
+          category: formData.category,
+          quantity: parseInt(formData.quantity),
+          imageFile: formData.imageFile,
+        },
+        merchantId
+      );
 
-      // Placeholder for now
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to mint NFT');
+      }
 
-      // Simulate success
-      router.push('/dashboard/deals');
+      // Success!
+      setTxSignature(result.signature || '');
+      setNftMint(result.nftMint || '');
+      setStep('success');
     } catch (err) {
       console.error('Minting error:', err);
       setError(err instanceof Error ? err.message : 'Failed to mint coupon');
-      setStep('form');
+      setStep('preview');
     } finally {
       setLoading(false);
     }
   };
+
+  // Render success screen
+  if (step === 'success') {
+    const explorerUrl = `https://explorer.solana.com/tx/${txSignature}?cluster=devnet`;
+
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white border-2 border-monke-border rounded-lg p-12 text-center">
+          <div className="w-20 h-20 bg-green-100 rounded-full mx-auto flex items-center justify-center mb-6">
+            <CheckCircle2 size={48} className="text-green-600" />
+          </div>
+
+          <h1 className="text-3xl font-bold text-monke-primary mb-3">
+            Deal Created Successfully! 🎉
+          </h1>
+          <p className="text-lg text-foreground/70 mb-8">
+            Your NFT coupon has been minted on the Solana blockchain
+          </p>
+
+          {/* Transaction Details */}
+          <div className="bg-monke-cream border-2 border-monke-border rounded-lg p-6 space-y-4 mb-8">
+            <div>
+              <p className="text-sm text-foreground/50 mb-1">Transaction Signature</p>
+              <div className="flex items-center justify-center space-x-2">
+                <p className="text-sm font-mono text-monke-primary">
+                  {txSignature.slice(0, 8)}...{txSignature.slice(-8)}
+                </p>
+                <a
+                  href={explorerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-monke-primary hover:text-monke-accent transition-colors"
+                >
+                  <ExternalLink size={16} />
+                </a>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm text-foreground/50 mb-1">NFT Mint Address</p>
+              <p className="text-sm font-mono text-monke-primary">
+                {nftMint.slice(0, 8)}...{nftMint.slice(-8)}
+              </p>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center space-y-3 sm:space-y-0 sm:space-x-4">
+            <a
+              href={explorerUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-6 py-3 border-2 border-monke-border text-monke-primary font-medium rounded-lg hover:bg-monke-cream transition-colors flex items-center justify-center space-x-2"
+            >
+              <ExternalLink size={20} />
+              <span>View on Explorer</span>
+            </a>
+
+            <Link
+              href="/dashboard/deals"
+              className="w-full sm:w-auto px-6 py-3 bg-monke-primary text-white font-bold rounded-lg hover:bg-monke-accent transition-colors flex items-center justify-center space-x-2"
+            >
+              <Package size={20} />
+              <span>View My Deals</span>
+            </Link>
+          </div>
+
+          <div className="mt-8 pt-6 border-t-2 border-monke-border">
+            <button
+              onClick={() => {
+                setStep('form');
+                setFormData({
+                  title: '',
+                  description: '',
+                  discountPercentage: '',
+                  expiryDate: '',
+                  quantity: '1',
+                  category: '',
+                  imageFile: null,
+                  imagePreview: '',
+                });
+                setError(null);
+                setTxSignature('');
+                setNftMint('');
+              }}
+              className="text-monke-primary hover:text-monke-accent transition-colors font-medium"
+            >
+              Create Another Deal
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Render preview
   if (step === 'preview') {
