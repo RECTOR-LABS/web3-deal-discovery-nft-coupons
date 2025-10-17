@@ -72,14 +72,16 @@ This is a **three-layer full-stack Web3 application**:
 web3-deal-discovery-nft-coupons/
 ├── README.md                        # Project overview (reference first)
 ├── CLAUDE.md                        # This file
-├── hackathon-analysis.md            # Strategic analysis (read for context)
-├── TRACK-REQUIREMENTS.md            # Feature checklist (track progress)
-├── TIMELINE.md                      # 14-day development roadmap (follow daily)
-├── resources/                       # Reference materials (empty placeholders)
-│   ├── QUICK-START-GUIDE.md        # Quick reference for hackathon
-│   ├── official-docs/              # External docs (Solana, Metaplex)
-│   ├── starter-kits/               # Boilerplates and templates
-│   └── references/                 # API docs, design inspiration
+├── docs/                           # Documentation and planning
+│   ├── planning/                   # Planning documents
+│   │   ├── hackathon-analysis.md  # Strategic analysis (read for context)
+│   │   ├── hackathon-original.md  # Original hackathon brief
+│   │   ├── PRD.md                 # Product Requirements Document
+│   │   ├── EXECUTION.md           # Implementation plan
+│   │   ├── TRACK-REQUIREMENTS.md  # Feature checklist (track progress)
+│   │   └── TIMELINE.md            # 14-day development roadmap (follow daily)
+│   └── resources/                  # Reference materials
+│       └── QUICK-START-GUIDE.md   # Quick reference for hackathon
 └── src/                            # Implementation workspace (EMPTY - to be created)
     ├── contracts/                  # Anchor smart contracts (Rust)
     │   ├── programs/               # Solana programs
@@ -149,7 +151,7 @@ Using Metaplex Token Metadata v1.1 standard:
 
 ### Phase-Based Development Approach
 
-This project follows a **strict 14-day phased development timeline** (see TIMELINE.md). Always reference the timeline for daily milestones and task breakdowns.
+This project follows a **strict 14-day phased development timeline** (see docs/planning/TIMELINE.md). Always reference the timeline for daily milestones and task breakdowns.
 
 **Phase 1 (Days 1-3):** Foundation - Smart contracts + wallet integration
 **Phase 2 (Days 4-8):** Core MVP - Merchant dashboard, marketplace, redemption flow
@@ -549,11 +551,11 @@ CREATE TABLE users (
 ### During Development (Day 4-11)
 
 **Daily Workflow:**
-1. Check TIMELINE.md for today's milestones
-2. Update TRACK-REQUIREMENTS.md as features are completed
+1. Check docs/planning/TIMELINE.md for today's milestones
+2. Update docs/planning/TRACK-REQUIREMENTS.md as features are completed
 3. Commit progress at least once per day with descriptive messages
 4. Test each feature before moving to next one
-5. Use daily standup template in TIMELINE.md to track blockers
+5. Use daily standup template in docs/planning/TIMELINE.md to track blockers
 
 **Testing Strategy:**
 - Test smart contracts after each function implementation
@@ -640,7 +642,7 @@ CREATE TABLE users (
 
 **Issue: Scope Creep**
 - **Solution:** Ruthlessly prioritize MVP features, cut bonus features if behind schedule
-- **Reference:** Check TIMELINE.md checkpoints to assess if on track
+- **Reference:** Check docs/planning/TIMELINE.md checkpoints to assess if on track
 
 **Issue: Poor Demo Video**
 - **Solution:** Write script, practice delivery, record early (Day 12-13)
@@ -655,10 +657,12 @@ CREATE TABLE users (
 ### Documentation Files (Read These First!)
 
 - **README.md** - Project overview, setup instructions, tech stack (start here)
-- **hackathon-analysis.md** - Comprehensive strategy, competition analysis, winning approach (critical context)
-- **TRACK-REQUIREMENTS.md** - Detailed feature checklist (track progress during implementation)
-- **TIMELINE.md** - Day-by-day roadmap with milestones (follow daily)
-- **resources/QUICK-START-GUIDE.md** - Quick reference summary
+- **docs/planning/hackathon-analysis.md** - Comprehensive strategy, competition analysis, winning approach (critical context)
+- **docs/planning/PRD.md** - Product Requirements Document (Epic → Story → Task hierarchy)
+- **docs/planning/EXECUTION.md** - Implementation plan tracking progress against PRD
+- **docs/planning/TRACK-REQUIREMENTS.md** - Detailed feature checklist (track progress during implementation)
+- **docs/planning/TIMELINE.md** - Day-by-day roadmap with milestones (follow daily)
+- **docs/resources/QUICK-START-GUIDE.md** - Quick reference summary
 
 ### Configuration Files (When Implemented)
 
@@ -680,15 +684,15 @@ CREATE TABLE users (
 
 ### When Asked to Implement Features
 
-1. **Check current phase:** Reference TIMELINE.md to see if this feature aligns with current day's goals
-2. **Check requirements:** Reference TRACK-REQUIREMENTS.md to understand feature scope
+1. **Check current phase:** Reference docs/planning/TIMELINE.md to see if this feature aligns with current day's goals
+2. **Check requirements:** Reference docs/planning/TRACK-REQUIREMENTS.md to understand feature scope
 3. **Follow architecture:** Stick to planned tech stack and design decisions
 4. **Test thoroughly:** Ensure feature works 100% before marking complete
-5. **Update docs:** Update TRACK-REQUIREMENTS.md and TIMELINE.md as features are completed
+5. **Update docs:** Update docs/planning/TRACK-REQUIREMENTS.md and docs/planning/TIMELINE.md as features are completed
 
 ### When Encountering Blockers
 
-1. **Document blocker:** Add to "Notes & Decisions Log" in TRACK-REQUIREMENTS.md
+1. **Document blocker:** Add to "Notes & Decisions Log" in docs/planning/TRACK-REQUIREMENTS.md
 2. **Assess impact:** Does this affect timeline? Can we work around it?
 3. **Propose solution:** Offer alternative approaches, reference documentation
 4. **Escalate if needed:** Suggest reaching out to hackathon support (Telegram: @moonsettler)
