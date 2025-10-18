@@ -103,11 +103,11 @@ export default function DealDetailPage() {
         }
       }
 
-      alert('Coupon claimed successfully! Check your wallet and My Coupons.');
+      alert('Coupon added successfully! Check My Coupons to view it.');
       router.push('/coupons');
     } catch (error) {
       console.error('Error claiming coupon:', error);
-      alert('Failed to claim coupon. Please try again.');
+      alert('Failed to get coupon. Please try again.');
     } finally {
       setClaiming(false);
       setShowConfirmModal(false);
@@ -254,19 +254,19 @@ export default function DealDetailPage() {
               </p>
             </div>
 
-            {/* NFT Metadata */}
+            {/* Coupon Details */}
             <div className="bg-[#0d2a13]/5 rounded-lg p-4 mb-6">
-              <h3 className="text-sm font-bold text-[#0d2a13] mb-2">NFT Coupon Details</h3>
+              <h3 className="text-sm font-bold text-[#0d2a13] mb-2">Coupon Details</h3>
               <div className="space-y-1 text-sm text-[#174622]">
-                <p>Mint Address: <span className="font-mono text-xs">{deal.nft_mint_address}</span></p>
-                <p>Redemptions: Single-use (burn on redeem)</p>
+                <p>Coupon ID: <span className="font-mono text-xs">{deal.nft_mint_address}</span></p>
+                <p>Usage: Single-use only</p>
                 <a
                   href={`https://explorer.solana.com/address/${deal.nft_mint_address}?cluster=devnet`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center text-[#00ff4d] hover:underline mt-2"
                 >
-                  View on Solana Explorer <ExternalLink className="w-4 h-4 ml-1" />
+                  View on Blockchain <ExternalLink className="w-4 h-4 ml-1" />
                 </a>
               </div>
             </div>
@@ -275,7 +275,7 @@ export default function DealDetailPage() {
             <div className="space-y-4">
               {!publicKey ? (
                 <div className="text-center">
-                  <p className="text-[#174622] mb-4">Connect your wallet to claim this coupon</p>
+                  <p className="text-[#174622] mb-4">Sign in to get this coupon</p>
                   <WalletMultiButton />
                 </div>
               ) : isExpired ? (
@@ -291,7 +291,7 @@ export default function DealDetailPage() {
                   disabled={claiming}
                   className="w-full bg-[#00ff4d] hover:bg-[#00ff4d]/90 text-[#0d2a13] font-bold py-4 rounded-lg transition-colors disabled:opacity-50"
                 >
-                  {claiming ? 'Claiming...' : 'Claim Coupon (FREE)'}
+                  {claiming ? 'Getting Coupon...' : 'Get Coupon (FREE)'}
                 </button>
               )}
 
@@ -322,15 +322,15 @@ export default function DealDetailPage() {
             animate={{ opacity: 1, scale: 1 }}
             className="bg-[#f2eecb] rounded-lg p-8 max-w-md w-full"
           >
-            <h2 className="text-2xl font-bold text-[#0d2a13] mb-4">Confirm Claim</h2>
+            <h2 className="text-2xl font-bold text-[#0d2a13] mb-4">Confirm</h2>
             <p className="text-[#174622] mb-6">
-              You are about to claim this NFT coupon. The NFT will be minted to your wallet.
+              You are about to get this coupon. It will be added to your account instantly.
             </p>
 
             <div className="bg-[#0d2a13]/5 rounded-lg p-4 mb-6">
               <p className="text-sm text-[#174622]"><strong>Deal:</strong> {deal.title}</p>
               <p className="text-sm text-[#174622]"><strong>Discount:</strong> {deal.discount_percentage}%</p>
-              <p className="text-sm text-[#174622]"><strong>Gas Fee:</strong> ~0.000005 SOL</p>
+              <p className="text-sm text-[#174622]"><strong>Processing Fee:</strong> FREE</p>
             </div>
 
             <div className="flex gap-4">
@@ -345,7 +345,7 @@ export default function DealDetailPage() {
                 disabled={claiming}
                 className="flex-1 bg-[#00ff4d] hover:bg-[#00ff4d]/90 text-[#0d2a13] font-bold py-3 rounded-lg transition-colors disabled:opacity-50"
               >
-                {claiming ? 'Claiming...' : 'Confirm'}
+                {claiming ? 'Processing...' : 'Confirm'}
               </button>
             </div>
           </motion.div>

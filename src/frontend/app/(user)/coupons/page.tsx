@@ -61,10 +61,10 @@ export default function MyCouponsPage() {
         >
           <Wallet className="w-16 h-16 text-[#0d2a13] mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-[#0d2a13] mb-4">
-            Connect Your Wallet
+            Sign In to View Your Coupons
           </h1>
           <p className="text-[#174622] mb-6">
-            Connect your Solana wallet to view your NFT coupons
+            Sign in to access all your saved coupons
           </p>
           <WalletMultiButton />
         </motion.div>
@@ -92,7 +92,7 @@ export default function MyCouponsPage() {
               My Coupons
             </h1>
             <p className="text-xl md:text-2xl text-[#f2eecb] max-w-3xl mx-auto">
-              Your NFT coupon collection
+              Your coupon collection
             </p>
           </motion.div>
         </div>
@@ -141,7 +141,7 @@ export default function MyCouponsPage() {
             </p>
             <p className="text-[#174622] mb-6">
               {filter === 'all'
-                ? 'Start collecting NFT coupons from amazing deals!'
+                ? 'Start collecting coupons from amazing deals!'
                 : 'Try adjusting your filter'}
             </p>
             {filter === 'all' && (

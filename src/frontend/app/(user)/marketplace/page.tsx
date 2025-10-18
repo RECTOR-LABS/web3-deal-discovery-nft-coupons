@@ -132,7 +132,7 @@ export default function MarketplacePage() {
               Discover Amazing Deals
             </h1>
             <p className="text-xl md:text-2xl text-[#f2eecb] max-w-3xl mx-auto">
-              Collect NFT coupons, trade them, and save on your favorite merchants 🛍️
+              Collect coupons, trade them, and save on your favorite merchants 🛍️
             </p>
           </motion.div>
         </div>

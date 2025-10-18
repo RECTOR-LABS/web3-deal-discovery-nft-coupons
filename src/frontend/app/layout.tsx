@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SolanaWalletProvider } from "@/components/shared/WalletProvider";
+import PrivyAuthProvider from "@/components/shared/PrivyAuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DealCoupon - Web3 Deal Discovery Platform",
-  description: "Discover and trade promotional deals as NFT coupons on Solana blockchain",
+  title: "DealCoupon - Best Deals & Coupons Marketplace",
+  description: "Discover and trade promotional deals and coupons from your favorite merchants",
 };
 
 export default function RootLayout({
@@ -28,9 +29,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SolanaWalletProvider>
-          {children}
-        </SolanaWalletProvider>
+        <PrivyAuthProvider>
+          <SolanaWalletProvider>
+            {children}
+          </SolanaWalletProvider>
+        </PrivyAuthProvider>
       </body>
     </html>
   );
