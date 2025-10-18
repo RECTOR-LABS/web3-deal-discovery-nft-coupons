@@ -2,9 +2,12 @@
 
 import Link from 'next/link';
 import { Database } from '@/lib/database/types';
-import { Calendar, Tag, TrendingUp, ExternalLink } from 'lucide-react';
+import { Calendar, Tag, TrendingUp, ExternalLink, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import VoteButtons from './VoteButtons';
+import TierBadge from './TierBadge';
+import { TierLevel } from '@/lib/loyalty/types';
+import { hasAccessToDeal } from '@/lib/loyalty/tiers';
 
 type Deal = Database['public']['Tables']['deals']['Row'];
 
@@ -14,13 +17,16 @@ export type ExtendedDeal = Deal & {
   source?: string;
   external_url?: string;
   merchant?: string;
+  min_tier?: TierLevel | null;
+  is_exclusive?: boolean | null;
 };
 
 interface DealCardProps {
   deal: ExtendedDeal;
+  userTier?: TierLevel;
 }
 
-export default function DealCard({ deal }: DealCardProps) {
+export default function DealCard({ deal, userTier = 'Bronze' }: DealCardProps) {
   const expiryDate = new Date(deal.expiry_date!);
   const now = new Date();
   const daysUntilExpiry = Math.ceil(
@@ -28,12 +34,17 @@ export default function DealCard({ deal }: DealCardProps) {
   );
   const isExpiringSoon = daysUntilExpiry <= 3;
 
-  // For external deals, use external_url or don't link
-  const CardWrapper = deal.is_external
-    ? ({ children }: { children: React.ReactNode }) => <div>{children}</div>
-    : ({ children }: { children: React.ReactNode }) => (
+  // Check if user has access to this deal based on tier
+  const requiredTier = (deal.min_tier || 'Bronze') as TierLevel;
+  const hasAccess = hasAccessToDeal(userTier, requiredTier);
+
+  // For external deals or locked deals, handle differently
+  const shouldLink = !deal.is_external && hasAccess;
+  const CardWrapper = shouldLink
+    ? ({ children }: { children: React.ReactNode }) => (
         <Link href={`/marketplace/${deal.id}`}>{children}</Link>
-      );
+      )
+    : ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
 
   return (
     <CardWrapper>
@@ -61,17 +72,34 @@ export default function DealCard({ deal }: DealCardProps) {
             {deal.discount_percentage}% OFF
           </div>
 
-          {/* Expiring Soon Badge OR Partner Badge */}
-          {deal.is_external ? (
-            <div className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-lg text-sm font-semibold flex items-center gap-1">
-              <ExternalLink className="w-3 h-3" />
-              Partner Deal
+          {/* Top Left Badges */}
+          <div className="absolute top-4 left-4 flex flex-col gap-2">
+            {/* Partner Badge OR Expiring Soon */}
+            {deal.is_external ? (
+              <div className="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm font-semibold flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" />
+                Partner Deal
+              </div>
+            ) : isExpiringSoon ? (
+              <div className="bg-red-500 text-white px-3 py-1 rounded-lg text-sm font-semibold animate-pulse">
+                Expiring Soon!
+              </div>
+            ) : null}
+
+            {/* Tier Badge (if exclusive) */}
+            {deal.is_exclusive && requiredTier !== 'Bronze' && (
+              <TierBadge requiredTier={requiredTier} userTier={userTier} size="sm" />
+            )}
+          </div>
+
+          {/* Locked Overlay (if user doesn't have access) */}
+          {!hasAccess && (
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center">
+              <Lock className="w-16 h-16 text-white mb-2" />
+              <p className="text-white font-bold text-lg">Unlock at {requiredTier}</p>
+              <p className="text-white/80 text-sm">Upgrade your tier to access</p>
             </div>
-          ) : isExpiringSoon ? (
-            <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-lg text-sm font-semibold animate-pulse">
-              Expiring Soon!
-            </div>
-          ) : null}
+          )}
         </div>
 
         {/* Content */}

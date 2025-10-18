@@ -49,7 +49,7 @@ export default function RedeemPage() {
 
   const handleRedeemConfirm = async () => {
     if (!verificationResult?.couponData || !publicKey || !signTransaction) {
-      setErrorMessage('Merchant wallet not connected');
+      setErrorMessage('Merchant account not connected');
       setState('failed');
       return;
     }
@@ -58,7 +58,7 @@ export default function RedeemPage() {
     setErrorMessage('');
 
     try {
-      // Call on-chain redemption (burn NFT)
+      // Call on-chain redemption (use coupon)
       const result = await redeemCouponOnChain(
         {
           nftMint: verificationResult.couponData.nftMint,
@@ -115,7 +115,7 @@ export default function RedeemPage() {
           </Link>
           <h1 className="text-4xl font-black text-[#0d2a13]">Redeem Coupon</h1>
           <p className="text-[#174622] mt-2">
-            Scan customer QR codes to verify and redeem NFT coupons
+            Scan customer QR codes to verify and redeem digital coupons
           </p>
         </div>
 
@@ -176,7 +176,7 @@ export default function RedeemPage() {
                   Coupon Verified!
                 </h2>
                 <p className="text-green-700 text-center">
-                  The NFT coupon is valid and ready to be redeemed
+                  The digital coupon is valid and ready to be redeemed
                 </p>
               </div>
 
@@ -199,13 +199,13 @@ export default function RedeemPage() {
                     </span>
                   </div>
                   <div>
-                    <span className="text-[#174622] font-semibold">Customer Wallet:</span>
+                    <span className="text-[#174622] font-semibold">Customer Account:</span>
                     <span className="ml-2 text-[#0d2a13] text-sm font-mono break-all">
                       {verificationResult.couponData.userWallet}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[#174622] font-semibold">NFT Mint:</span>
+                    <span className="text-[#174622] font-semibold">Coupon ID:</span>
                     <span className="ml-2 text-[#0d2a13] text-sm font-mono break-all">
                       {verificationResult.couponData.nftMint}
                     </span>
@@ -218,8 +218,8 @@ export default function RedeemPage() {
                 <div className="flex items-start">
                   <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5 mr-3 flex-shrink-0" />
                   <div className="text-sm text-yellow-800">
-                    <strong>Important:</strong> Once you confirm redemption, the NFT will be
-                    burned on-chain and cannot be reused. Make sure you've provided the
+                    <strong>Important:</strong> Once you confirm redemption, the coupon will be
+                    used and cannot be reused. Make sure you&apos;ve provided the
                     service/product before confirming.
                   </div>
                 </div>
@@ -254,7 +254,7 @@ export default function RedeemPage() {
                 Redeeming Coupon...
               </h2>
               <p className="text-[#174622]">
-                Burning NFT on-chain and recording redemption event
+                Using coupon on-chain and recording redemption event
               </p>
             </motion.div>
           )}
@@ -275,7 +275,7 @@ export default function RedeemPage() {
                   Redemption Successful!
                 </h2>
                 <p className="text-green-700 text-center mb-4">
-                  The NFT coupon has been burned on-chain
+                  The digital coupon has been burned on-chain
                 </p>
                 {redemptionSignature && (
                   <div className="bg-white rounded-lg p-4 mt-4">
@@ -363,7 +363,7 @@ export default function RedeemPage() {
           <ol className="space-y-2 text-[#174622]">
             <li className="flex items-start">
               <span className="font-bold mr-2">1.</span>
-              <span>Customer shows their QR code generated from their NFT coupon</span>
+              <span>Customer shows their QR code generated from their digital coupon</span>
             </li>
             <li className="flex items-start">
               <span className="font-bold mr-2">2.</span>
@@ -375,7 +375,7 @@ export default function RedeemPage() {
             </li>
             <li className="flex items-start">
               <span className="font-bold mr-2">4.</span>
-              <span>Upon confirmation, NFT is burned to prevent reuse</span>
+              <span>Upon confirmation, coupon is used to prevent reuse</span>
             </li>
             <li className="flex items-start">
               <span className="font-bold mr-2">5.</span>

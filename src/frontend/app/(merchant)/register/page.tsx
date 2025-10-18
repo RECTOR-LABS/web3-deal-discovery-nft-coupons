@@ -21,7 +21,7 @@ export default function MerchantRegisterPage() {
     e.preventDefault();
 
     if (!publicKey) {
-      setError('Please connect your wallet first');
+      setError('Please sign in to your account first');
       return;
     }
 
@@ -80,7 +80,7 @@ export default function MerchantRegisterPage() {
               Merchant Registration
             </h1>
             <p className="text-foreground/60">
-              Connect your wallet to register as a merchant
+              Sign in to your account to register as a merchant
             </p>
           </div>
           <div className="flex justify-center">
@@ -104,14 +104,14 @@ export default function MerchantRegisterPage() {
               Register Your Business
             </h1>
             <p className="text-monke-primary/80 font-medium">
-              Create your merchant account to start minting NFT coupons
+              Create your merchant account to start minting digital coupons
             </p>
           </div>
 
-          {/* Connected Wallet Info */}
+          {/* Account Info */}
           <div className="mb-6 p-4 bg-monke-neon/10 border-2 border-monke-neon rounded-lg">
             <p className="text-sm font-bold text-monke-primary mb-1">
-              ✅ Connected Wallet
+              ✅ Account
             </p>
             <p className="text-xs font-mono text-monke-primary/80 font-medium break-all">
               {publicKey?.toBase58()}
@@ -211,8 +211,8 @@ export default function MerchantRegisterPage() {
           {/* Footer Note */}
           <div className="mt-6 pt-6 border-t-2 border-monke-border text-center">
             <p className="text-xs text-monke-primary/70 font-medium">
-              By registering, you can create and manage promotional NFT coupons
-              on Solana blockchain
+              By registering, you can create and manage promotional digital coupons
+              on secure digital ledger
             </p>
           </div>
         </div>

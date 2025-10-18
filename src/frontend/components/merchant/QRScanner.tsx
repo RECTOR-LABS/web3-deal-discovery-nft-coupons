@@ -121,7 +121,7 @@ export default function QRScanner({ onScanSuccess, onClose }: QRScannerProps) {
         {!scanning && !error && (
           <div className="bg-[#00ff4d]/10 border border-[#00ff4d] rounded-lg p-4 mb-4">
             <p className="text-sm text-[#0d2a13] text-center">
-              Click "Start Camera" and position the QR code within the frame
+              Click &ldquo;Start Camera&rdquo; and position the QR code within the frame
             </p>
           </div>
         )}

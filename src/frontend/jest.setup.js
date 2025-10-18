@@ -27,6 +27,27 @@ jest.mock('@solana/wallet-adapter-react-ui', () => ({
   WalletModalProvider: ({ children }) => children,
 }))
 
+// Mock Privy authentication
+jest.mock('@privy-io/react-auth', () => ({
+  usePrivy: jest.fn(() => ({
+    ready: true,
+    authenticated: false,
+    user: null,
+    login: jest.fn(),
+    logout: jest.fn(),
+  })),
+  useWallets: jest.fn(() => ({
+    wallets: [],
+  })),
+  PrivyProvider: ({ children }) => children,
+}))
+
+// Mock PrivyLoginButton component
+jest.mock('@/components/shared/PrivyLoginButton', () => ({
+  __esModule: true,
+  default: () => <button>Sign In</button>,
+}))
+
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => ({

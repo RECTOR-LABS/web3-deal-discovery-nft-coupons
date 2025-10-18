@@ -1,32 +1,63 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { supabase } from '@/lib/database/supabase';
 import { Database } from '@/lib/database/types';
 import DealCard from '@/components/user/DealCard';
 import DealFilters from '@/components/user/DealFilters';
 import ActivityFeed from '@/components/user/ActivityFeed';
 import { motion } from 'framer-motion';
+import { TierLevel } from '@/lib/loyalty/types';
 
 type Deal = Database['public']['Tables']['deals']['Row'];
 
-// Extended Deal type to support external deals
+// Extended Deal type to support external deals and tier requirements
 export type ExtendedDeal = Deal & {
   is_external?: boolean;
   source?: string;
   external_url?: string;
   merchant?: string;
+  min_tier?: TierLevel | null;
+  is_exclusive?: boolean | null;
 };
 
 type SortOption = 'newest' | 'expiring-soon' | 'highest-discount';
 type CategoryOption = 'All' | 'Food & Beverage' | 'Retail' | 'Services' | 'Travel' | 'Entertainment' | 'Other';
 
 export default function MarketplacePage() {
+  const { authenticated } = usePrivy();
+  const { wallets } = useWallets();
+  const solanaWallet = wallets.find((wallet) => wallet.walletClientType === 'privy');
+
   const [deals, setDeals] = useState<ExtendedDeal[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryOption>('All');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const [userTier, setUserTier] = useState<TierLevel>('Bronze');
+
+  // Fetch user's tier
+  useEffect(() => {
+    async function fetchUserTier() {
+      if (!authenticated || !solanaWallet) {
+        setUserTier('Bronze');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/user/tier?wallet=${solanaWallet.address}`);
+        if (response.ok) {
+          const data = await response.json();
+          setUserTier(data.tierInfo.currentTier);
+        }
+      } catch (error) {
+        console.error('Error fetching user tier:', error);
+      }
+    }
+
+    fetchUserTier();
+  }, [authenticated, solanaWallet]);
 
   // Fetch both platform and external deals
   useEffect(() => {
@@ -34,7 +65,7 @@ export default function MarketplacePage() {
       try {
         setLoading(true);
 
-        // Fetch platform deals from Supabase
+        // Fetch platform deals from Supabase (including min_tier and is_exclusive)
         const { data: platformDeals, error } = await supabase
           .from('deals')
           .select('*')
@@ -200,7 +231,7 @@ export default function MarketplacePage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: Math.min(index * 0.05, 0.3) }}
                   >
-                    <DealCard deal={deal} />
+                    <DealCard deal={deal} userTier={userTier} />
                   </motion.div>
                 ))}
               </motion.div>

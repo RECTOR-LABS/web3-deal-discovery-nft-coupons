@@ -3,21 +3,25 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { usePrivy, useWallets } from '@privy-io/react-auth';
+import { PublicKey } from '@solana/web3.js';
 import { getUserCoupons, type UserCoupon } from '@/lib/solana/getUserCoupons';
 import CouponCard from '@/components/user/CouponCard';
 import { motion } from 'framer-motion';
-import { Wallet, Filter } from 'lucide-react';
+import { Tag, Filter } from 'lucide-react';
 
-const WalletMultiButton = dynamic(
-  async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
+const PrivyLoginButton = dynamic(
+  async () => (await import('@/components/shared/PrivyLoginButton')).default,
   { ssr: false }
 );
 
 type CouponStatus = 'all' | 'active' | 'expired' | 'redeemed';
 
 export default function MyCouponsPage() {
-  const { publicKey } = useWallet();
+  const { authenticated } = usePrivy();
+  const { wallets } = useWallets();
+  const solanaWallet = wallets.find((wallet) => wallet.walletClientType === 'privy');
+  const publicKey = solanaWallet ? new PublicKey(solanaWallet.address) : null;
   const [coupons, setCoupons] = useState<UserCoupon[]>([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<CouponStatus>('all');
@@ -59,14 +63,14 @@ export default function MyCouponsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-[#f2eecb] rounded-lg p-8 max-w-md w-full text-center"
         >
-          <Wallet className="w-16 h-16 text-[#0d2a13] mx-auto mb-4" />
+          <Tag className="w-16 h-16 text-[#0d2a13] mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-[#0d2a13] mb-4">
             Sign In to View Your Coupons
           </h1>
           <p className="text-[#174622] mb-6">
             Sign in to access all your saved coupons
           </p>
-          <WalletMultiButton />
+          <PrivyLoginButton />
         </motion.div>
       </div>
     );

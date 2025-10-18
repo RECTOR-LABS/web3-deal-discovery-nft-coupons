@@ -266,7 +266,7 @@ export default function DealDetailPage() {
                   rel="noopener noreferrer"
                   className="flex items-center text-[#00ff4d] hover:underline mt-2"
                 >
-                  View on Blockchain <ExternalLink className="w-4 h-4 ml-1" />
+                  View Details <ExternalLink className="w-4 h-4 ml-1" />
                 </a>
               </div>
             </div>

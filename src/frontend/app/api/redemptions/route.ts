@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/database/supabase';
+import { checkAndMintBadges } from '@/lib/loyalty/autoBadge';
 
 export async function POST(request: NextRequest) {
   try {
@@ -47,9 +48,49 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Update user tier (increment redemption count)
+    try {
+      await fetch(`${request.nextUrl.origin}/api/user/tier`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          wallet: user_wallet,
+          activity: 'redemption',
+        }),
+      });
+    } catch (tierError) {
+      console.error('Failed to update tier:', tierError);
+      // Don't fail the whole request if tier update fails
+    }
+
+    // Check and mint badges (async, don't await)
+    let mintedBadges = [];
+    try {
+      // Fetch updated user stats
+      const { data: userData } = await supabase
+        .from('users')
+        .select('total_redemptions, total_referrals, total_reviews, total_upvotes')
+        .eq('wallet_address', user_wallet)
+        .single();
+
+      if (userData) {
+        const result = await checkAndMintBadges(user_wallet, {
+          totalRedemptions: userData.total_redemptions || 0,
+          totalReferrals: userData.total_referrals || 0,
+          totalReviews: userData.total_reviews || 0,
+          totalUpvotes: userData.total_upvotes || 0,
+        });
+        mintedBadges = result.mintedBadges;
+      }
+    } catch (badgeError) {
+      console.error('Failed to mint badges:', badgeError);
+      // Don't fail the whole request if badge minting fails
+    }
+
     return NextResponse.json({
       success: true,
       event: data,
+      mintedBadges, // Include newly minted badges in response
     });
   } catch (error) {
     console.error('API error:', error);

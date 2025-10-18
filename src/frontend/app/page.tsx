@@ -1,11 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { WalletButton } from '@/components/shared/WalletButton';
-import { useWallet } from '@solana/wallet-adapter-react';
+import dynamic from 'next/dynamic';
+import { usePrivy, useWallets } from '@privy-io/react-auth';
+
+const PrivyLoginButton = dynamic(
+  async () => (await import('@/components/shared/PrivyLoginButton')).default,
+  { ssr: false }
+);
 
 export default function Home() {
-  const { connected, publicKey } = useWallet();
+  const { authenticated } = usePrivy();
+  const { wallets } = useWallets();
+  const solanaWallet = wallets.find((wallet) => wallet.walletClientType === 'privy');
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-b from-background via-background to-monke-primary/5">
@@ -51,18 +58,18 @@ export default function Home() {
           <div className="space-y-6">
             <div className="flex justify-center">
               <div className="w-full max-w-sm">
-                <WalletButton />
+                <PrivyLoginButton />
               </div>
             </div>
 
-            {connected && publicKey ? (
+            {authenticated && solanaWallet ? (
               <div className="space-y-4 text-left">
                 <div className="p-4 bg-monke-cream border-2 border-monke-border rounded-lg shadow-lg">
                   <p className="text-sm font-bold text-monke-primary mb-2">
-                    ✅ Wallet Connected
+                    ✅ Signed In
                   </p>
                   <p className="text-xs font-mono text-monke-primary font-bold break-all">
-                    {publicKey.toBase58()}
+                    {solanaWallet.address}
                   </p>
                 </div>
 
@@ -110,10 +117,10 @@ export default function Home() {
             ) : (
               <div className="text-center space-y-2">
                 <p className="text-sm text-foreground/70">
-                  Connect your wallet to get started
+                  Sign in to get started
                 </p>
                 <p className="text-xs text-foreground/50">
-                  Supports: Phantom • Solflare
+                  Sign in with Email, Google, or Twitter
                 </p>
               </div>
             )}

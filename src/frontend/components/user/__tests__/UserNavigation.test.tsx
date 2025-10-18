@@ -16,7 +16,7 @@ describe('UserNavigation', () => {
 
     render(<UserNavigation />);
 
-    expect(screen.getByText('NFT Coupons')).toBeInTheDocument();
+    expect(screen.getByText('DealCoupon')).toBeInTheDocument();
   });
 
   it('should render all navigation links', () => {
@@ -56,13 +56,13 @@ describe('UserNavigation', () => {
     expect(couponsLink).toHaveClass('bg-[#00ff4d]');
   });
 
-  it('should render wallet button', () => {
+  it('should render sign in button', () => {
     mockUsePathname.mockReturnValue('/');
 
     render(<UserNavigation />);
 
-    // Wallet button is mocked in jest.setup.js
-    expect(screen.getByRole('button', { name: /Connect Wallet/i })).toBeInTheDocument();
+    // Sign in button is mocked in jest.setup.js
+    expect(screen.getByRole('button', { name: /Sign In/i })).toBeInTheDocument();
   });
 
   it('should have correct navigation href links', () => {

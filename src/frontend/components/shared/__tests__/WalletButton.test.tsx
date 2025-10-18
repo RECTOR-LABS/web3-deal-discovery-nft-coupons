@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen } from '@testing-library/react';
 import { WalletButton } from '../WalletButton';
 import { useWallet } from '@solana/wallet-adapter-react';

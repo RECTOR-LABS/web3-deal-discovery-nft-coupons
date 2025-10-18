@@ -273,13 +273,13 @@ export default function SettingsPage() {
           <div className="flex items-center space-x-2 mb-6">
             <Wallet size={24} className="text-monke-primary" />
             <h2 className="text-xl font-bold text-monke-primary">
-              Blockchain Identity
+              Account Identity
             </h2>
           </div>
 
           <div>
               <label className="block text-sm font-semibold text-monke-primary mb-3">
-                Connected Wallet Address
+                Account Address
               </label>
               <div className="relative">
                 <div className="px-4 py-4 bg-white border-2 border-monke-neon/30 rounded-lg shadow-sm">
@@ -292,7 +292,7 @@ export default function SettingsPage() {
               <div className="mt-3 p-3 bg-monke-neon/10 border border-monke-neon/30 rounded-lg">
                 <p className="text-xs text-monke-primary/70 font-medium flex items-center gap-2">
                   <AlertCircle size={14} className="text-monke-neon flex-shrink-0" />
-                  This is your unique blockchain identity. It cannot be changed and is used for all on-chain transactions.
+                  This is your unique account identity. It cannot be changed and is used for all on-chain transactions.
                 </p>
               </div>
             </div>

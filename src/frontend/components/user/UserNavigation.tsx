@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { Home, Wallet, ShoppingBag } from 'lucide-react';
+import { Home, Tag, ShoppingBag, User } from 'lucide-react';
 
-const WalletMultiButton = dynamic(
-  async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
+const PrivyLoginButton = dynamic(
+  async () => (await import('@/components/shared/PrivyLoginButton')).default,
   { ssr: false }
 );
 
@@ -16,7 +16,8 @@ export default function UserNavigation() {
   const navLinks = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/marketplace', label: 'Marketplace', icon: ShoppingBag },
-    { href: '/coupons', label: 'My Coupons', icon: Wallet },
+    { href: '/coupons', label: 'My Coupons', icon: Tag },
+    { href: '/profile', label: 'Profile', icon: User },
   ];
 
   return (
@@ -27,7 +28,7 @@ export default function UserNavigation() {
           <Link href="/" className="flex items-center space-x-2">
             <ShoppingBag className="w-8 h-8 text-[#00ff4d]" />
             <span className="text-[#f2eecb] text-xl font-bold">
-              NFT Coupons
+              DealCoupon
             </span>
           </Link>
 
@@ -54,9 +55,9 @@ export default function UserNavigation() {
             })}
           </div>
 
-          {/* Wallet Button */}
+          {/* Sign In Button */}
           <div className="flex items-center" style={{ outline: 'none', border: 'none' }}>
-            <WalletMultiButton />
+            <PrivyLoginButton />
           </div>
         </div>
       </div>

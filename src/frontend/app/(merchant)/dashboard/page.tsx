@@ -99,7 +99,7 @@ export default function DashboardHomePage() {
 
       // After initial check, verify wallet is connected
       if (!connected || !publicKey) {
-        console.log('Wallet not connected, redirecting to home...');
+        console.log('Not signed in, redirecting to home...');
         router.push('/');
         return;
       }
@@ -233,7 +233,7 @@ export default function DashboardHomePage() {
             transition={{ delay: 0.4, duration: 0.5 }}
             className="text-lg text-monke-primary/70 font-medium"
           >
-            Here&apos;s an overview of your NFT coupon platform performance
+            Here&apos;s an overview of your digital coupon platform performance
           </motion.p>
         </div>
       </motion.div>
@@ -260,7 +260,7 @@ export default function DashboardHomePage() {
               </motion.span>
             </h2>
             <p className="text-white/90 text-base font-medium">
-              Start minting NFT coupons and attract more customers
+              Start minting digital coupons and attract more customers
             </p>
           </div>
           <Link href="/dashboard/create">
@@ -353,7 +353,7 @@ export default function DashboardHomePage() {
               transition={{ delay: 1 }}
               className="text-monke-primary/70 font-medium text-lg"
             >
-              Start by creating your first promotional NFT coupon. Your customers
+              Start by creating your first promotional digital coupon. Your customers
               will be able to purchase, trade, and redeem them on-chain.
             </motion.p>
             <Link href="/dashboard/create">

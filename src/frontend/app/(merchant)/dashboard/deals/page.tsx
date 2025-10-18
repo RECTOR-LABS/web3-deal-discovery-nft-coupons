@@ -88,7 +88,7 @@ export default function MyDealsPage() {
         <div>
           <h1 className="text-3xl font-bold text-monke-primary mb-2">My Deals</h1>
           <p className="text-foreground/60">
-            Manage your NFT coupon deals ({deals.length} total)
+            Manage your digital coupon deals ({deals.length} total)
           </p>
         </div>
         <Link
@@ -110,7 +110,7 @@ export default function MyDealsPage() {
             <h3 className="text-2xl font-bold text-monke-primary">No Deals Yet</h3>
             <p className="text-foreground/60">
               You haven&apos;t created any deals yet. Start by creating your first
-              promotional NFT coupon.
+              promotional digital coupon.
             </p>
             <Link
               href="/dashboard/create"
@@ -206,7 +206,7 @@ export default function MyDealsPage() {
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-foreground/50">NFT Mint</span>
+                      <span className="text-foreground/50">Coupon ID</span>
                       <span className="font-mono text-xs text-monke-primary">
                         {deal.nft_mint_address.slice(0, 4)}...
                         {deal.nft_mint_address.slice(-4)}

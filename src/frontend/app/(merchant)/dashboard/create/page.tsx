@@ -153,7 +153,7 @@ export default function CreateDealPage() {
   // Handle minting
   const handleMint = async () => {
     if (!publicKey || !signTransaction || !signAllTransactions) {
-      setError('Please connect your wallet');
+      setError('Please sign in to your account');
       return;
     }
 
@@ -167,7 +167,7 @@ export default function CreateDealPage() {
     setError(null);
 
     try {
-      // Mint NFT coupon
+      // Create digital coupon
       const result = await mintCoupon(
         connection,
         { publicKey, signTransaction, signAllTransactions },
@@ -184,7 +184,7 @@ export default function CreateDealPage() {
       );
 
       if (!result.success) {
-        throw new Error(result.error || 'Failed to mint NFT');
+        throw new Error(result.error || 'Failed to create coupon');
       }
 
       // Success!
@@ -215,7 +215,7 @@ export default function CreateDealPage() {
             Deal Created Successfully! 🎉
           </h1>
           <p className="text-lg text-foreground/70 mb-8">
-            Your NFT coupon has been minted on the Solana blockchain
+            Your digital coupon has been created successfully
           </p>
 
           {/* Transaction Details */}
@@ -238,7 +238,7 @@ export default function CreateDealPage() {
             </div>
 
             <div>
-              <p className="text-sm text-foreground/50 mb-1">NFT Mint Address</p>
+              <p className="text-sm text-foreground/50 mb-1">Coupon ID</p>
               <p className="text-sm font-mono text-monke-primary">
                 {nftMint.slice(0, 8)}...{nftMint.slice(-8)}
               </p>
@@ -303,7 +303,7 @@ export default function CreateDealPage() {
             Preview Your Deal
           </h1>
           <p className="text-foreground/60">
-            Review your deal before minting it as an NFT
+            Review your deal before creating it
           </p>
         </div>
 
@@ -380,7 +380,7 @@ export default function CreateDealPage() {
             ) : (
               <>
                 <PlusCircle size={20} />
-                <span>Confirm & Mint NFT</span>
+                <span>Confirm & Create Deal</span>
               </>
             )}
           </button>
@@ -404,7 +404,7 @@ export default function CreateDealPage() {
           Create New Deal
         </h1>
         <p className="text-foreground/60">
-          Mint a new NFT coupon for your customers to purchase and redeem
+          Create a new digital coupon for your customers to save and redeem
         </p>
       </div>
 

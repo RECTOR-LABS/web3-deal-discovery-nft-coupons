@@ -77,7 +77,7 @@ export default function VoteButtons({ dealId, size = 'md', showScore = true }: V
       const prevUserVote = userVote;
 
       // Calculate optimistic stats
-      let newStats = { ...stats };
+      const newStats = { ...stats };
       let newUserVote: 'upvote' | 'downvote' | null = voteType;
 
       if (userVote === voteType) {
