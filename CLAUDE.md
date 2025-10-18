@@ -162,15 +162,35 @@ This is a **hackathon project** for the Cypherpunk - MonkeDAO Track on Superteam
 - ✅ **Database Migration** - Complete schema for users, deals, badges tables
 - ✅ **API Routes** - /api/user/tier, /api/user/badges, /api/badges/mint
 
+**What doesn't exist yet (OPTIONAL Bonus Epics):**
+- ❌ **Epic 8: Reward Staking / Cashback** (OPTIONAL - NOT RECOMMENDED)
+  - Status: Not Started (0% - 0/4 tasks)
+  - Effort: 8-12 hours (~1 day)
+  - Features: Token staking, cashback on redemptions, staking dashboard
+  - Why Skip: Token contracts add regulatory complexity, less aligned with Web3 value prop than Epic 9 (already complete)
+- ❌ **Epic 10: Geo-Based Discovery** (OPTIONAL - NOT RECOMMENDED)
+  - Status: Not Started (0% - 0/3 tasks)
+  - Effort: 10-12 hours (~1 day)
+  - Features: Browser geolocation, "Deals Near Me" filter, map view with markers
+  - Why Skip: Less aligned with Web3 differentiators, requires third-party map APIs, higher complexity
+
 **What doesn't exist yet (Submission - Phase 4):**
-- ❌ Database migration run on Supabase (SQL script ready)
+- ✅ Database migration run on Supabase ✅ COMPLETE
 - ❌ Production deployment (Vercel hosting) - Epic 11
 - ❌ Demo video (3-5 minutes) - Epic 11
 - ❌ Final submission package - Epic 11
 
+**IMPORTANT - Epic Sequencing Rule:**
+- **DO NOT proceed to Epic 11 (Submission) until RECTOR explicitly approves skipping Epic 8 & 10**
+- Epic 8 & 10 are OPTIONAL bonus epics marked "NOT RECOMMENDED" in planning docs
+- We already completed Epic 9 (the RECOMMENDED bonus epic)
+- Current completion: 8/10 epics done (Epic 1-7 + 9) = 96% complete
+- Decision: Skip Epic 8 & 10 OR implement them before Epic 11
+
 **Next Steps:**
-1. Run database migration on Supabase (2 min)
-2. Epic 11 - Submission Preparation (Deploy, Demo Video, Submit)
+1. ✅ Database migration complete ✅
+2. **DECISION REQUIRED:** Skip Epic 8 & 10 (OPTIONAL) OR implement them?
+3. Epic 11 - Submission Preparation (Deploy, Demo Video, Submit) - ONLY after approval
 
 ## Architecture and Structure
 
