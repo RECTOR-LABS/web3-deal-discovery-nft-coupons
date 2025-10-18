@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/database/supabase';
 import { checkAndMintBadges } from '@/lib/loyalty/autoBadge';
+import { distributeCashback } from '@/lib/staking/cashback';
 
 export async function POST(request: NextRequest) {
   try {
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
       // Fetch updated user stats
       const { data: userData } = await supabase
         .from('users')
-        .select('total_redemptions, total_referrals, total_reviews, total_upvotes')
+        .select('total_redemptions, total_referrals, total_reviews, total_upvotes, tier')
         .eq('wallet_address', user_wallet)
         .single();
 
@@ -87,10 +88,48 @@ export async function POST(request: NextRequest) {
       // Don't fail the whole request if badge minting fails
     }
 
+    // Distribute cashback (Epic 8)
+    let cashbackAmount = 0;
+    try {
+      if (deal_id) {
+        // Fetch deal info for cashback calculation
+        const { data: dealData } = await supabase
+          .from('deals')
+          .select('discount_percentage, category')
+          .eq('id', deal_id)
+          .single();
+
+        // Fetch user tier
+        const { data: userData } = await supabase
+          .from('users')
+          .select('tier')
+          .eq('wallet_address', user_wallet)
+          .single();
+
+        if (dealData && userData) {
+          const cashbackResult = await distributeCashback({
+            userWallet: user_wallet,
+            dealId: deal_id,
+            discountPercentage: dealData.discount_percentage || 0,
+            category: dealData.category || 'Other',
+            tier: userData.tier || 'Bronze',
+          });
+
+          if (cashbackResult.success) {
+            cashbackAmount = cashbackResult.cashbackAmount;
+          }
+        }
+      }
+    } catch (cashbackError) {
+      console.error('Failed to distribute cashback:', cashbackError);
+      // Don't fail the whole request if cashback fails
+    }
+
     return NextResponse.json({
       success: true,
       event: data,
       mintedBadges, // Include newly minted badges in response
+      cashback: cashbackAmount, // Include cashback amount in response
     });
   } catch (error) {
     console.error('API error:', error);

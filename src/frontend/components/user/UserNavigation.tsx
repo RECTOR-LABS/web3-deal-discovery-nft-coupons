@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { Home, Tag, ShoppingBag, User } from 'lucide-react';
+import { Home, Tag, ShoppingBag, User, TrendingUp } from 'lucide-react';
 
 const PrivyLoginButton = dynamic(
   async () => (await import('@/components/shared/PrivyLoginButton')).default,
@@ -17,6 +17,7 @@ export default function UserNavigation() {
     { href: '/', label: 'Home', icon: Home },
     { href: '/marketplace', label: 'Marketplace', icon: ShoppingBag },
     { href: '/coupons', label: 'My Coupons', icon: Tag },
+    { href: '/staking', label: 'Staking', icon: TrendingUp },
     { href: '/profile', label: 'Profile', icon: User },
   ];
 
