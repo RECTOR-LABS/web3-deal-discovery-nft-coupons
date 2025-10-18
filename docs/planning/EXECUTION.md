@@ -959,11 +959,12 @@
 ### Epic 4: Redemption Verification Flow ⭐ CRITICAL
 
 **Priority:** Highest
-**Status:** ⏳ Not Started
-**Progress:** 0% (0/8 tasks)
+**Status:** ✅ Complete
+**Progress:** 100% (8/8 tasks)
 **Target Start:** October 23, 2025 (Day 8)
 **Target Completion:** October 23, 2025 (Day 8)
-**Dependencies:** Epic 1 (burn mechanism) ✅, Epic 3 (users own NFTs) ⏳
+**Actual Completion:** October 18, 2025 (Day 6) - **2 days early!**
+**Dependencies:** Epic 1 (burn mechanism) ✅, Epic 3 (users own NFTs) ✅
 **Owner:** RECTOR
 
 #### Story 4.1: QR Code Generation & Scanning
@@ -1080,52 +1081,439 @@
 
 ### Epic 5: Deal Aggregator Feed 🟡 MEDIUM
 
-**Priority:** Medium (Competitive Advantage)
+**Priority:** Medium (Competitive Advantage - Shows Feasibility & Scalability)
 **Status:** ⏳ Not Started
 **Progress:** 0% (0/5 tasks)
-**Target Start:** October 24, 2025 (Day 9)
+**Target Start:** October 19, 2025 (Day 7)
+**Target Completion:** October 19, 2025 (Day 7)
+**Dependencies:** Epic 3 (marketplace UI exists) ✅
+**Owner:** RECTOR
+**Estimated Effort:** 9-12 hours (~1 day)
 
-**Epic 5 will expand when started on Day 9**
+**Objective:** Integrate external deal APIs to enrich marketplace with partner deals, demonstrating platform feasibility and scalability.
+
+#### Story 5.1: External API Integration
+**Status:** ⏳ Not Started
+**Progress:** 0/5 tasks
+**Reference:** PRD.md Epic 5 Story 5.1
+
+**Tasks:**
+- ⏳ Task 5.1.1: Research and Choose API
+  - Acceptance: API selected (RapidAPI / Skyscanner / Booking.com), API key obtained
+  - Status: ⏳ Not Started
+  - Estimate: 1-2 hours
+  - Implementation: docs/api-selection.md (research notes)
+  - Features: Evaluate free tier, ease of integration, data quality, make test request
+
+- ⏳ Task 5.1.2: Implement API Fetching Logic
+  - Acceptance: `/api/deals/aggregated` route fetches external deals
+  - Status: ⏳ Not Started
+  - Estimate: 2-3 hours
+  - Implementation: app/api/deals/aggregated/route.ts
+  - Features: API wrapper, rate limit handling, error handling, JSON response
+
+- ⏳ Task 5.1.3: Normalize Data to Platform Format
+  - Acceptance: External deals mapped to internal schema with "Partner Deal" source label
+  - Status: ⏳ Not Started
+  - Estimate: 2 hours
+  - Implementation: lib/api/normalizeDeal.ts
+  - Features: Map to {title, description, discount, expiry, image, category, source}, default values for missing fields
+
+- ⏳ Task 5.1.4: Display Aggregated Deals in Marketplace
+  - Acceptance: Marketplace shows both platform and external deals with clear labeling
+  - Status: ⏳ Not Started
+  - Estimate: 2 hours
+  - Implementation: app/(user)/marketplace/page.tsx (update)
+  - Features: Mix platform + external deals, "Partner Deal" badge, external deals redirect to source
+
+- ⏳ Task 5.1.5: Implement Caching Strategy
+  - Acceptance: API responses cached (1-hour TTL) to reduce costs
+  - Status: ⏳ Not Started
+  - Estimate: 2-3 hours
+  - Implementation: Next.js `unstable_cache` or Redis
+  - Features: Cache with TTL, cache miss fetches from API, cache hit returns cached data
+
+**Story 5.1 Acceptance Criteria:**
+- ⏳ At least ONE external API integrated (RapidAPI recommended)
+- ⏳ Deals fetched and normalized to platform format
+- ⏳ Marketplace displays both platform NFTs and external deals
+- ⏳ External deals clearly labeled with "Partner Deal" badge
+- ⏳ Caching prevents excessive API calls (max 1 call per hour)
+
+**Evidence:** app/api/deals/aggregated/, app/(user)/marketplace/page.tsx
+
+---
+
+**Epic 5 Overall Acceptance Criteria:**
+- ⏳ One external API integrated and live
+- ⏳ Marketplace enriched with external deals
+- ⏳ Clear distinction between platform NFTs and partner deals
+- ⏳ Demonstrates feasibility (real deal data) and scalability (can add more APIs)
+- ⏳ Feature showcases innovation in judging presentation
+
+**Next Steps:**
+1. Research and select API (RapidAPI recommended for ease)
+2. Implement API fetching route
+3. Normalize data format
+4. Update marketplace to display mixed deals
+5. Add caching layer
+
+**Notes:**
+- Choose RapidAPI for quickest integration (free tier, good docs)
+- Cache aggressively to stay within free tier limits
+- Partner deals drive home "aggregator" value proposition
+- Major differentiator for feasibility score (15% of judging)
 
 ---
 
 ### Epic 6: Social Discovery Layer 🟡 MEDIUM
 
-**Priority:** Medium (Competitive Advantage)
+**Priority:** Medium (Competitive Advantage - Drives Engagement & Vir ality)
 **Status:** ⏳ Not Started
 **Progress:** 0% (0/5 tasks)
-**Target Start:** October 25, 2025 (Day 10)
+**Target Start:** October 20, 2025 (Day 8)
+**Target Completion:** October 21, 2025 (Day 9)
+**Dependencies:** Epic 3 (marketplace and deal pages exist) ✅
+**Owner:** RECTOR
+**Estimated Effort:** 12-16 hours (~1.5-2 days)
 
-**Epic 6 will expand when started on Day 10**
+**Objective:** Add social and viral features to drive user engagement, sharing, and community interaction.
+
+#### Story 6.1: Community Features
+**Status:** ⏳ Not Started
+**Progress:** 0/5 tasks
+**Reference:** PRD.md Epic 6 Story 6.1
+
+**Tasks:**
+- ⏳ Task 6.1.1: Add Rating/Review System
+  - Acceptance: Users can rate deals (1-5 stars) and submit reviews, average rating displayed
+  - Status: ⏳ Not Started
+  - Estimate: 3-4 hours
+  - Implementation: components/user/RatingSystem.tsx, app/api/reviews/route.ts
+  - Features: 5-star rating UI, optional text review, database storage (reviews table), average calculation, display on deal cards
+
+- ⏳ Task 6.1.2: Implement Upvote/Downvote
+  - Acceptance: Reddit-style voting with vote count, one vote per user per deal
+  - Status: ⏳ Not Started
+  - Estimate: 2-3 hours
+  - Implementation: components/user/VoteButtons.tsx, app/api/votes/route.ts
+  - Features: Upvote/downvote buttons, vote count display, unique constraint (votes table), optimistic UI updates
+
+- ⏳ Task 6.1.3: Add Share Buttons (Twitter, Telegram, Copy Link)
+  - Acceptance: Share buttons functional on deal detail page
+  - Status: ⏳ Not Started
+  - Estimate: 2 hours
+  - Implementation: components/user/ShareButtons.tsx
+  - Features: Twitter intent URL, Telegram share, copy to clipboard, social meta tags
+
+- ⏳ Task 6.1.4: Build Referral Tracking System
+  - Acceptance: Track when users share and others claim via their referral link
+  - Status: ⏳ Not Started
+  - Estimate: 3-4 hours
+  - Implementation: lib/referrals/trackReferral.ts, app/api/referrals/route.ts
+  - Features: `?ref={userWallet}` URL parameter, referral tracking (referrals table), conversion tracking, referral stats display
+
+- ⏳ Task 6.1.5: Create Activity Feed
+  - Acceptance: Show recent platform activity ("User X claimed Deal Y")
+  - Status: ⏳ Not Started
+  - Estimate: 2-3 hours
+  - Implementation: components/shared/ActivityFeed.tsx
+  - Features: Query recent events (purchases, redemptions), display on homepage/sidebar, real-time updates (optional via polling)
+
+**Story 6.1 Acceptance Criteria:**
+- ⏳ Rating and review system live and functional
+- ⏳ Upvote/downvote working with proper vote tracking
+- ⏳ Share buttons work for Twitter, Telegram, and copy link
+- ⏳ Referral tracking records conversions
+- ⏳ Activity feed displays recent platform engagement
+
+**Evidence:** components/user/RatingSystem.tsx, components/user/ShareButtons.tsx, components/shared/ActivityFeed.tsx
+
+---
+
+**Epic 6 Overall Acceptance Criteria:**
+- ⏳ Users can rate, review, and vote on deals
+- ⏳ Social sharing drives viral growth
+- ⏳ Referral system tracks user contributions
+- ⏳ Activity feed shows community engagement
+- ⏳ Features increase time on site and user retention
+- ⏳ Major differentiator for innovation score (25% of judging)
+
+**Next Steps:**
+1. Implement rating/review system first (high visibility)
+2. Add upvote/downvote buttons
+3. Integrate share buttons with social meta tags
+4. Build referral tracking
+5. Create activity feed
+
+**Notes:**
+- Database tables (reviews, votes, referrals) already exist from schema
+- Social features are high-impact for judging (innovation + engagement)
+- Referral tracking can be gamified later (leaderboard, rewards)
+- Activity feed adds "social proof" to platform
+- Focus on Twitter/Telegram share (crypto-native audiences)
 
 ---
 
 ### Epic 7: Web3 Abstraction 🟢 LOW
 
-**Priority:** Low (High judging impact)
+**Priority:** Low (But HIGH judging impact - 25% UX score)
 **Status:** ⏳ Not Started
 **Progress:** 0% (0/5 tasks)
-**Target Start:** October 24, 2025 (Day 9)
+**Target Start:** October 22, 2025 (Day 10)
+**Target Completion:** October 23, 2025 (Day 11)
+**Dependencies:** None (can integrate anytime)
+**Owner:** RECTOR
+**Estimated Effort:** 13-16 hours (~1.5-2 days)
 
-**Epic 7 will expand if prioritized**
+**Objective:** Make Web3 invisible to mainstream users - email/social login, embedded wallets, no crypto jargon.
+
+#### Story 7.1: Mainstream User Onboarding
+**Status:** ⏳ Not Started
+**Progress:** 0/5 tasks
+**Reference:** PRD.md Epic 7 Story 7.1
+
+**Tasks:**
+- ⏳ Task 7.1.1: Implement Email/Social Login (Privy/Dynamic)
+  - Acceptance: Users can login with email, Google, or Twitter
+  - Status: ⏳ Not Started
+  - Estimate: 3-4 hours
+  - Implementation: Privy or Dynamic SDK integration, PrivyProvider wrapper
+  - Features: Email/social OAuth, embedded wallet auto-creation, no private keys visible
+
+- ⏳ Task 7.1.2: Create Embedded Wallets
+  - Acceptance: Solana wallet auto-generated for users, hidden from UI
+  - Status: ⏳ Not Started
+  - Estimate: 1 hour (configuration)
+  - Implementation: Privy/Dynamic handles automatically
+  - Features: Secure wallet creation, private key management, transaction signing without user seeing keys
+
+- ⏳ Task 7.1.3: Hide Crypto Terminology
+  - Acceptance: UI free of crypto jargon ("NFT" → "Coupon", "Wallet" → "My Account")
+  - Status: ⏳ Not Started
+  - Estimate: 2 hours
+  - Implementation: UI copy updates across all pages
+  - Features: Replace "NFT", "Mint", "Wallet", "Redeem NFT" with user-friendly terms
+
+- ⏳ Task 7.1.4: Support Fiat Payments (Stripe) - OPTIONAL
+  - Acceptance: Users can pay with credit card, backend converts to SOL for fees
+  - Status: ⏳ Not Started (Optional - defer if time-constrained)
+  - Estimate: 4-5 hours
+  - Implementation: Stripe integration, payment intent API
+  - Features: Card payment form, USD to SOL conversion, transaction fee coverage
+
+- ⏳ Task 7.1.5: Sponsor Gas Fees - OPTIONAL
+  - Acceptance: Users with 0 SOL can claim coupons (platform pays fees)
+  - Status: ⏳ Not Started (Optional - defer if time-constrained)
+  - Estimate: 3-4 hours
+  - Implementation: Fee payer mechanism in smart contract and frontend
+  - Features: Platform wallet as fee payer, no "Insufficient SOL" errors
+
+**Story 7.1 Acceptance Criteria:**
+- ⏳ Email/social login functional (Email, Google, Twitter)
+- ⏳ Embedded wallets created automatically without user awareness
+- ⏳ UI completely free of crypto terminology
+- ⏳ (Optional) Fiat payments working via Stripe
+- ⏳ (Optional) Gas fees sponsored by platform
+
+**Evidence:** PrivyProvider integration, UI terminology audit, payment flow
+
+---
+
+**Epic 7 Overall Acceptance Criteria:**
+- ⏳ Mainstream users onboard without crypto wallet knowledge
+- ⏳ Email/social login working seamlessly
+- ⏳ UI feels like Web2 app (no "NFT", "wallet", "mint" terminology)
+- ⏳ User experience indistinguishable from traditional deal platforms
+- ⏳ Major UX differentiator (25% of judging score!)
+
+**Next Steps:**
+1. Choose Privy or Dynamic (Privy recommended for ease)
+2. Integrate SDK and configure authentication
+3. Audit all UI copy for crypto jargon
+4. Replace terminology across platform
+5. (Optional) Add Stripe if time permits
+
+**Notes:**
+- **Highest judging impact per hour invested** (UX = 25% of score)
+- Privy has better docs and React support than Dynamic
+- Focus on core abstraction (email login + terminology) first
+- Fiat payments and gas sponsorship are nice-to-have (defer if behind)
+- This feature is what separates "crypto app" from "mainstream app"
 
 ---
 
 ### Epic 11: Submission Preparation ⭐ CRITICAL
 
-**Priority:** Highest
+**Priority:** Highest (Required to Win!)
 **Status:** ⏳ Not Started
-**Progress:** 0% (0/11 tasks)
-**Target Start:** October 27, 2025 (Day 12)
-**Target Completion:** October 30, 2025 (Day 14)
+**Progress:** 0% (0/13 tasks)
+**Target Start:** October 24, 2025 (Day 12)
+**Target Completion:** October 28, 2025 (Day 14) - Submit 24-48h EARLY!
+**Dependencies:** All core features complete (Epic 1-4 ✅)
+**Owner:** RECTOR
+**Estimated Effort:** 17.5-25.5 hours (~2-3 days)
 
-**Stories:**
-- Story 11.1: Deployment (0/3 tasks)
-- Story 11.2: GitHub & Documentation (0/4 tasks)
-- Story 11.3: Demo Video (0/4 tasks)
-- Story 11.4: Submission (0/2 tasks)
+**Objective:** Professional presentation, deployment, and submission to maximize judging score.
 
-**Epic 11 will expand on Day 12**
+#### Story 11.1: Deployment
+**Status:** ⏳ Not Started
+**Progress:** 0/3 tasks
+**Reference:** PRD.md Epic 11 Story 11.1
+
+**Tasks:**
+- ⏳ Task 11.1.1: Deploy Frontend to Vercel
+  - Acceptance: Next.js app deployed to production, live URL accessible
+  - Status: ⏳ Not Started
+  - Estimate: 1-2 hours
+  - Implementation: Vercel CLI or GitHub integration
+  - Features: Production build, env vars configured, auto-deploy on push, custom domain (optional)
+
+- ⏳ Task 11.1.2: Deploy Smart Contracts to Solana
+  - Acceptance: Contracts deployed to Devnet (or Mainnet-beta), program ID recorded
+  - Status: ⏳ Not Started
+  - Estimate: 1 hour
+  - Implementation: Anchor deploy, update frontend env vars with new program ID
+  - Features: Deploy to chosen network, verify on Solana Explorer, test transactions
+
+- ⏳ Task 11.1.3: Test Live Deployment
+  - Acceptance: End-to-end flows tested on production (create deal, purchase, redeem)
+  - Status: ⏳ Not Started
+  - Estimate: 2-3 hours
+  - Implementation: Manual testing on production environment
+  - Features: Test all flows, verify wallet connection, check mobile responsive, no console errors
+
+**Story 11.1 Total:** 4-6 hours
+
+---
+
+#### Story 11.2: GitHub & Documentation
+**Status:** ⏳ Not Started
+**Progress:** 0/4 tasks
+**Reference:** PRD.md Epic 11 Story 11.2
+
+**Tasks:**
+- ⏳ Task 11.2.1: Write Comprehensive README.md
+  - Acceptance: README with setup, features, tech stack, screenshots
+  - Status: ⏳ Not Started
+  - Estimate: 2-3 hours
+  - Implementation: Update README.md with sections: overview, features, setup, deployment, tech stack
+  - Features: Step-by-step setup instructions, environment variables list, links to demo/video
+
+- ⏳ Task 11.2.2: Add Screenshots/GIFs
+  - Acceptance: Visual documentation of key features
+  - Status: ⏳ Not Started
+  - Estimate: 1 hour
+  - Implementation: Screenshots of marketplace, dashboard, QR redemption; GIFs of flows (optional)
+  - Features: MacOS screenshots, CloudApp/Giphy for GIFs, add to README
+
+- ⏳ Task 11.2.3: Clean Up Code
+  - Acceptance: Code formatted, linted, no console.logs or TODOs
+  - Status: ⏳ Not Started
+  - Estimate: 1-2 hours
+  - Implementation: Remove debug code, add comments, run Prettier/ESLint
+  - Features: `npm run lint:fix`, `npm run format`, remove commented code
+
+- ⏳ Task 11.2.4: Write Technical Write-Up (2-4 pages)
+  - Acceptance: PDF/Markdown doc explaining design choices, architecture, innovations
+  - Status: ⏳ Not Started
+  - Estimate: 3-4 hours
+  - Implementation: Google Docs or Notion, export to PDF
+  - Features: Sections - tech stack justification, architecture diagram, smart contract design, security considerations, innovations
+
+**Story 11.2 Total:** 7-10 hours
+
+---
+
+#### Story 11.3: Demo Video
+**Status:** ⏳ Not Started
+**Progress:** 0/4 tasks
+**Reference:** PRD.md Epic 11 Story 11.3
+
+**Tasks:**
+- ⏳ Task 11.3.1: Write Video Script
+  - Acceptance: 3-5 min script (Intro, Demo, Innovation, Outro)
+  - Status: ⏳ Not Started
+  - Estimate: 1 hour
+  - Implementation: Google Docs script
+  - Features: Problem statement (30s), demo flows (2-3 min), differentiators (1 min), call-to-action (30s)
+
+- ⏳ Task 11.3.2: Record Screen Capture (3-5 min)
+  - Acceptance: 1080p recording showing merchant flow, user flow, redemption
+  - Status: ⏳ Not Started
+  - Estimate: 2-3 hours (with retakes)
+  - Implementation: Loom, OBS Studio, or QuickTime
+  - Features: Clear voiceover, show key features, smooth pacing, no dead time
+
+- ⏳ Task 11.3.3: Edit Video
+  - Acceptance: Polished video with captions, transitions, export as 1080p MP4
+  - Status: ⏳ Not Started
+  - Estimate: 2-3 hours
+  - Implementation: iMovie or DaVinci Resolve
+  - Features: Cut awkward pauses, add text overlays for key features, optional background music
+
+- ⏳ Task 11.3.4: Upload to YouTube
+  - Acceptance: Video uploaded (unlisted/public), links work
+  - Status: ⏳ Not Started
+  - Estimate: 30 min
+  - Implementation: YouTube upload
+  - Features: Title, description with links (GitHub, demo, writeup), custom thumbnail (optional)
+
+**Story 11.3 Total:** 5.5-7.5 hours
+
+---
+
+#### Story 11.4: Submission
+**Status:** ⏳ Not Started
+**Progress:** 0/2 tasks
+**Reference:** PRD.md Epic 11 Story 11.4
+
+**Tasks:**
+- ⏳ Task 11.4.1: Submit via Superteam Earn
+  - Acceptance: Submission form filled with all required fields
+  - Status: ⏳ Not Started
+  - Estimate: 1 hour
+  - Implementation: Fill form on Superteam Earn hackathon page
+  - Features: Project title, description, demo URL, GitHub, video, documentation, team info
+
+- ⏳ Task 11.4.2: Confirm Submission Received
+  - Acceptance: Confirmation received, submission visible on platform
+  - Status: ⏳ Not Started
+  - Estimate: 15 min
+  - Implementation: Check confirmation email, verify submission visible
+  - Features: Screenshot for records, follow up if no confirmation within 24h
+
+**Story 11.4 Total:** 1-2 hours
+
+---
+
+**Epic 11 Overall Acceptance Criteria:**
+- ⏳ Frontend deployed to Vercel (production)
+- ⏳ Smart contracts deployed (Devnet or Mainnet-beta)
+- ⏳ Live demo tested and functional end-to-end
+- ⏳ GitHub repo with comprehensive README and screenshots
+- ⏳ Code cleaned up, formatted, and commented
+- ⏳ Technical write-up complete (2-4 pages PDF)
+- ⏳ Demo video recorded, edited, and uploaded (3-5 min)
+- ⏳ Submission form filled and submitted on Superteam Earn
+- ⏳ Submission confirmed 24-48h before deadline
+
+**Next Steps:**
+1. Deploy frontend and contracts FIRST (get live URL)
+2. Test thoroughly on production
+3. Clean up code and write documentation
+4. Record and edit demo video
+5. Submit 24-48h early for buffer
+
+**Notes:**
+- **Submit 24-48h BEFORE deadline** (Oct 28-29, not Oct 30!)
+- Demo video is CRITICAL - first impression for judges
+- Technical write-up explains innovations (25% of judging score)
+- Clean code matters - judges may review GitHub
+- Test on production environment, not just localhost
+- Backup all files before final submission
+
+**Total Effort:** 17.5-25.5 hours (~2-3 days)
 
 ---
 
