@@ -9,29 +9,61 @@ import { motion } from 'framer-motion';
 
 type Deal = Database['public']['Tables']['deals']['Row'];
 
+// Extended Deal type to support external deals
+export type ExtendedDeal = Deal & {
+  is_external?: boolean;
+  source?: string;
+  external_url?: string;
+  merchant?: string;
+};
+
 type SortOption = 'newest' | 'expiring-soon' | 'highest-discount';
 type CategoryOption = 'All' | 'Food & Beverage' | 'Retail' | 'Services' | 'Travel' | 'Entertainment' | 'Other';
 
 export default function MarketplacePage() {
-  const [deals, setDeals] = useState<Deal[]>([]);
+  const [deals, setDeals] = useState<ExtendedDeal[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryOption>('All');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
 
-  // Fetch deals from Supabase
+  // Fetch both platform and external deals
   useEffect(() => {
     async function fetchDeals() {
       try {
         setLoading(true);
-        const { data, error } = await supabase
+
+        // Fetch platform deals from Supabase
+        const { data: platformDeals, error } = await supabase
           .from('deals')
           .select('*')
           .eq('is_active', true)
           .gte('expiry_date', new Date().toISOString());
 
         if (error) throw error;
-        setDeals(data || []);
+
+        // Fetch external deals from aggregator API
+        let externalDeals: ExtendedDeal[] = [];
+        try {
+          const response = await fetch('/api/deals/aggregated');
+          if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.deals) {
+              externalDeals = result.deals;
+            }
+          }
+        } catch (externalError) {
+          console.error('Error fetching external deals:', externalError);
+          // Continue with platform deals only if external fetch fails
+        }
+
+        // Merge platform and external deals
+        const allDeals: ExtendedDeal[] = [
+          ...(platformDeals || []),
+          ...externalDeals,
+        ];
+
+        setDeals(allDeals);
       } catch (error) {
         console.error('Error fetching deals:', error);
       } finally {

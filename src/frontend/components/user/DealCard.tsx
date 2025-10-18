@@ -2,13 +2,21 @@
 
 import Link from 'next/link';
 import { Database } from '@/lib/database/types';
-import { Calendar, Tag, TrendingUp } from 'lucide-react';
+import { Calendar, Tag, TrendingUp, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 type Deal = Database['public']['Tables']['deals']['Row'];
 
+// Extended Deal type to support external deals
+export type ExtendedDeal = Deal & {
+  is_external?: boolean;
+  source?: string;
+  external_url?: string;
+  merchant?: string;
+};
+
 interface DealCardProps {
-  deal: Deal;
+  deal: ExtendedDeal;
 }
 
 export default function DealCard({ deal }: DealCardProps) {
@@ -19,8 +27,15 @@ export default function DealCard({ deal }: DealCardProps) {
   );
   const isExpiringSoon = daysUntilExpiry <= 3;
 
+  // For external deals, use external_url or don't link
+  const CardWrapper = deal.is_external
+    ? ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+    : ({ children }: { children: React.ReactNode }) => (
+        <Link href={`/marketplace/${deal.id}`}>{children}</Link>
+      );
+
   return (
-    <Link href={`/marketplace/${deal.id}`}>
+    <CardWrapper>
       <motion.div
         whileHover={{ scale: 1.02, y: -4 }}
         transition={{ duration: 0.2 }}
@@ -45,12 +60,17 @@ export default function DealCard({ deal }: DealCardProps) {
             {deal.discount_percentage}% OFF
           </div>
 
-          {/* Expiring Soon Badge */}
-          {isExpiringSoon && (
+          {/* Expiring Soon Badge OR Partner Badge */}
+          {deal.is_external ? (
+            <div className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-lg text-sm font-semibold flex items-center gap-1">
+              <ExternalLink className="w-3 h-3" />
+              Partner Deal
+            </div>
+          ) : isExpiringSoon ? (
             <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-lg text-sm font-semibold animate-pulse">
               Expiring Soon!
             </div>
-          )}
+          ) : null}
         </div>
 
         {/* Content */}
@@ -65,6 +85,14 @@ export default function DealCard({ deal }: DealCardProps) {
 
           {/* Metadata */}
           <div className="space-y-2">
+            {/* Merchant (for external deals) */}
+            {deal.is_external && deal.merchant && (
+              <div className="flex items-center text-[#174622] text-sm font-semibold">
+                <Tag className="w-4 h-4 mr-2" />
+                <span>{deal.merchant}</span>
+              </div>
+            )}
+
             {/* Category */}
             <div className="flex items-center text-[#174622] text-sm">
               <Tag className="w-4 h-4 mr-2" />
@@ -93,11 +121,28 @@ export default function DealCard({ deal }: DealCardProps) {
           </div>
 
           {/* Action Button */}
-          <button className="mt-4 w-full bg-[#0d2a13] hover:bg-[#174622] text-[#f2eecb] font-semibold py-3 rounded-lg transition-colors">
-            View Deal
-          </button>
+          {deal.is_external && deal.external_url ? (
+            <a
+              href={deal.external_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ExternalLink className="w-4 h-4" />
+              View on Partner Site
+            </a>
+          ) : deal.is_external ? (
+            <button className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors">
+              View Partner Deal
+            </button>
+          ) : (
+            <button className="mt-4 w-full bg-[#0d2a13] hover:bg-[#174622] text-[#f2eecb] font-semibold py-3 rounded-lg transition-colors">
+              View Deal
+            </button>
+          )}
         </div>
       </motion.div>
-    </Link>
+    </CardWrapper>
   );
 }
