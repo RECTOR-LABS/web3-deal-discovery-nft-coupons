@@ -94,7 +94,7 @@ export default function MerchantRegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="max-w-2xl w-full">
-        <div className="bg-white border-2 border-monke-border rounded-lg shadow-lg p-8">
+        <div className="bg-white border-2 border-monke-border rounded-lg shadow-xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-monke-primary rounded-full mx-auto flex items-center justify-center mb-4">
@@ -103,17 +103,17 @@ export default function MerchantRegisterPage() {
             <h1 className="text-3xl font-bold text-monke-primary mb-2">
               Register Your Business
             </h1>
-            <p className="text-foreground/60">
+            <p className="text-monke-primary/80 font-medium">
               Create your merchant account to start minting NFT coupons
             </p>
           </div>
 
           {/* Connected Wallet Info */}
-          <div className="mb-6 p-4 bg-monke-neon/10 border border-monke-neon rounded-lg">
-            <p className="text-sm font-medium text-monke-primary mb-1">
-              Connected Wallet
+          <div className="mb-6 p-4 bg-monke-neon/10 border-2 border-monke-neon rounded-lg">
+            <p className="text-sm font-bold text-monke-primary mb-1">
+              ✅ Connected Wallet
             </p>
-            <p className="text-xs font-mono text-foreground/70 break-all">
+            <p className="text-xs font-mono text-monke-primary/80 font-medium break-all">
               {publicKey?.toBase58()}
             </p>
           </div>
@@ -124,7 +124,7 @@ export default function MerchantRegisterPage() {
             <div>
               <label
                 htmlFor="businessName"
-                className="block text-sm font-medium text-foreground/80 mb-2"
+                className="block text-sm font-semibold text-monke-primary mb-2"
               >
                 Business Name <span className="text-red-500">*</span>
               </label>
@@ -135,7 +135,7 @@ export default function MerchantRegisterPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, businessName: e.target.value })
                 }
-                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors"
+                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary focus:ring-2 focus:ring-monke-primary/20 transition-all text-monke-primary placeholder:text-monke-primary/50"
                 placeholder="e.g., Artisan Coffee Roasters"
                 required
               />
@@ -145,7 +145,7 @@ export default function MerchantRegisterPage() {
             <div>
               <label
                 htmlFor="description"
-                className="block text-sm font-medium text-foreground/80 mb-2"
+                className="block text-sm font-semibold text-monke-primary mb-2"
               >
                 Business Description (Optional)
               </label>
@@ -156,7 +156,7 @@ export default function MerchantRegisterPage() {
                   setFormData({ ...formData, description: e.target.value })
                 }
                 rows={3}
-                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors resize-none"
+                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary focus:ring-2 focus:ring-monke-primary/20 transition-all resize-none text-monke-primary placeholder:text-monke-primary/50"
                 placeholder="Tell customers about your business..."
               />
             </div>
@@ -165,7 +165,7 @@ export default function MerchantRegisterPage() {
             <div>
               <label
                 htmlFor="logoUrl"
-                className="block text-sm font-medium text-foreground/80 mb-2"
+                className="block text-sm font-semibold text-monke-primary mb-2"
               >
                 Logo URL (Optional)
               </label>
@@ -176,10 +176,10 @@ export default function MerchantRegisterPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, logoUrl: e.target.value })
                 }
-                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors"
+                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary focus:ring-2 focus:ring-monke-primary/20 transition-all text-monke-primary placeholder:text-monke-primary/50"
                 placeholder="https://example.com/logo.png"
               />
-              <p className="mt-1 text-xs text-foreground/50">
+              <p className="mt-1 text-xs text-monke-primary/60 font-medium">
                 You can add your logo later in settings
               </p>
             </div>
@@ -195,7 +195,7 @@ export default function MerchantRegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-monke-primary text-white font-bold rounded-lg hover:bg-monke-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              className="w-full py-4 bg-monke-primary text-white font-bold rounded-lg hover:bg-monke-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center space-x-2"
             >
               {loading ? (
                 <>
@@ -210,7 +210,7 @@ export default function MerchantRegisterPage() {
 
           {/* Footer Note */}
           <div className="mt-6 pt-6 border-t-2 border-monke-border text-center">
-            <p className="text-xs text-foreground/50">
+            <p className="text-xs text-monke-primary/70 font-medium">
               By registering, you can create and manage promotional NFT coupons
               on Solana blockchain
             </p>

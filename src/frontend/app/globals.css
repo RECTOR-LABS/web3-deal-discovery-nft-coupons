@@ -36,3 +36,64 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Override Solana Wallet Adapter button colors with MonkeDAO branding */
+.wallet-adapter-button {
+  background-color: var(--monke-primary) !important;
+  color: var(--monke-cream) !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+.wallet-adapter-button:not([disabled]):hover {
+  background-color: var(--monke-accent) !important;
+}
+
+.wallet-adapter-button[disabled] {
+  background-color: var(--monke-primary) !important;
+  opacity: 0.6;
+}
+
+/* Override wallet adapter modal colors */
+.wallet-adapter-modal-wrapper {
+  background: rgba(13, 42, 19, 0.8) !important;
+}
+
+.wallet-adapter-modal {
+  background: var(--monke-cream) !important;
+  border: 2px solid var(--monke-border) !important;
+  border-radius: 8px !important;
+}
+
+.wallet-adapter-modal-title {
+  color: var(--monke-primary) !important;
+}
+
+.wallet-adapter-modal-list .wallet-adapter-button {
+  background-color: var(--monke-cream) !important;
+  border: 2px solid var(--monke-border) !important;
+  color: var(--monke-primary) !important;
+}
+
+.wallet-adapter-modal-list .wallet-adapter-button:hover {
+  background-color: var(--monke-neon) !important;
+  border-color: var(--monke-primary) !important;
+}
+
+/* Animated gradient for dashboard CTA */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 6s ease infinite;
+}

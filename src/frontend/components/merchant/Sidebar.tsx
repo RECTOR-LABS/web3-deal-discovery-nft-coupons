@@ -36,7 +36,7 @@ export function Sidebar() {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className="fixed top-4 left-4 z-50 lg:hidden p-2 bg-monke-primary text-white rounded-lg shadow-lg"
+        className="fixed top-4 left-4 z-50 lg:hidden p-2 bg-monke-neon text-monke-primary rounded-lg shadow-lg"
         aria-label="Toggle menu"
       >
         {isMobileOpen ? <X size={24} /> : <Menu size={24} />}
@@ -54,21 +54,21 @@ export function Sidebar() {
       <aside
         className={`
           fixed lg:sticky top-0 left-0 z-40
-          h-screen w-64 bg-white border-r-2 border-monke-border
+          h-screen w-64 bg-monke-primary border-r-2 border-monke-accent shadow-xl
           transition-transform duration-300 ease-in-out
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
         <div className="flex flex-col h-full">
           {/* Logo/Brand */}
-          <div className="p-6 border-b-2 border-monke-border">
+          <div className="p-6 border-b-2 border-monke-accent">
             <Link href="/dashboard" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-monke-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">D</span>
+              <div className="w-8 h-8 bg-monke-neon rounded-lg flex items-center justify-center shadow-lg">
+                <span className="text-monke-primary font-bold text-xl">D</span>
               </div>
               <div>
-                <h1 className="text-lg font-bold text-monke-primary">DealCoupon</h1>
-                <p className="text-xs text-foreground/60">Merchant Portal</p>
+                <h1 className="text-lg font-bold text-monke-cream">DealCoupon</h1>
+                <p className="text-xs text-monke-cream/70">Merchant Portal</p>
               </div>
             </Link>
           </div>
@@ -77,7 +77,10 @@ export function Sidebar() {
           <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+              // Fix: Dashboard should only be active on exact match, others can have sub-paths
+              const isActive = item.href === '/dashboard'
+                ? pathname === item.href
+                : pathname === item.href || pathname.startsWith(item.href + '/');
 
               return (
                 <Link
@@ -86,26 +89,26 @@ export function Sidebar() {
                   onClick={() => setIsMobileOpen(false)}
                   className={`
                     flex items-center space-x-3 px-4 py-3 rounded-lg
-                    transition-all duration-200
+                    transition-all duration-200 cursor-pointer
                     ${
                       isActive
-                        ? 'bg-monke-primary text-white shadow-md'
-                        : 'text-foreground/70 hover:bg-monke-cream hover:text-monke-primary'
+                        ? 'bg-monke-neon text-monke-primary shadow-lg shadow-monke-neon/30'
+                        : 'text-monke-cream/80 hover:bg-monke-accent hover:text-monke-cream'
                     }
                   `}
                 >
                   <Icon size={20} />
-                  <span className="font-medium">{item.name}</span>
+                  <span className="font-semibold">{item.name}</span>
                 </Link>
               );
             })}
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t-2 border-monke-border">
-            <div className="text-xs text-foreground/50 text-center">
-              <p>Powered by Solana</p>
-              <p className="mt-1">MonkeDAO Track</p>
+          <div className="p-4 border-t-2 border-monke-accent">
+            <div className="text-xs text-monke-cream/60 text-center">
+              <p>⚡ Powered by Solana</p>
+              <p className="mt-1">🐵 MonkeDAO Track</p>
             </div>
           </div>
         </div>

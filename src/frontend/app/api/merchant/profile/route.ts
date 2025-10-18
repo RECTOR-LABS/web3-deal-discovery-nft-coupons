@@ -73,7 +73,7 @@ export async function PATCH(request: NextRequest) {
     const supabase = createClient();
 
     // Build update object with only provided fields
-    const updates: any = {};
+    const updates: Record<string, string | null> = {};
     if (businessName !== undefined) updates.business_name = businessName;
     if (description !== undefined) updates.description = description;
     if (logoUrl !== undefined) updates.logo_url = logoUrl;

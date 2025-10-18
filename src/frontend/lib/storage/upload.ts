@@ -18,7 +18,7 @@ export async function uploadDealImage(
     const filePath = `deals/${fileName}`;
 
     // Upload to Supabase Storage
-    const { data, error } = await supabase.storage
+    const { data: _data, error } = await supabase.storage
       .from('deal-images')
       .upload(filePath, file, {
         cacheControl: '3600',

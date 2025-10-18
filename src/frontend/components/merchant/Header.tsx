@@ -45,7 +45,7 @@ export function Header() {
   }, [publicKey]);
 
   return (
-    <header className="sticky top-0 z-30 bg-white border-b-2 border-monke-border shadow-sm">
+    <header className="sticky top-0 z-30 bg-monke-primary border-b-2 border-monke-accent shadow-lg">
       <div className="flex items-center justify-between px-6 py-4">
         {/* Business Info */}
         <div className="flex items-center space-x-3">
@@ -55,32 +55,32 @@ export function Header() {
                 <img
                   src={merchant.logo_url}
                   alt={merchant.business_name}
-                  className="w-10 h-10 rounded-lg object-cover border-2 border-monke-border"
+                  className="w-10 h-10 rounded-lg object-cover border-2 border-monke-neon"
                 />
               ) : (
-                <div className="w-10 h-10 bg-monke-cream border-2 border-monke-border rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-monke-neon border-2 border-monke-neon rounded-lg flex items-center justify-center">
                   <Store size={20} className="text-monke-primary" />
                 </div>
               )}
               <div>
-                <h2 className="text-sm font-bold text-monke-primary">
+                <h2 className="text-sm font-bold text-monke-cream">
                   {merchant.business_name}
                 </h2>
-                <p className="text-xs text-foreground/60">Merchant Account</p>
+                <p className="text-xs text-monke-cream/70">Merchant Account</p>
               </div>
             </>
           ) : (
             <div className="flex items-center space-x-2">
               {loading ? (
                 <div className="animate-pulse flex space-x-2">
-                  <div className="w-10 h-10 bg-monke-cream rounded-lg" />
+                  <div className="w-10 h-10 bg-monke-accent rounded-lg" />
                   <div className="space-y-2">
-                    <div className="w-24 h-3 bg-monke-cream rounded" />
-                    <div className="w-16 h-2 bg-monke-cream rounded" />
+                    <div className="w-24 h-3 bg-monke-accent rounded" />
+                    <div className="w-16 h-2 bg-monke-accent rounded" />
                   </div>
                 </div>
               ) : (
-                <div className="text-sm text-foreground/60">
+                <div className="text-sm text-monke-cream/70">
                   Please complete registration
                 </div>
               )}

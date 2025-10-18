@@ -4,7 +4,7 @@ import { supabase } from '@/lib/database/supabase';
 export async function GET() {
   try {
     // Test connection by listing tables
-    const { data: tables, error } = await supabase
+    const { data: _tables, error } = await supabase
       .from('merchants')
       .select('count')
       .limit(1);

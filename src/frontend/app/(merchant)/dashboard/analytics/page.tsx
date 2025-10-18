@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { BarChart3, TrendingUp, Eye, ShoppingCart, CheckCircle, Loader2 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { BarChart3, Eye, ShoppingCart, CheckCircle, Loader2 } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { createClient } from '@/lib/database/supabase';
 
 interface Analytics {
@@ -104,8 +104,10 @@ export default function AnalyticsPage() {
         // Category breakdown
         const categoryMap = new Map<string, number>();
         deals?.forEach(deal => {
-          const count = categoryMap.get(deal.category) || 0;
-          categoryMap.set(deal.category, count + 1);
+          if (deal.category) {
+            const count = categoryMap.get(deal.category) || 0;
+            categoryMap.set(deal.category, count + 1);
+          }
         });
 
         const categoryBreakdown = Array.from(categoryMap.entries()).map(([name, value]) => ({

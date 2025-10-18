@@ -9,7 +9,7 @@ export default function MerchantLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen bg-monke-cream/30">
+    <div className="flex h-screen bg-monke-cream">
       {/* Sidebar */}
       <Sidebar />
 
@@ -19,7 +19,7 @@ export default function MerchantLayout({
         <Header />
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto bg-gradient-to-b from-monke-cream via-monke-cream to-monke-primary/5">
           <div className="container mx-auto px-6 py-8">
             {children}
           </div>

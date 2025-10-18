@@ -1,0 +1,32 @@
+{
+  "version": "0.1.0",
+  "name": "nft_coupon",
+  "instructions": [
+    {
+      "name": "initializeMerchant",
+      "accounts": [],
+      "args": []
+    },
+    {
+      "name": "createCoupon",
+      "accounts": [],
+      "args": []
+    },
+    {
+      "name": "redeemCoupon",
+      "accounts": [],
+      "args": []
+    },
+    {
+      "name": "updateCouponStatus",
+      "accounts": [],
+      "args": []
+    }
+  ],
+  "accounts": [],
+  "types": [],
+  "errors": [],
+  "metadata": {
+    "address": "REC6VwdAzaaNdrUCWbXmqqN8ryoSAphQkft2BX1P1b1"
+  }
+}

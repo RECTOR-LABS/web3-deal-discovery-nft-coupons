@@ -3,27 +3,27 @@
 import { useEffect, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Link from 'next/link';
-import { PlusCircle, Package, Loader2, Calendar, Percent } from 'lucide-react';
+import { PlusCircle, Package, Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/database/supabase';
 
 interface Deal {
   id: string;
   nft_mint_address: string;
   title: string;
-  description: string;
-  image_url: string;
-  discount_percentage: number;
-  expiry_date: string;
-  category: string;
-  is_active: boolean;
-  created_at: string;
+  description: string | null;
+  image_url: string | null;
+  discount_percentage: number | null;
+  expiry_date: string | null;
+  category: string | null;
+  is_active: boolean | null;
+  created_at: string | null;
 }
 
 export default function MyDealsPage() {
   const { publicKey } = useWallet();
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
-  const [merchantId, setMerchantId] = useState<string>('');
+  const [, setMerchantId] = useState<string>('');
 
   useEffect(() => {
     const fetchDeals = async () => {
@@ -109,7 +109,7 @@ export default function MyDealsPage() {
             </div>
             <h3 className="text-2xl font-bold text-monke-primary">No Deals Yet</h3>
             <p className="text-foreground/60">
-              You haven't created any deals yet. Start by creating your first
+              You haven&apos;t created any deals yet. Start by creating your first
               promotional NFT coupon.
             </p>
             <Link
@@ -125,11 +125,11 @@ export default function MyDealsPage() {
         /* Deals Grid */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {deals.map((deal) => {
-            const isExpired = new Date(deal.expiry_date) < new Date();
-            const daysUntilExpiry = Math.ceil(
+            const isExpired = deal.expiry_date ? new Date(deal.expiry_date) < new Date() : false;
+            const daysUntilExpiry = deal.expiry_date ? Math.ceil(
               (new Date(deal.expiry_date).getTime() - Date.now()) /
                 (1000 * 60 * 60 * 24)
-            );
+            ) : 0;
 
             return (
               <div

@@ -1,10 +1,8 @@
 import {
   Connection,
   Keypair,
-  PublicKey,
   SystemProgram,
   SYSVAR_RENT_PUBKEY,
-  Transaction,
 } from '@solana/web3.js';
 import {
   TOKEN_PROGRAM_ID,
@@ -37,6 +35,28 @@ export interface MintResult {
   signature?: string;
   nftMint?: string;
   error?: string;
+}
+
+export interface NFTMetadata {
+  name: string;
+  description: string;
+  image: string;
+  external_url: string;
+  attributes: Array<{
+    trait_type: string;
+    value: string;
+  }>;
+  properties: {
+    category: string;
+    creators?: Array<{
+      address: string;
+      share: number;
+    }>;
+    files?: Array<{
+      uri: string;
+      type: string;
+    }>;
+  };
 }
 
 /**
@@ -99,7 +119,7 @@ function createMetadata(
  * (For production, consider Arweave or IPFS for permanent storage)
  */
 async function uploadMetadata(
-  metadata: any,
+  metadata: NFTMetadata,
   nftMint: string
 ): Promise<{ url: string; path: string } | { error: string }> {
   try {
@@ -109,7 +129,7 @@ async function uploadMetadata(
     const filePath = `metadata/${fileName}`;
 
     // Upload metadata JSON
-    const { data, error } = await supabase.storage
+    const { data: _data, error } = await supabase.storage
       .from('deal-images')
       .upload(filePath, JSON.stringify(metadata, null, 2), {
         contentType: 'application/json',
@@ -209,7 +229,15 @@ export async function mintCoupon(
     const program = getProgram(connection, wallet);
 
     // Map category to enum variant (must match smart contract enum)
-    const categoryMap: Record<string, any> = {
+    type CategoryVariant =
+      | { foodBeverage: Record<string, never> }
+      | { retail: Record<string, never> }
+      | { services: Record<string, never> }
+      | { travel: Record<string, never> }
+      | { entertainment: Record<string, never> }
+      | { other: Record<string, never> };
+
+    const categoryMap: Record<string, CategoryVariant> = {
       'Food & Beverage': { foodBeverage: {} },
       'Retail': { retail: {} },
       'Services': { services: {} },
@@ -218,7 +246,7 @@ export async function mintCoupon(
       'Other': { other: {} },
     };
 
-    const categoryVariant = categoryMap[dealData.category] || { other: {} };
+    const categoryVariant: CategoryVariant = categoryMap[dealData.category] || { other: {} };
 
     const tx = await program.methods
       .createCoupon(

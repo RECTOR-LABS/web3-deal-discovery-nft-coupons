@@ -17,6 +17,7 @@ export function getProgram(connection: Connection, wallet: AnchorWallet) {
     commitment: 'confirmed',
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return new Program(idl as any, provider);
 }
 

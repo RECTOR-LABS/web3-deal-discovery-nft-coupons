@@ -41,7 +41,7 @@ const CATEGORIES = [
 ];
 
 export default function CreateDealPage() {
-  const { publicKey, connected, signTransaction, signAllTransactions } = useWallet();
+  const { publicKey, signTransaction, signAllTransactions } = useWallet();
   const { connection } = useConnection();
   const router = useRouter();
   const [step, setStep] = useState<'form' | 'preview' | 'minting' | 'success'>('form');
@@ -284,7 +284,7 @@ export default function CreateDealPage() {
                 setTxSignature('');
                 setNftMint('');
               }}
-              className="text-monke-primary hover:text-monke-accent transition-colors font-medium"
+              className="text-monke-primary hover:text-monke-accent transition-colors font-medium cursor-pointer"
             >
               Create Another Deal
             </button>
@@ -363,14 +363,14 @@ export default function CreateDealPage() {
         <div className="flex items-center justify-between mt-8">
           <button
             onClick={() => setStep('form')}
-            className="px-6 py-3 border-2 border-monke-border text-monke-primary font-medium rounded-lg hover:bg-monke-cream transition-colors"
+            className="px-6 py-3 border-2 border-monke-border text-monke-primary font-medium rounded-lg hover:bg-monke-cream transition-colors cursor-pointer"
           >
             ← Back to Edit
           </button>
           <button
             onClick={handleMint}
             disabled={loading}
-            className="px-8 py-3 bg-monke-primary text-white font-bold rounded-lg hover:bg-monke-accent transition-colors disabled:opacity-50 flex items-center space-x-2"
+            className="px-8 py-3 bg-monke-primary text-white font-bold rounded-lg hover:bg-monke-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center space-x-2"
           >
             {loading ? (
               <>
@@ -590,7 +590,7 @@ export default function CreateDealPage() {
                   onClick={() =>
                     setFormData({ ...formData, imageFile: null, imagePreview: '' })
                   }
-                  className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                  className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors cursor-pointer"
                 >
                   Remove
                 </button>
@@ -633,13 +633,13 @@ export default function CreateDealPage() {
           <button
             type="button"
             onClick={() => router.push('/dashboard')}
-            className="px-6 py-3 border-2 border-monke-border text-monke-primary font-medium rounded-lg hover:bg-monke-cream transition-colors"
+            className="px-6 py-3 border-2 border-monke-border text-monke-primary font-medium rounded-lg hover:bg-monke-cream transition-colors cursor-pointer"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-8 py-3 bg-monke-primary text-white font-bold rounded-lg hover:bg-monke-accent transition-colors flex items-center space-x-2"
+            className="px-8 py-3 bg-monke-primary text-white font-bold rounded-lg hover:bg-monke-accent transition-colors cursor-pointer flex items-center space-x-2"
           >
             <Eye size={20} />
             <span>Preview Deal</span>

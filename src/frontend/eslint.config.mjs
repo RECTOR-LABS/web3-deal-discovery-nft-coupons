@@ -20,6 +20,18 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  {
+    rules: {
+      // Suppress performance warnings for MVP - can optimize later
+      "@next/next/no-img-element": "off",
+      // Allow unused variables in destructuring (common pattern for ignoring values)
+      "@typescript-eslint/no-unused-vars": ["warn", {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_"
+      }],
+    },
+  },
 ];
 
 export default eslintConfig;

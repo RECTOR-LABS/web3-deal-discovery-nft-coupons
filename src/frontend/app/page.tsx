@@ -7,18 +7,43 @@ export default function Home() {
   const { connected, publicKey } = useWallet();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-background">
-      <main className="max-w-2xl w-full space-y-8 text-center">
-        <div className="space-y-4">
-          <h1 className="text-5xl font-bold text-foreground">
-            DealCoupon
-          </h1>
-          <p className="text-xl text-monke-accent">
+    <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-b from-background via-background to-monke-primary/5">
+      <main className="max-w-4xl w-full space-y-8">
+        {/* Hero Header */}
+        <div className="text-center space-y-6 py-4 md:py-8">
+          {/* MonkeDAO Logo */}
+          <div className="flex justify-center">
+            <img
+              src="/monkedao-logo.svg"
+              alt="MonkeDAO"
+              className="h-16 md:h-20 w-auto object-contain"
+            />
+          </div>
+
+          {/* Main Title with Gradient */}
+          <div className="space-y-2">
+            <h1 className="text-6xl md:text-7xl font-black tracking-tight">
+              <span className="bg-gradient-to-r from-monke-cream via-white to-monke-neon bg-clip-text text-transparent drop-shadow-lg">
+                DealCoupon
+              </span>
+            </h1>
+            <div className="h-1 w-32 mx-auto bg-gradient-to-r from-transparent via-monke-neon to-transparent rounded-full shadow-lg shadow-monke-neon/50" />
+          </div>
+
+          {/* Subtitle */}
+          <p className="text-xl md:text-2xl font-semibold text-monke-cream drop-shadow-md">
             Web3 Deal Discovery & Loyalty Platform
           </p>
-          <p className="text-sm text-foreground/70">
-            Powered by Solana • MonkeDAO Track
-          </p>
+
+          {/* Badges */}
+          <div className="flex items-center justify-center gap-4 flex-wrap">
+            <span className="inline-flex items-center gap-2 px-4 py-2 bg-monke-neon/30 border-2 border-monke-neon rounded-full shadow-lg shadow-monke-neon/20">
+              <span className="text-sm font-bold text-white">⚡ Powered by Solana</span>
+            </span>
+            <span className="inline-flex items-center gap-2 px-4 py-2 bg-monke-cream/20 border-2 border-monke-cream rounded-full shadow-lg">
+              <span className="text-sm font-bold text-monke-cream">🐵 MonkeDAO Track</span>
+            </span>
+          </div>
         </div>
 
         <div className="p-8 border-2 border-monke-border rounded-lg bg-white/50 backdrop-blur">
@@ -30,10 +55,10 @@ export default function Home() {
             {connected && publicKey ? (
               <div className="space-y-4 text-left">
                 <div className="p-4 bg-monke-neon/10 border border-monke-neon rounded-lg">
-                  <p className="text-sm font-medium text-monke-primary mb-2">
+                  <p className="text-sm font-bold text-monke-primary mb-2">
                     ✅ Wallet Connected
                   </p>
-                  <p className="text-xs font-mono text-foreground/70 break-all">
+                  <p className="text-xs font-mono text-monke-primary/90 font-medium break-all">
                     {publicKey.toBase58()}
                   </p>
                 </div>
@@ -41,16 +66,42 @@ export default function Home() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                   <div className="p-4 bg-monke-cream border border-monke-border rounded-lg">
                     <p className="text-2xl font-bold text-monke-primary">0</p>
-                    <p className="text-xs text-foreground/70">Coupons Owned</p>
+                    <p className="text-xs text-monke-primary/80 font-medium">Coupons Owned</p>
                   </div>
                   <div className="p-4 bg-monke-cream border border-monke-border rounded-lg">
                     <p className="text-2xl font-bold text-monke-primary">0</p>
-                    <p className="text-xs text-foreground/70">Deals Created</p>
+                    <p className="text-xs text-monke-primary/80 font-medium">Deals Created</p>
                   </div>
                   <div className="p-4 bg-monke-cream border border-monke-border rounded-lg">
                     <p className="text-2xl font-bold text-monke-primary">0</p>
-                    <p className="text-xs text-foreground/70">Redemptions</p>
+                    <p className="text-xs text-monke-primary/80 font-medium">Redemptions</p>
                   </div>
+                </div>
+
+                <div className="pt-4 space-y-3">
+                  <p className="text-sm font-medium text-monke-primary text-center">
+                    What would you like to do?
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <a
+                      href="/register"
+                      className="px-6 py-3 bg-monke-primary text-white font-bold rounded-lg hover:bg-monke-accent transition-colors text-center cursor-pointer"
+                    >
+                      🏪 Register as Merchant
+                    </a>
+                    <a
+                      href="/dashboard"
+                      className="px-6 py-3 bg-monke-accent text-white font-bold rounded-lg hover:bg-monke-primary transition-colors text-center cursor-pointer"
+                    >
+                      📊 Merchant Dashboard
+                    </a>
+                  </div>
+                  <a
+                    href="/marketplace"
+                    className="block w-full px-6 py-3 bg-monke-neon text-monke-primary font-bold rounded-lg hover:opacity-90 transition-opacity text-center cursor-pointer"
+                  >
+                    🛍️ Browse Deals Marketplace
+                  </a>
                 </div>
               </div>
             ) : (
@@ -59,7 +110,7 @@ export default function Home() {
                   Connect your wallet to get started
                 </p>
                 <p className="text-xs text-foreground/50">
-                  Supports: Phantom • Solflare • Backpack
+                  Supports: Phantom • Solflare
                 </p>
               </div>
             )}
