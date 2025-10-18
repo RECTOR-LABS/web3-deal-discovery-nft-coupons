@@ -20,22 +20,28 @@ export async function POST(request: NextRequest) {
       .eq('user_wallet', wallet)
       .single();
 
-    if (fetchError || !stake || stake.staked_amount === 0) {
+    const stakedAmount = stake?.staked_amount ?? 0;
+    const totalRewardsEarned = stake?.total_rewards_earned ?? 0;
+
+    if (fetchError || !stake || stakedAmount === 0) {
       return NextResponse.json({ error: 'No stake found' }, { status: 404 });
     }
 
     // Calculate final rewards
-    const lastStakeTime = new Date(stake.last_stake_time).getTime();
-    const currentTime = Date.now();
-    const timeStaked = Math.floor((currentTime - lastStakeTime) / 1000);
-    const secondsPerYear = 365 * 24 * 60 * 60;
+    let pendingRewards = 0;
+    if (stake.last_stake_time) {
+      const lastStakeTime = new Date(stake.last_stake_time).getTime();
+      const currentTime = Date.now();
+      const timeStaked = Math.floor((currentTime - lastStakeTime) / 1000);
+      const secondsPerYear = 365 * 24 * 60 * 60;
 
-    const pendingRewards = Math.floor(
-      (stake.staked_amount * APY_BASIS_POINTS * timeStaked) / (secondsPerYear * 10000)
-    );
+      pendingRewards = Math.floor(
+        (stakedAmount * APY_BASIS_POINTS * timeStaked) / (secondsPerYear * 10000)
+      );
+    }
 
-    const totalRewards = stake.total_rewards_earned + pendingRewards;
-    const totalWithdrawn = stake.staked_amount + totalRewards;
+    const totalRewards = totalRewardsEarned + pendingRewards;
+    const totalWithdrawn = stakedAmount + totalRewards;
 
     // Reset stake to 0
     const { error: updateError } = await supabase
@@ -54,7 +60,7 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Unstaked successfully',
       unstaked: {
-        principal: stake.staked_amount,
+        principal: stakedAmount,
         rewards: totalRewards,
         total: totalWithdrawn,
       },

@@ -25,14 +25,17 @@ export async function POST(request: NextRequest) {
     if (existingStake) {
       // Calculate pending rewards before adding new stake
       let pendingRewards = 0;
-      if (existingStake.staked_amount > 0) {
+      const currentStaked = existingStake.staked_amount ?? 0;
+      const currentRewards = existingStake.total_rewards_earned ?? 0;
+
+      if (currentStaked > 0 && existingStake.last_stake_time) {
         const lastStakeTime = new Date(existingStake.last_stake_time).getTime();
         const currentTime = Date.now();
         const timeStaked = Math.floor((currentTime - lastStakeTime) / 1000);
         const secondsPerYear = 365 * 24 * 60 * 60;
 
         pendingRewards = Math.floor(
-          (existingStake.staked_amount * APY_BASIS_POINTS * timeStaked) / (secondsPerYear * 10000)
+          (currentStaked * APY_BASIS_POINTS * timeStaked) / (secondsPerYear * 10000)
         );
       }
 
@@ -40,9 +43,9 @@ export async function POST(request: NextRequest) {
       const { data: updatedStake, error } = await supabase
         .from('staking')
         .update({
-          staked_amount: existingStake.staked_amount + amount,
+          staked_amount: currentStaked + amount,
           last_stake_time: now,
-          total_rewards_earned: existingStake.total_rewards_earned + pendingRewards,
+          total_rewards_earned: currentRewards + pendingRewards,
           updated_at: now,
         })
         .eq('user_wallet', wallet)

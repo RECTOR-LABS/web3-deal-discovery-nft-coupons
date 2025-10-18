@@ -14,6 +14,71 @@ export type Database = {
   }
   public: {
     Tables: {
+      badges: {
+        Row: {
+          badge_type: string
+          earned_at: string | null
+          id: string
+          metadata: Json | null
+          nft_mint_address: string
+          user_wallet: string
+        }
+        Insert: {
+          badge_type: string
+          earned_at?: string | null
+          id?: string
+          metadata?: Json | null
+          nft_mint_address: string
+          user_wallet: string
+        }
+        Update: {
+          badge_type?: string
+          earned_at?: string | null
+          id?: string
+          metadata?: Json | null
+          nft_mint_address?: string
+          user_wallet?: string
+        }
+        Relationships: []
+      }
+      cashback_transactions: {
+        Row: {
+          cashback_amount: number
+          cashback_rate: number
+          created_at: string | null
+          deal_id: string | null
+          id: string
+          tier: string
+          user_wallet: string
+        }
+        Insert: {
+          cashback_amount: number
+          cashback_rate: number
+          created_at?: string | null
+          deal_id?: string | null
+          id?: string
+          tier: string
+          user_wallet: string
+        }
+        Update: {
+          cashback_amount?: number
+          cashback_rate?: number
+          created_at?: string | null
+          deal_id?: string | null
+          id?: string
+          tier?: string
+          user_wallet?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cashback_transactions_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deals: {
         Row: {
           category: string | null
@@ -24,7 +89,9 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean | null
+          is_exclusive: boolean | null
           merchant_id: string | null
+          min_tier: string | null
           nft_mint_address: string
           quantity: number | null
           title: string
@@ -39,7 +106,9 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_exclusive?: boolean | null
           merchant_id?: string | null
+          min_tier?: string | null
           nft_mint_address: string
           quantity?: number | null
           title: string
@@ -54,7 +123,9 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_exclusive?: boolean | null
           merchant_id?: string | null
+          min_tier?: string | null
           nft_mint_address?: string
           quantity?: number | null
           title?: string
@@ -66,6 +137,13 @@ export type Database = {
             columns: ["merchant_id"]
             isOneToOne: false
             referencedRelation: "merchants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_merchant_id_fkey"
+            columns: ["merchant_id"]
+            isOneToOne: false
+            referencedRelation: "merchants_with_location"
             referencedColumns: ["id"]
           },
         ]
@@ -107,29 +185,50 @@ export type Database = {
       }
       merchants: {
         Row: {
+          address: string | null
           business_name: string
+          city: string | null
+          country: string | null
           created_at: string | null
           description: string | null
           id: string
+          latitude: number | null
           logo_url: string | null
+          longitude: number | null
+          postal_code: string | null
+          state: string | null
           updated_at: string | null
           wallet_address: string
         }
         Insert: {
+          address?: string | null
           business_name: string
+          city?: string | null
+          country?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
+          latitude?: number | null
           logo_url?: string | null
+          longitude?: number | null
+          postal_code?: string | null
+          state?: string | null
           updated_at?: string | null
           wallet_address: string
         }
         Update: {
+          address?: string | null
           business_name?: string
+          city?: string | null
+          country?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
+          latitude?: number | null
           logo_url?: string | null
+          longitude?: number | null
+          postal_code?: string | null
+          state?: string | null
           updated_at?: string | null
           wallet_address?: string
         }
@@ -229,13 +328,49 @@ export type Database = {
           },
         ]
       }
+      staking: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_stake_time: string | null
+          staked_amount: number | null
+          total_rewards_earned: number | null
+          updated_at: string | null
+          user_wallet: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_stake_time?: string | null
+          staked_amount?: number | null
+          total_rewards_earned?: number | null
+          updated_at?: string | null
+          user_wallet: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_stake_time?: string | null
+          staked_amount?: number | null
+          total_rewards_earned?: number | null
+          updated_at?: string | null
+          user_wallet?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           created_at: string | null
           email: string | null
           id: string
+          lifetime_cashback: number | null
           preferences: Json | null
           role: string | null
+          tier: string | null
+          total_redemptions: number | null
+          total_referrals: number | null
+          total_reviews: number | null
+          total_upvotes: number | null
           updated_at: string | null
           wallet_address: string
         }
@@ -243,8 +378,14 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           id?: string
+          lifetime_cashback?: number | null
           preferences?: Json | null
           role?: string | null
+          tier?: string | null
+          total_redemptions?: number | null
+          total_referrals?: number | null
+          total_reviews?: number | null
+          total_upvotes?: number | null
           updated_at?: string | null
           wallet_address: string
         }
@@ -252,8 +393,14 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           id?: string
+          lifetime_cashback?: number | null
           preferences?: Json | null
           role?: string | null
+          tier?: string | null
+          total_redemptions?: number | null
+          total_referrals?: number | null
+          total_reviews?: number | null
+          total_upvotes?: number | null
           updated_at?: string | null
           wallet_address?: string
         }
@@ -293,10 +440,66 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      merchants_with_location: {
+        Row: {
+          address: string | null
+          business_name: string | null
+          city: string | null
+          country: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          latitude: number | null
+          logo_url: string | null
+          longitude: number | null
+          postal_code: string | null
+          state: string | null
+          total_deals: number | null
+          wallet_address: string | null
+        }
+        Relationships: []
+      }
+      staking_leaderboard: {
+        Row: {
+          current_rewards: number | null
+          last_stake_time: string | null
+          lifetime_cashback: number | null
+          stake_rank: number | null
+          staked_amount: number | null
+          tier: string | null
+          total_rewards_earned: number | null
+          user_wallet: string | null
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          badge_count: number | null
+          badges: Json | null
+          created_at: string | null
+          tier: string | null
+          total_redemptions: number | null
+          total_referrals: number | null
+          total_reviews: number | null
+          total_upvotes: number | null
+          wallet_address: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      calculate_distance_miles: {
+        Args: { lat1: number; lat2: number; lon1: number; lon2: number }
+        Returns: number
+      }
+      calculate_staking_rewards: {
+        Args: { user_wallet_address: string }
+        Returns: number
+      }
+      increment_user_stat: {
+        Args: { stat_field: string; user_wallet: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

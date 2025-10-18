@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/database/supabase';
 import { BADGE_CONFIGS, generateBadgeMetadata, checkEligibleBadges } from '@/lib/loyalty/badges';
-import { BadgeType } from '@/lib/loyalty/types';
+import { BadgeType, Badge } from '@/lib/loyalty/types';
 
 /**
  * POST /api/badges/mint
@@ -66,12 +66,24 @@ export async function POST(request: NextRequest) {
     };
 
     // Verify eligibility
-    const { data: earnedBadges } = await supabase
+    const { data: earnedBadgesDb } = await supabase
       .from('badges')
-      .select('badge_type')
+      .select('id, user_wallet, badge_type, nft_mint_address, earned_at, metadata')
       .eq('user_wallet', wallet);
 
-    const eligibleBadges = checkEligibleBadges(stats, earnedBadges || []);
+    // Transform database records to Badge type
+    const earnedBadges: Badge[] = (earnedBadgesDb || []).map((b) => ({
+      id: b.id,
+      userWallet: b.user_wallet,
+      badgeType: b.badge_type as BadgeType,
+      nftMintAddress: b.nft_mint_address,
+      earnedAt: b.earned_at || new Date().toISOString(),
+      metadata: typeof b.metadata === 'object' && b.metadata !== null
+        ? (b.metadata as Badge['metadata'])
+        : { name: '', description: '', image: '', rarity: 'Common' },
+    }));
+
+    const eligibleBadges = checkEligibleBadges(stats, earnedBadges);
 
     if (!eligibleBadges.includes(badgeType)) {
       return NextResponse.json(

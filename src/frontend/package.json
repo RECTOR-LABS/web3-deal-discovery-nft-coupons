@@ -11,7 +11,9 @@
     "typecheck:strict": "tsc --noEmit --strict",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "clean": "lsof -ti:3000 | xargs kill -9 2>/dev/null || true && rm -rf .next out .turbo",
+    "clean:all": "lsof -ti:3000 | xargs kill -9 2>/dev/null || true && rm -rf .next out .turbo node_modules package-lock.json"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",

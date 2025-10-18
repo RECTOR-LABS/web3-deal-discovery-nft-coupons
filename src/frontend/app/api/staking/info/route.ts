@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 
     // Calculate pending rewards
     let pendingRewards = 0;
-    if (staking && staking.staked_amount > 0) {
+    if (staking && staking.staked_amount && staking.staked_amount > 0 && staking.last_stake_time) {
       const now = Date.now();
       const lastStakeTime = new Date(staking.last_stake_time).getTime();
       const timeStaked = Math.floor((now - lastStakeTime) / 1000); // seconds

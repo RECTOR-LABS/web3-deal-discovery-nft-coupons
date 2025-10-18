@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/database/supabase';
 import { checkAndMintBadges } from '@/lib/loyalty/autoBadge';
 import { distributeCashback } from '@/lib/staking/cashback';
+import { Badge } from '@/lib/loyalty/types';
 
 export async function POST(request: NextRequest) {
   try {
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check and mint badges (async, don't await)
-    let mintedBadges = [];
+    let mintedBadges: Badge[] = [];
     try {
       // Fetch updated user stats
       const { data: userData } = await supabase

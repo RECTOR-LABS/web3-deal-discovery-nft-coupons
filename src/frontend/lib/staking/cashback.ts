@@ -73,21 +73,20 @@ export async function distributeCashback(params: {
     }
 
     // Update user's lifetime cashback
-    const { error: updateError } = await supabase.rpc('increment_user_stat', {
-      user_wallet_address: userWallet,
-      stat_field: 'lifetime_cashback',
-    });
+    // First get current value
+    const { data: userData } = await supabase
+      .from('users')
+      .select('lifetime_cashback')
+      .eq('wallet_address', userWallet)
+      .single();
 
-    if (updateError) {
-      console.error('Failed to update lifetime cashback:', updateError);
-      // Don't fail if stat update fails
-    }
+    const currentCashback = userData?.lifetime_cashback || 0;
 
-    // Manually increment since RPC might not work
+    // Then update with new total
     await supabase
       .from('users')
       .update({
-        lifetime_cashback: supabase.raw(`COALESCE(lifetime_cashback, 0) + ${cashbackAmount}`),
+        lifetime_cashback: currentCashback + cashbackAmount,
       })
       .eq('wallet_address', userWallet);
 

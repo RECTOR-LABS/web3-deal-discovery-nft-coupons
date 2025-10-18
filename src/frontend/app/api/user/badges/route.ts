@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/database/supabase';
 import { checkEligibleBadges, getNextBadges } from '@/lib/loyalty/badges';
+import { Badge, BadgeType } from '@/lib/loyalty/types';
 
 /**
  * GET /api/user/badges?wallet=<wallet_address>
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
     const supabase = createClient();
 
     // Get user's earned badges
-    const { data: badges, error: badgesError } = await supabase
+    const { data: badgesDb, error: badgesError } = await supabase
       .from('badges')
       .select('*')
       .eq('user_wallet', wallet)
@@ -34,6 +35,18 @@ export async function GET(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Transform database records to Badge type
+    const badges: Badge[] = (badgesDb || []).map((b) => ({
+      id: b.id,
+      userWallet: b.user_wallet,
+      badgeType: b.badge_type as BadgeType,
+      nftMintAddress: b.nft_mint_address,
+      earnedAt: b.earned_at || new Date().toISOString(),
+      metadata: typeof b.metadata === 'object' && b.metadata !== null
+        ? (b.metadata as Badge['metadata'])
+        : { name: '', description: '', image: '', rarity: 'Common' },
+    }));
 
     // Get user stats for eligibility checking
     const { data: user } = await supabase
@@ -50,10 +63,10 @@ export async function GET(request: NextRequest) {
     };
 
     // Check for eligible badges (not yet minted)
-    const eligibleBadges = checkEligibleBadges(stats, badges || []);
+    const eligibleBadges = checkEligibleBadges(stats, badges);
 
     // Get next badges with progress
-    const nextBadges = getNextBadges(stats, badges || []);
+    const nextBadges = getNextBadges(stats, badges);
 
     return NextResponse.json({
       earnedBadges: badges || [],
