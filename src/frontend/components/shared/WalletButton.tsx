@@ -27,17 +27,8 @@ export const WalletButton: FC = () => {
   }
 
   return (
-    <div className="flex items-center gap-4">
-      <WalletMultiButton className="!bg-monke-neon hover:!bg-monke-neon/90 !rounded-lg !px-4 !py-2 !text-monke-primary !font-bold !transition-all !shadow-lg hover:!shadow-monke-neon/50" />
-
-      {connected && publicKey && (
-        <div className="hidden sm:flex items-center gap-2 text-sm">
-          <div className="w-2 h-2 bg-monke-neon rounded-full animate-pulse" />
-          <span className="text-monke-cream font-mono font-medium">
-            {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
-          </span>
-        </div>
-      )}
+    <div className="flex justify-center items-center">
+      <WalletMultiButton className="!bg-monke-accent hover:!bg-monke-neon !rounded-lg !px-6 !py-3 !text-monke-cream !font-bold !transition-all !shadow-lg hover:!shadow-xl hover:!text-monke-primary" />
     </div>
   );
 };

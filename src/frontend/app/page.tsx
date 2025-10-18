@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { WalletButton } from '@/components/shared/WalletButton';
 import { useWallet } from '@solana/wallet-adapter-react';
 
@@ -46,19 +47,21 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="p-8 border-2 border-monke-border rounded-lg bg-white/50 backdrop-blur">
+        <div className="p-8 md:p-10 border border-foreground/10 rounded-2xl bg-background/50 backdrop-blur-sm shadow-lg">
           <div className="space-y-6">
             <div className="flex justify-center">
-              <WalletButton />
+              <div className="w-full max-w-sm">
+                <WalletButton />
+              </div>
             </div>
 
             {connected && publicKey ? (
               <div className="space-y-4 text-left">
-                <div className="p-4 bg-monke-neon/10 border border-monke-neon rounded-lg">
+                <div className="p-4 bg-monke-cream border-2 border-monke-border rounded-lg shadow-lg">
                   <p className="text-sm font-bold text-monke-primary mb-2">
                     ✅ Wallet Connected
                   </p>
-                  <p className="text-xs font-mono text-monke-primary/90 font-medium break-all">
+                  <p className="text-xs font-mono text-monke-primary font-bold break-all">
                     {publicKey.toBase58()}
                   </p>
                 </div>
@@ -79,29 +82,29 @@ export default function Home() {
                 </div>
 
                 <div className="pt-4 space-y-3">
-                  <p className="text-sm font-medium text-monke-primary text-center">
+                  <p className="text-sm font-medium text-monke-cream text-center">
                     What would you like to do?
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <a
+                    <Link
                       href="/register"
-                      className="px-6 py-3 bg-monke-primary text-white font-bold rounded-lg hover:bg-monke-accent transition-colors text-center cursor-pointer"
+                      className="px-6 py-3 bg-monke-cream text-monke-primary font-bold rounded-lg hover:bg-white transition-all shadow-md hover:shadow-lg text-center cursor-pointer border-2 border-monke-cream"
                     >
                       🏪 Register as Merchant
-                    </a>
-                    <a
+                    </Link>
+                    <Link
                       href="/dashboard"
-                      className="px-6 py-3 bg-monke-accent text-white font-bold rounded-lg hover:bg-monke-primary transition-colors text-center cursor-pointer"
+                      className="px-6 py-3 bg-monke-cream text-monke-primary font-bold rounded-lg hover:bg-white transition-all shadow-md hover:shadow-lg text-center cursor-pointer border-2 border-monke-cream"
                     >
                       📊 Merchant Dashboard
-                    </a>
+                    </Link>
                   </div>
-                  <a
+                  <Link
                     href="/marketplace"
-                    className="block w-full px-6 py-3 bg-monke-neon text-monke-primary font-bold rounded-lg hover:opacity-90 transition-opacity text-center cursor-pointer"
+                    className="block w-full px-6 py-3 bg-monke-cream text-monke-primary font-bold rounded-lg hover:bg-white transition-all shadow-md hover:shadow-lg text-center cursor-pointer border-2 border-monke-cream"
                   >
                     🛍️ Browse Deals Marketplace
-                  </a>
+                  </Link>
                 </div>
               </div>
             ) : (
