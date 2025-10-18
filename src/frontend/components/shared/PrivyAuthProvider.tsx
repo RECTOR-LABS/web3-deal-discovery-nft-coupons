@@ -34,10 +34,11 @@ export default function PrivyAuthProvider({ children }: { children: React.ReactN
             connectors: solanaConnectors,
           },
         },
-        // Embedded wallet configuration
+        // Embedded wallet configuration (Privy v3 API - chain-specific)
         embeddedWallets: {
-          createOnLogin: 'users-without-wallets', // Auto-create wallet for email/social users
-          requireUserPasswordOnCreate: false, // No password needed - seamless UX
+          solana: {
+            createOnLogin: 'users-without-wallets',
+          },
         },
       }}
     >

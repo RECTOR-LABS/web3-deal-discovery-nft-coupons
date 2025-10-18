@@ -91,6 +91,25 @@ export async function PATCH(request: NextRequest) {
 
     const supabase = createClient();
 
+    // Validate latitude and longitude ranges
+    if (latitude !== undefined && latitude !== null) {
+      if (typeof latitude !== 'number' || latitude < -90 || latitude > 90) {
+        return NextResponse.json(
+          { error: 'Invalid latitude. Must be a number between -90 and 90.' },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (longitude !== undefined && longitude !== null) {
+      if (typeof longitude !== 'number' || longitude < -180 || longitude > 180) {
+        return NextResponse.json(
+          { error: 'Invalid longitude. Must be a number between -180 and 180.' },
+          { status: 400 }
+        );
+      }
+    }
+
     // Build update object with only provided fields
     const updates: Record<string, string | number | null> = {};
     if (businessName !== undefined) updates.business_name = businessName;

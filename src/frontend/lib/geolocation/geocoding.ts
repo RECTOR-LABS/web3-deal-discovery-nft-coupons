@@ -1,13 +1,20 @@
 import { GeocodingResult } from './types';
 
 /**
+ * Sleep helper for retry logic
+ */
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+/**
  * Geocode an address to coordinates using OpenStreetMap Nominatim API
  * Free, no API key required
+ * Includes retry logic with exponential backoff for rate limiting (429 errors)
  *
  * @param address Full address string (e.g., "1600 Amphitheatre Parkway, Mountain View, CA")
+ * @param retries Number of retry attempts remaining (default: 3)
  * @returns Geocoding result with coordinates and formatted address
  */
-export async function geocodeAddress(address: string): Promise<GeocodingResult | null> {
+export async function geocodeAddress(address: string, retries = 3): Promise<GeocodingResult | null> {
   if (!address || address.trim().length === 0) {
     return null;
   }
@@ -21,6 +28,14 @@ export async function geocodeAddress(address: string): Promise<GeocodingResult |
         'User-Agent': 'DealCoupon-Web3-Platform', // Nominatim requires a User-Agent
       },
     });
+
+    // Handle rate limiting (429 Too Many Requests)
+    if (response.status === 429 && retries > 0) {
+      const backoffMs = (4 - retries) * 1000; // 1s, 2s, 3s
+      console.warn(`Geocoding rate limited. Retrying in ${backoffMs}ms (${retries} retries left)...`);
+      await sleep(backoffMs);
+      return geocodeAddress(address, retries - 1);
+    }
 
     if (!response.ok) {
       console.error('Geocoding request failed:', response.statusText);
@@ -44,6 +59,14 @@ export async function geocodeAddress(address: string): Promise<GeocodingResult |
       country: result.address?.country,
     };
   } catch (error) {
+    // Retry on network errors
+    if (retries > 0 && error instanceof Error) {
+      const backoffMs = (4 - retries) * 1000;
+      console.warn(`Geocoding error: ${error.message}. Retrying in ${backoffMs}ms...`);
+      await sleep(backoffMs);
+      return geocodeAddress(address, retries - 1);
+    }
+
     console.error('Geocoding error:', error);
     return null;
   }

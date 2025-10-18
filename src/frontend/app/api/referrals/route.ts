@@ -112,30 +112,32 @@ export async function GET(request: NextRequest) {
 
     // Calculate stats
     const totalReferrals = referrals?.length || 0;
-    const uniqueDeals = new Set(referrals?.map(r => r.deal_id) || []).size;
+    const uniqueDeals = new Set(referrals?.map(r => r.deal_id).filter(Boolean) || []).size;
     const uniqueUsers = new Set(referrals?.map(r => r.referee_wallet) || []).size;
 
-    // Group referrals by deal
-    const referralsByDeal = (referrals || []).reduce((acc: any, referral) => {
-      const dealId = referral.deal_id;
-      if (!acc[dealId]) {
-        acc[dealId] = {
-          deal_id: dealId,
-          deal_title: referral.deals?.title || 'Unknown Deal',
-          discount_percentage: referral.deals?.discount_percentage || 0,
-          image_url: referral.deals?.image_url || null,
-          count: 0,
-          referrals: [],
-        };
-      }
-      acc[dealId].count += 1;
-      acc[dealId].referrals.push({
-        id: referral.id,
-        referee_wallet: referral.referee_wallet,
-        claimed_at: referral.claimed_at,
-      });
-      return acc;
-    }, {});
+    // Group referrals by deal (filter out referrals without deal_id)
+    const referralsByDeal = (referrals || [])
+      .filter(referral => referral.deal_id !== null)
+      .reduce((acc: any, referral) => {
+        const dealId = referral.deal_id as string; // Now guaranteed to be non-null
+        if (!acc[dealId]) {
+          acc[dealId] = {
+            deal_id: dealId,
+            deal_title: referral.deals?.title || 'Unknown Deal',
+            discount_percentage: referral.deals?.discount_percentage || 0,
+            image_url: referral.deals?.image_url || null,
+            count: 0,
+            referrals: [],
+          };
+        }
+        acc[dealId].count += 1;
+        acc[dealId].referrals.push({
+          id: referral.id,
+          referee_wallet: referral.referee_wallet,
+          claimed_at: referral.claimed_at,
+        });
+        return acc;
+      }, {});
 
     const dealBreakdown = Object.values(referralsByDeal);
 
