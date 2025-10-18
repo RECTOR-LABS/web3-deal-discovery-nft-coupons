@@ -1343,6 +1343,248 @@
 
 ---
 
+### Epic 8: Reward Staking / Cashback 🟣 BONUS (OPTIONAL)
+
+**Priority:** Lowest (Only if ahead of schedule - Epic 9 recommended instead)
+**Status:** ⏳ Not Started
+**Progress:** 0% (0/4 tasks)
+**Target Start:** October 23, 2025 (Day 11)
+**Target Completion:** October 23, 2025 (Day 11)
+**Dependencies:** Epic 1-4 complete (✅), Epic 5-7 complete (for time availability)
+**Owner:** RECTOR
+**Estimated Effort:** 8-12 hours (~1 day)
+
+**Objective:** Implement token economics with staking rewards and cashback to drive user retention and platform loyalty.
+
+#### Story 8.1: Token Economics & Staking
+**Status:** ⏳ Not Started
+**Progress:** 0/4 tasks
+**Reference:** PRD.md Epic 8
+
+**Tasks:**
+- ⏳ Task 8.1.1: Design token economics model
+  - Acceptance: Tokenomics document with supply, distribution, rewards structure
+  - Status: ⏳ Not Started
+  - Estimate: 2 hours
+  - Implementation: docs/tokenomics.md
+  - Features: Token supply (fixed/inflationary), staking APY calculation, cashback % per deal category
+  - Notes: Keep simple - avoid complex DeFi mechanics
+
+- ⏳ Task 8.1.2: Create staking smart contract
+  - Acceptance: Users can stake platform tokens for rewards
+  - Status: ⏳ Not Started
+  - Estimate: 4-5 hours
+  - Implementation: programs/staking/src/lib.rs (new Anchor program)
+  - Features: stake(), unstake(), claim_rewards(), view staking balance
+  - Notes: Reuse Anchor patterns from Epic 1 NFT contract
+
+- ⏳ Task 8.1.3: Build staking UI
+  - Acceptance: Staking dashboard showing balance, APY, rewards
+  - Status: ⏳ Not Started
+  - Estimate: 2-3 hours
+  - Implementation: app/(user)/staking/page.tsx, components/user/StakingDashboard.tsx
+  - Features: Stake/unstake forms, current APY display, reward claims, staking history
+
+- ⏳ Task 8.1.4: Implement cashback distribution system
+  - Acceptance: Users earn cashback tokens on coupon redemptions
+  - Status: ⏳ Not Started
+  - Estimate: 2-3 hours
+  - Implementation: lib/solana/cashback.ts, update redemption flow
+  - Features: Automatic cashback on redemption, tier-based rates (5%-15%), cashback history
+
+**Story 8.1 Acceptance Criteria:**
+- ⏳ Token economics model documented and sensible
+- ⏳ Staking contract deployed and functional
+- ⏳ Users can stake/unstake tokens via UI
+- ⏳ Cashback automatically distributed on redemptions
+- ⏳ APY and rewards calculated correctly
+
+**Evidence:** Staking contract deployed, UI functional, cashback transactions on-chain
+
+---
+
+**Epic 8 Overall Acceptance Criteria:**
+- ⏳ Token staking works end-to-end (stake → earn rewards → unstake)
+- ⏳ Cashback distributed automatically on redemptions
+- ⏳ Tokenomics model clear and sustainable
+- ⏳ UI for staking polished and intuitive
+
+**Next Steps:**
+1. Design tokenomics (supply, APY, cashback rates)
+2. Create staking Anchor program
+3. Deploy staking contract to devnet
+4. Build staking UI dashboard
+5. Integrate cashback into redemption flow
+
+**Notes:**
+- **NOT RECOMMENDED** - Epic 9 (Reputation) is better aligned with Web3 value prop
+- Only implement if Epic 1-7 complete AND 1+ days ahead of schedule
+- Token contracts add regulatory complexity - keep simple or skip
+- Consider mocking if implementing for demo purposes only
+- Judges may question token necessity vs. core platform value
+
+---
+
+### Epic 9: On-Chain Reputation / Loyalty System 🟣 BONUS (RECOMMENDED)
+
+**Priority:** Lowest (But BEST optional feature if implementing one)
+**Status:** ⏳ Not Started
+**Progress:** 0% (0/4 tasks)
+**Target Start:** October 23, 2025 (Day 11)
+**Target Completion:** October 23, 2025 (Day 11)
+**Dependencies:** Epic 1-4 complete (✅), Epic 5-7 complete (for time availability)
+**Owner:** RECTOR
+**Estimated Effort:** 8-10 hours (~1 day)
+
+**Objective:** Gamify user engagement with NFT badges, loyalty tiers, and exclusive deals for high-reputation users.
+
+#### Story 9.1: NFT Badge System & Loyalty Tiers
+**Status:** ⏳ Not Started
+**Progress:** 0/4 tasks
+**Reference:** PRD.md Epic 9
+
+**Tasks:**
+- ⏳ Task 9.1.1: Design loyalty tier system
+  - Acceptance: Tier definitions (Bronze, Silver, Gold, Platinum) with unlock criteria
+  - Status: ⏳ Not Started
+  - Estimate: 1 hour
+  - Implementation: docs/loyalty-tiers.md, lib/loyalty/tiers.ts
+  - Features: Bronze (0-5 redemptions), Silver (6-20), Gold (21-50), Platinum (51+)
+  - Rewards: Tier-based discounts (+5%, +10%, +15%, +20%), exclusive deals, early access
+
+- ⏳ Task 9.1.2: Create NFT badge smart contract logic
+  - Acceptance: Milestone badges minted automatically (First Purchase, 10 Redemptions, etc.)
+  - Status: ⏳ Not Started
+  - Estimate: 3-4 hours
+  - Implementation: Extend Epic 1 NFT contract or create new badge program
+  - Features: mint_badge(milestone_type), badge metadata (name, image, rarity), non-transferable badges
+  - Notes: Reuse Metaplex Token Metadata from Epic 1
+
+- ⏳ Task 9.1.3: Build user profile with badges & tier display
+  - Acceptance: User profile shows current tier, earned badges, progress to next tier
+  - Status: ⏳ Not Started
+  - Estimate: 2-3 hours
+  - Implementation: app/(user)/profile/page.tsx, components/user/BadgeCollection.tsx
+  - Features: Badge gallery, tier progress bar, tier benefits list, redemption count
+
+- ⏳ Task 9.1.4: Implement exclusive deals for high-tier users
+  - Acceptance: Gold+ users see exclusive deals not visible to Bronze/Silver
+  - Status: ⏳ Not Started
+  - Estimate: 2 hours
+  - Implementation: lib/database/deals.ts (tier filtering), UI conditional rendering
+  - Features: "Exclusive" badge on deals, tier requirement display, locked deals preview
+
+**Story 9.1 Acceptance Criteria:**
+- ⏳ Loyalty tiers defined with clear unlock criteria
+- ⏳ NFT badges minted on milestone achievements (first purchase, 10 redemptions, etc.)
+- ⏳ User profile displays tier, badges, and progress
+- ⏳ Exclusive deals visible only to qualified tiers
+- ⏳ Gamification drives user engagement
+
+**Evidence:** Badge NFTs minted, tier system functional, exclusive deals working
+
+---
+
+**Epic 9 Overall Acceptance Criteria:**
+- ⏳ Users automatically progress through loyalty tiers based on activity
+- ⏳ NFT badges minted for milestones (first purchase, 10/25/50 redemptions)
+- ⏳ Exclusive deals locked for low-tier users
+- ⏳ User profile showcases achievements and tier status
+- ⏳ System incentivizes repeat usage and engagement
+
+**Next Steps:**
+1. Define tier thresholds and badge milestones
+2. Extend NFT contract for badge minting (or reuse Epic 1)
+3. Create badge metadata and images (5-10 badge types)
+4. Build user profile with tier/badge display
+5. Add tier-gating to deal queries
+
+**Notes:**
+- **RECOMMENDED** - Best optional feature to implement
+- Reuses NFT minting logic from Epic 1 (low implementation cost)
+- High engagement value (gamification proven to work)
+- Strongly aligned with Web3 value prop (on-chain reputation)
+- Differentiates from Web2 loyalty programs (badges are tradable NFTs)
+- Can implement in ~8-10 hours vs. 12+ for Epic 8 or 10
+
+---
+
+### Epic 10: Geo-Based Discovery 🟣 BONUS (OPTIONAL)
+
+**Priority:** Lowest (Only if ahead of schedule - Epic 9 recommended instead)
+**Status:** ⏳ Not Started
+**Progress:** 0% (0/3 tasks)
+**Target Start:** October 23, 2025 (Day 11)
+**Target Completion:** October 23, 2025 (Day 11)
+**Dependencies:** Epic 1-4 complete (✅), Epic 5-7 complete (for time availability)
+**Owner:** RECTOR
+**Estimated Effort:** 10-12 hours (~1 day)
+
+**Objective:** Enable location-based deal discovery with "Deals near me" filtering and map visualization.
+
+#### Story 10.1: Geolocation & Map View
+**Status:** ⏳ Not Started
+**Progress:** 0/3 tasks
+**Reference:** PRD.md Epic 10
+
+**Tasks:**
+- ⏳ Task 10.1.1: Implement browser geolocation detection
+  - Acceptance: User location detected via browser API (with permission)
+  - Status: ⏳ Not Started
+  - Estimate: 2 hours
+  - Implementation: lib/geolocation/detect.ts, permission handling
+  - Features: navigator.geolocation API, permission prompt, fallback to manual location entry
+  - Notes: Requires HTTPS (works on localhost + production Vercel)
+
+- ⏳ Task 10.1.2: Add merchant location data to database
+  - Acceptance: Merchants can set business location (lat/long or address)
+  - Status: ⏳ Not Started
+  - Estimate: 2-3 hours
+  - Implementation: Database migration (add location columns), merchant settings UI update
+  - Features: Address input with geocoding (Mapbox/Google Maps API), lat/long storage, location display on deals
+
+- ⏳ Task 10.1.3: Build "Deals Near Me" filter & map view
+  - Acceptance: Users can filter deals within X miles radius and view on map
+  - Status: ⏳ Not Started
+  - Estimate: 6-7 hours
+  - Implementation: components/user/MapView.tsx (React-Leaflet or Mapbox GL), distance calculation
+  - Features: Distance filter (1, 5, 10, 25 miles), map with deal markers, click marker → deal detail, list/map toggle
+
+**Story 10.1 Acceptance Criteria:**
+- ⏳ User location detected via browser API
+- ⏳ Merchants can set business location
+- ⏳ "Deals Near Me" filter shows deals within radius
+- ⏳ Map view displays deals as markers
+- ⏳ Distance calculation accurate (haversine formula)
+
+**Evidence:** Geolocation working, map view functional, distance filter accurate
+
+---
+
+**Epic 10 Overall Acceptance Criteria:**
+- ⏳ Users can discover deals based on proximity
+- ⏳ Map view shows nearby deals with markers
+- ⏳ Distance filter (1/5/10/25 miles) functional
+- ⏳ Location permissions handled gracefully (allow/deny)
+- ⏳ Fallback to manual location entry if permissions denied
+
+**Next Steps:**
+1. Implement browser geolocation detection
+2. Add location fields to merchants table
+3. Geocode merchant addresses (Mapbox/Google API)
+4. Build map view component (React-Leaflet)
+5. Add distance-based filtering to marketplace
+
+**Notes:**
+- **NOT RECOMMENDED** - Less aligned with Web3 differentiators than Epic 9
+- Requires third-party map API (Mapbox free tier: 50k requests/month)
+- Higher complexity (geocoding, map libraries, distance calculations)
+- More valuable for local services (restaurants, retail) than online deals
+- Consider mocking with static map if implementing for demo only
+- Users expect this in mobile apps - less critical for web demo
+
+---
+
 ### Epic 11: Submission Preparation ⭐ CRITICAL
 
 **Priority:** Highest (Required to Win!)
