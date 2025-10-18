@@ -10,6 +10,7 @@ import {
   Settings,
   Menu,
   X,
+  QrCode,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -23,6 +24,7 @@ const navItems: NavItem[] = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Create Deal', href: '/dashboard/create', icon: PlusCircle },
   { name: 'My Deals', href: '/dashboard/deals', icon: Package },
+  { name: 'Redeem Coupon', href: '/dashboard/redeem', icon: QrCode },
   { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
