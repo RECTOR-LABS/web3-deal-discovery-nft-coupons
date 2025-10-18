@@ -1,6 +1,7 @@
 'use client';
 
 import { Search } from 'lucide-react';
+import CustomSelect from '@/components/shared/CustomSelect';
 
 type SortOption = 'newest' | 'expiring-soon' | 'highest-discount';
 type CategoryOption = 'All' | 'Food & Beverage' | 'Retail' | 'Services' | 'Travel' | 'Entertainment' | 'Other';
@@ -57,10 +58,10 @@ export default function DealFilters({
               <button
                 key={category}
                 onClick={() => onCategoryChange(category)}
-                className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 ${
+                className={`px-4 py-2.5 rounded-lg text-sm font-semibold shadow-md cursor-pointer transition-all ${
                   selectedCategory === category
                     ? 'bg-[#00ff4d] text-[#0d2a13] shadow-[#00ff4d]/30'
-                    : 'bg-white text-[#0d2a13] border-2 border-[#f3efcd] hover:border-[#00ff4d]'
+                    : 'bg-white text-[#0d2a13] border-2 border-[#f3efcd] hover:border-[#00ff4d] hover:shadow-lg'
                 }`}
               >
                 {category}
@@ -70,20 +71,17 @@ export default function DealFilters({
         </div>
 
         {/* Sort Options */}
-        <div className="md:w-64">
-          <label className="block text-[#0d2a13] text-sm font-bold mb-3">
-            Sort By
-          </label>
-          <select
-            value={sortBy}
-            onChange={(e) => onSortChange(e.target.value as SortOption)}
-            className="w-full px-4 py-3 bg-white text-[#0d2a13] rounded-xl border-2 border-[#f3efcd] focus:outline-none focus:ring-2 focus:ring-[#00ff4d] focus:border-[#00ff4d] font-medium shadow-md hover:shadow-lg transition-all cursor-pointer"
-          >
-            <option value="newest">Newest First</option>
-            <option value="expiring-soon">Expiring Soon</option>
-            <option value="highest-discount">Highest Discount</option>
-          </select>
-        </div>
+        <CustomSelect
+          label="Sort By"
+          value={sortBy}
+          onChange={(value) => onSortChange(value as SortOption)}
+          options={[
+            { value: 'newest', label: 'Newest First' },
+            { value: 'expiring-soon', label: 'Expiring Soon' },
+            { value: 'highest-discount', label: 'Highest Discount' },
+          ]}
+          className="md:w-64"
+        />
       </div>
     </div>
   );

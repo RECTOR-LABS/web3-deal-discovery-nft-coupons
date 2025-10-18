@@ -2,8 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import dynamic from 'next/dynamic';
 import { Home, Wallet, ShoppingBag } from 'lucide-react';
+
+const WalletMultiButton = dynamic(
+  async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
+  { ssr: false }
+);
 
 export default function UserNavigation() {
   const pathname = usePathname();
@@ -50,32 +55,9 @@ export default function UserNavigation() {
           </div>
 
           {/* Wallet Button */}
-          <div className="flex items-center">
+          <div className="flex items-center" style={{ outline: 'none', border: 'none' }}>
             <WalletMultiButton />
           </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        <div className="md:hidden flex items-center justify-around pb-4">
-          {navLinks.map((link) => {
-            const Icon = link.icon;
-            const isActive = pathname === link.href;
-
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
-                  isActive
-                    ? 'bg-[#00ff4d] text-[#0d2a13]'
-                    : 'text-[#f2eecb]'
-                }`}
-              >
-                <Icon className="w-5 h-5" />
-                <span className="text-xs font-medium">{link.label}</span>
-              </Link>
-            );
-          })}
         </div>
       </div>
     </nav>
