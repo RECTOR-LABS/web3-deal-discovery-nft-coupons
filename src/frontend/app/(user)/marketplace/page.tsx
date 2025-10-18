@@ -7,12 +7,16 @@ import { Database } from '@/lib/database/types';
 import DealCard from '@/components/user/DealCard';
 import DealFilters from '@/components/user/DealFilters';
 import ActivityFeed from '@/components/user/ActivityFeed';
+import DistanceFilter from '@/components/user/DistanceFilter';
+import MapView, { MapMarker } from '@/components/user/MapView';
 import { motion } from 'framer-motion';
 import { TierLevel } from '@/lib/loyalty/types';
+import { getUserLocation, filterByDistance, Coordinates } from '@/lib/geolocation';
+import { List, Map } from 'lucide-react';
 
 type Deal = Database['public']['Tables']['deals']['Row'];
 
-// Extended Deal type to support external deals and tier requirements
+// Extended Deal type to support external deals, tier requirements, and location (Epic 10)
 export type ExtendedDeal = Deal & {
   is_external?: boolean;
   source?: string;
@@ -20,9 +24,14 @@ export type ExtendedDeal = Deal & {
   merchant?: string;
   min_tier?: TierLevel | null;
   is_exclusive?: boolean | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  merchant_city?: string | null;
+  merchant_state?: string | null;
+  merchant_name?: string | null;
 };
 
-type SortOption = 'newest' | 'expiring-soon' | 'highest-discount';
+type SortOption = 'newest' | 'expiring-soon' | 'highest-discount' | 'nearest';
 type CategoryOption = 'All' | 'Food & Beverage' | 'Retail' | 'Services' | 'Travel' | 'Entertainment' | 'Other';
 
 export default function MarketplacePage() {
@@ -36,6 +45,21 @@ export default function MarketplacePage() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryOption>('All');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [userTier, setUserTier] = useState<TierLevel>('Bronze');
+
+  // Geolocation state (Epic 10)
+  const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
+  const [selectedDistance, setSelectedDistance] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+
+  // Request user location (Epic 10)
+  const handleRequestLocation = async () => {
+    const result = await getUserLocation();
+    if (result.success && result.coordinates) {
+      setUserLocation(result.coordinates);
+    } else {
+      alert(result.error || 'Unable to get your location');
+    }
+  };
 
   // Fetch user's tier
   useEffect(() => {
@@ -65,14 +89,33 @@ export default function MarketplacePage() {
       try {
         setLoading(true);
 
-        // Fetch platform deals from Supabase (including min_tier and is_exclusive)
+        // Fetch platform deals from Supabase with merchant location data (Epic 10)
         const { data: platformDeals, error } = await supabase
           .from('deals')
-          .select('*')
+          .select(`
+            *,
+            merchants (
+              latitude,
+              longitude,
+              city,
+              state,
+              business_name
+            )
+          `)
           .eq('is_active', true)
           .gte('expiry_date', new Date().toISOString());
 
         if (error) throw error;
+
+        // Flatten merchant location data into deals (Epic 10)
+        const dealsWithLocation = (platformDeals || []).map((deal: any) => ({
+          ...deal,
+          latitude: deal.merchants?.latitude || null,
+          longitude: deal.merchants?.longitude || null,
+          merchant_city: deal.merchants?.city || null,
+          merchant_state: deal.merchants?.state || null,
+          merchant_name: deal.merchants?.business_name || null,
+        }));
 
         // Fetch external deals from aggregator API
         let externalDeals: ExtendedDeal[] = [];
@@ -91,7 +134,7 @@ export default function MarketplacePage() {
 
         // Merge platform and external deals
         const allDeals: ExtendedDeal[] = [
-          ...(platformDeals || []),
+          ...dealsWithLocation,
           ...externalDeals,
         ];
 
@@ -124,9 +167,38 @@ export default function MarketplacePage() {
       filtered = filtered.filter((deal) => deal.category === selectedCategory);
     }
 
+    // Distance filter (Epic 10) - Only filter if user location and distance are set
+    if (userLocation && selectedDistance) {
+      // Filter deals with valid lat/lng and within selected distance
+      const dealsWithDistance = filterByDistance(
+        filtered.filter((deal) => deal.latitude && deal.longitude) as Array<ExtendedDeal & { latitude: number; longitude: number }>,
+        userLocation,
+        selectedDistance,
+        'miles'
+      );
+
+      // Add back deals without location (external deals, etc.) but mark distance as null
+      const dealsWithoutLocation = filtered
+        .filter((deal) => !deal.latitude || !deal.longitude)
+        .map((deal) => ({ ...deal, distance: undefined }));
+
+      filtered = [...dealsWithDistance, ...dealsWithoutLocation] as ExtendedDeal[];
+    }
+
     // Sort
     filtered = [...filtered].sort((a, b) => {
-      if (sortBy === 'newest') {
+      if (sortBy === 'nearest' && userLocation) {
+        // Sort by distance if user has location
+        const aDistance = (a as ExtendedDeal & { distance?: number }).distance;
+        const bDistance = (b as ExtendedDeal & { distance?: number }).distance;
+
+        // Deals without location go to the end
+        if (aDistance === undefined && bDistance === undefined) return 0;
+        if (aDistance === undefined) return 1;
+        if (bDistance === undefined) return -1;
+
+        return aDistance - bDistance;
+      } else if (sortBy === 'newest') {
         const aCreated = a.created_at ? new Date(a.created_at).getTime() : 0;
         const bCreated = b.created_at ? new Date(b.created_at).getTime() : 0;
         return bCreated - aCreated;
@@ -141,7 +213,27 @@ export default function MarketplacePage() {
     });
 
     return filtered;
-  }, [deals, searchQuery, selectedCategory, sortBy]);
+  }, [deals, searchQuery, selectedCategory, sortBy, userLocation, selectedDistance]);
+
+  // Prepare map markers (Epic 10)
+  const mapMarkers: MapMarker[] = useMemo(() => {
+    return filteredDeals
+      .filter((deal) => deal.latitude && deal.longitude)
+      .map((deal) => ({
+        id: deal.id,
+        position: {
+          latitude: deal.latitude!,
+          longitude: deal.longitude!,
+        },
+        title: deal.title,
+        description: `${deal.discount_percentage}% OFF`,
+        imageUrl: deal.image_url || undefined,
+        onClick: () => {
+          // Navigate to deal detail page
+          window.location.href = `/marketplace/${deal.id}`;
+        },
+      }));
+  }, [filteredDeals]);
 
   return (
     <div className="min-h-screen bg-[#f2eecb]">
@@ -178,19 +270,55 @@ export default function MarketplacePage() {
           onCategoryChange={setSelectedCategory}
           sortBy={sortBy}
           onSortChange={setSortBy}
+          hasLocation={!!userLocation}
         />
+
+        {/* View Mode Toggle (List vs Map) - Epic 10 */}
+        {userLocation && (
+          <div className="mt-6 flex justify-end">
+            <div className="inline-flex bg-white border-2 border-monke-border rounded-lg p-1 shadow-md">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`px-6 py-2 rounded-md font-semibold transition-all flex items-center gap-2 ${
+                  viewMode === 'list'
+                    ? 'bg-monke-primary text-white'
+                    : 'text-monke-primary hover:bg-monke-cream/50'
+                }`}
+              >
+                <List size={18} />
+                <span>List View</span>
+              </button>
+              <button
+                onClick={() => setViewMode('map')}
+                className={`px-6 py-2 rounded-md font-semibold transition-all flex items-center gap-2 ${
+                  viewMode === 'map'
+                    ? 'bg-monke-primary text-white'
+                    : 'text-monke-primary hover:bg-monke-cream/50'
+                }`}
+              >
+                <Map size={18} />
+                <span>Map View</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Main Content - Two Column Layout */}
       <div className="max-w-7xl mx-auto px-4 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Main Column - Deals */}
+          {/* Main Column - Deals (List or Map View) */}
           <div className="lg:col-span-8">
             {/* Results Count */}
             {!loading && filteredDeals.length > 0 && (
               <div className="mb-6">
                 <p className="text-[#0d2a13] font-semibold">
                   {filteredDeals.length} {filteredDeals.length === 1 ? 'deal' : 'deals'} found
+                  {userLocation && selectedDistance && (
+                    <span className="text-monke-neon ml-2">
+                      (within {selectedDistance} miles)
+                    </span>
+                  )}
                 </p>
               </div>
             )}
@@ -218,7 +346,28 @@ export default function MarketplacePage() {
                     : 'Check back soon for amazing deals!'}
                 </p>
               </div>
+            ) : viewMode === 'map' && userLocation ? (
+              // Map View (Epic 10)
+              <div className="space-y-4">
+                <MapView
+                  center={userLocation}
+                  markers={mapMarkers}
+                  zoom={selectedDistance ? Math.min(13 - Math.log2(selectedDistance), 13) : 12}
+                  height="600px"
+                  showUserLocation={true}
+                  userLocation={userLocation}
+                  radiusInMiles={selectedDistance || undefined}
+                />
+                {mapMarkers.length === 0 && (
+                  <div className="text-center p-6 bg-amber-50 border-2 border-amber-200 rounded-lg">
+                    <p className="text-amber-700 font-semibold">
+                      No deals with location data found. Switch to List View to see all deals.
+                    </p>
+                  </div>
+                )}
+              </div>
             ) : (
+              // List View (Default)
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -238,9 +387,18 @@ export default function MarketplacePage() {
             )}
           </div>
 
-          {/* Sidebar - Activity Feed */}
+          {/* Sidebar - Distance Filter & Activity Feed */}
           <div className="lg:col-span-4">
-            <div className="sticky top-8">
+            <div className="sticky top-8 space-y-6">
+              {/* Distance Filter (Epic 10) */}
+              <DistanceFilter
+                selectedDistance={selectedDistance}
+                onDistanceChange={setSelectedDistance}
+                hasLocation={!!userLocation}
+                onRequestLocation={handleRequestLocation}
+              />
+
+              {/* Activity Feed */}
               <ActivityFeed limit={10} />
             </div>
           </div>

@@ -56,12 +56,31 @@ export async function GET(request: NextRequest) {
  *   businessName?: string;
  *   description?: string;
  *   logoUrl?: string;
+ *   address?: string;
+ *   city?: string;
+ *   state?: string;
+ *   postalCode?: string;
+ *   country?: string;
+ *   latitude?: number;
+ *   longitude?: number;
  * }
  */
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { walletAddress, businessName, description, logoUrl } = body;
+    const {
+      walletAddress,
+      businessName,
+      description,
+      logoUrl,
+      address,
+      city,
+      state,
+      postalCode,
+      country,
+      latitude,
+      longitude
+    } = body;
 
     if (!walletAddress) {
       return NextResponse.json(
@@ -73,10 +92,17 @@ export async function PATCH(request: NextRequest) {
     const supabase = createClient();
 
     // Build update object with only provided fields
-    const updates: Record<string, string | null> = {};
+    const updates: Record<string, string | number | null> = {};
     if (businessName !== undefined) updates.business_name = businessName;
     if (description !== undefined) updates.description = description;
     if (logoUrl !== undefined) updates.logo_url = logoUrl;
+    if (address !== undefined) updates.address = address;
+    if (city !== undefined) updates.city = city;
+    if (state !== undefined) updates.state = state;
+    if (postalCode !== undefined) updates.postal_code = postalCode;
+    if (country !== undefined) updates.country = country;
+    if (latitude !== undefined) updates.latitude = latitude;
+    if (longitude !== undefined) updates.longitude = longitude;
 
     const { data: merchant, error } = await supabase
       .from('merchants')

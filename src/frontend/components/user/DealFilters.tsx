@@ -3,7 +3,7 @@
 import { Search } from 'lucide-react';
 import CustomSelect from '@/components/shared/CustomSelect';
 
-type SortOption = 'newest' | 'expiring-soon' | 'highest-discount';
+type SortOption = 'newest' | 'expiring-soon' | 'highest-discount' | 'nearest';
 type CategoryOption = 'All' | 'Food & Beverage' | 'Retail' | 'Services' | 'Travel' | 'Entertainment' | 'Other';
 
 interface DealFiltersProps {
@@ -13,6 +13,7 @@ interface DealFiltersProps {
   onCategoryChange: (category: CategoryOption) => void;
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
+  hasLocation?: boolean; // Epic 10 - Show "Nearest" option only if user has location
 }
 
 const categories: CategoryOption[] = [
@@ -32,7 +33,16 @@ export default function DealFilters({
   onCategoryChange,
   sortBy,
   onSortChange,
+  hasLocation = false,
 }: DealFiltersProps) {
+  // Build sort options dynamically based on location availability
+  const sortOptions = [
+    { value: 'newest', label: 'Newest First' },
+    { value: 'expiring-soon', label: 'Expiring Soon' },
+    { value: 'highest-discount', label: 'Highest Discount' },
+    ...(hasLocation ? [{ value: 'nearest', label: 'Nearest to Me 📍' }] : []),
+  ];
+
   return (
     <div className="space-y-6 bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-[#f3efcd] shadow-lg">
       {/* Search Bar */}
@@ -75,11 +85,7 @@ export default function DealFilters({
           label="Sort By"
           value={sortBy}
           onChange={(value) => onSortChange(value as SortOption)}
-          options={[
-            { value: 'newest', label: 'Newest First' },
-            { value: 'expiring-soon', label: 'Expiring Soon' },
-            { value: 'highest-discount', label: 'Highest Discount' },
-          ]}
+          options={sortOptions}
           className="md:w-64"
         />
       </div>

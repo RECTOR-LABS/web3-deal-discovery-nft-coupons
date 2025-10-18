@@ -3,13 +3,21 @@
 import { useEffect, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { motion } from 'framer-motion';
-import { Store, Loader2, Save, AlertCircle, CheckCircle2, User, Image as ImageIcon, Wallet, Sparkles } from 'lucide-react';
+import { Store, Loader2, Save, AlertCircle, CheckCircle2, User, Image as ImageIcon, Wallet, Sparkles, MapPin, Navigation } from 'lucide-react';
+import { geocodeAddress } from '@/lib/geolocation';
 
 interface MerchantProfile {
   business_name: string;
   description: string;
   logo_url: string;
   wallet_address: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  postal_code?: string;
+  country?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export default function SettingsPage() {
@@ -23,6 +31,13 @@ export default function SettingsPage() {
     description: '',
     logo_url: '',
     wallet_address: '',
+    address: '',
+    city: '',
+    state: '',
+    postal_code: '',
+    country: 'United States',
+    latitude: undefined,
+    longitude: undefined,
   });
   // Track original profile for dirty form detection
   const [originalProfile, setOriginalProfile] = useState<MerchantProfile>({
@@ -30,14 +45,29 @@ export default function SettingsPage() {
     description: '',
     logo_url: '',
     wallet_address: '',
+    address: '',
+    city: '',
+    state: '',
+    postal_code: '',
+    country: 'United States',
+    latitude: undefined,
+    longitude: undefined,
   });
+  const [geocoding, setGeocoding] = useState(false);
 
   // Check if form has unsaved changes
   const hasChanges = () => {
     return (
       profile.business_name !== originalProfile.business_name ||
       profile.description !== originalProfile.description ||
-      profile.logo_url !== originalProfile.logo_url
+      profile.logo_url !== originalProfile.logo_url ||
+      profile.address !== originalProfile.address ||
+      profile.city !== originalProfile.city ||
+      profile.state !== originalProfile.state ||
+      profile.postal_code !== originalProfile.postal_code ||
+      profile.country !== originalProfile.country ||
+      profile.latitude !== originalProfile.latitude ||
+      profile.longitude !== originalProfile.longitude
     );
   };
 
@@ -58,6 +88,13 @@ export default function SettingsPage() {
               description: data.merchant.description || '',
               logo_url: data.merchant.logo_url || '',
               wallet_address: data.merchant.wallet_address,
+              address: data.merchant.address || '',
+              city: data.merchant.city || '',
+              state: data.merchant.state || '',
+              postal_code: data.merchant.postal_code || '',
+              country: data.merchant.country || 'United States',
+              latitude: data.merchant.latitude || undefined,
+              longitude: data.merchant.longitude || undefined,
             };
             setProfile(profileData);
             setOriginalProfile(profileData); // Store original for comparison
@@ -72,6 +109,49 @@ export default function SettingsPage() {
 
     fetchProfile();
   }, [publicKey]);
+
+  const handleGeocode = async () => {
+    setGeocoding(true);
+    setError(null);
+
+    try {
+      // Build full address from components
+      const fullAddress = [
+        profile.address,
+        profile.city,
+        profile.state,
+        profile.postal_code,
+        profile.country,
+      ]
+        .filter(Boolean)
+        .join(', ');
+
+      if (!fullAddress || fullAddress.length < 5) {
+        setError('Please enter at least a city and state to geocode');
+        return;
+      }
+
+      const result = await geocodeAddress(fullAddress);
+
+      if (result) {
+        setProfile({
+          ...profile,
+          latitude: result.latitude,
+          longitude: result.longitude,
+          city: result.city || profile.city,
+        });
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 3000);
+      } else {
+        setError('Could not find coordinates for this address. Please check the address and try again.');
+      }
+    } catch (err) {
+      console.error('Geocoding error:', err);
+      setError('Geocoding failed. Please try again.');
+    } finally {
+      setGeocoding(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,6 +172,13 @@ export default function SettingsPage() {
           businessName: profile.business_name,
           description: profile.description,
           logoUrl: profile.logo_url,
+          address: profile.address,
+          city: profile.city,
+          state: profile.state,
+          postalCode: profile.postal_code,
+          country: profile.country,
+          latitude: profile.latitude,
+          longitude: profile.longitude,
         }),
       });
 
@@ -260,6 +347,172 @@ export default function SettingsPage() {
                 {profile.description.length} characters
               </p>
             </div>
+          </div>
+        </motion.div>
+
+        {/* Business Location */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45, duration: 0.5 }}
+          className="bg-white border-2 border-monke-border rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow"
+        >
+          <div className="flex items-center space-x-2 mb-6">
+            <MapPin size={24} className="text-monke-primary" />
+            <h2 className="text-xl font-bold text-monke-primary">
+              Business Location
+            </h2>
+          </div>
+
+          <div className="space-y-6">
+            {/* Address Input */}
+            <div>
+              <label
+                htmlFor="address"
+                className="block text-sm font-semibold text-monke-primary mb-2"
+              >
+                Street Address
+              </label>
+              <input
+                type="text"
+                id="address"
+                value={profile.address || ''}
+                onChange={(e) =>
+                  setProfile({ ...profile, address: e.target.value })
+                }
+                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary focus:ring-2 focus:ring-monke-primary/20 transition-all text-monke-primary placeholder:text-monke-primary/40"
+                placeholder="123 Main Street"
+              />
+            </div>
+
+            {/* City, State, Postal Code Row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label
+                  htmlFor="city"
+                  className="block text-sm font-semibold text-monke-primary mb-2"
+                >
+                  City
+                </label>
+                <input
+                  type="text"
+                  id="city"
+                  value={profile.city || ''}
+                  onChange={(e) =>
+                    setProfile({ ...profile, city: e.target.value })
+                  }
+                  className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary focus:ring-2 focus:ring-monke-primary/20 transition-all text-monke-primary placeholder:text-monke-primary/40"
+                  placeholder="San Francisco"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="state"
+                  className="block text-sm font-semibold text-monke-primary mb-2"
+                >
+                  State
+                </label>
+                <input
+                  type="text"
+                  id="state"
+                  value={profile.state || ''}
+                  onChange={(e) =>
+                    setProfile({ ...profile, state: e.target.value })
+                  }
+                  className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary focus:ring-2 focus:ring-monke-primary/20 transition-all text-monke-primary placeholder:text-monke-primary/40"
+                  placeholder="CA"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="postalCode"
+                  className="block text-sm font-semibold text-monke-primary mb-2"
+                >
+                  Postal Code
+                </label>
+                <input
+                  type="text"
+                  id="postalCode"
+                  value={profile.postal_code || ''}
+                  onChange={(e) =>
+                    setProfile({ ...profile, postal_code: e.target.value })
+                  }
+                  className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary focus:ring-2 focus:ring-monke-primary/20 transition-all text-monke-primary placeholder:text-monke-primary/40"
+                  placeholder="94102"
+                />
+              </div>
+            </div>
+
+            {/* Country Input */}
+            <div>
+              <label
+                htmlFor="country"
+                className="block text-sm font-semibold text-monke-primary mb-2"
+              >
+                Country
+              </label>
+              <input
+                type="text"
+                id="country"
+                value={profile.country || 'United States'}
+                onChange={(e) =>
+                  setProfile({ ...profile, country: e.target.value })
+                }
+                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary focus:ring-2 focus:ring-monke-primary/20 transition-all text-monke-primary placeholder:text-monke-primary/40"
+                placeholder="United States"
+              />
+            </div>
+
+            {/* Geocode Button */}
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={handleGeocode}
+                disabled={geocoding}
+                className="w-full md:w-auto px-6 py-3 bg-monke-neon hover:bg-monke-neon/80 text-monke-primary font-bold rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+              >
+                {geocoding ? (
+                  <>
+                    <Loader2 className="animate-spin" size={20} />
+                    <span>Finding Coordinates...</span>
+                  </>
+                ) : (
+                  <>
+                    <Navigation size={20} />
+                    <span>Get Coordinates from Address</span>
+                  </>
+                )}
+              </button>
+              <p className="text-xs text-monke-primary/60 font-medium mt-3">
+                Click to automatically find latitude and longitude for your address
+              </p>
+            </div>
+
+            {/* Coordinates Display */}
+            {(profile.latitude !== undefined && profile.longitude !== undefined) && (
+              <div className="p-4 bg-monke-neon/10 border-2 border-monke-neon/30 rounded-lg">
+                <p className="text-sm font-semibold text-monke-primary mb-2 flex items-center gap-2">
+                  <CheckCircle2 size={16} className="text-monke-neon" />
+                  Coordinates Found
+                </p>
+                <div className="grid grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <span className="text-monke-primary/60 font-medium">Latitude:</span>
+                    <p className="font-mono font-bold text-monke-primary mt-1">
+                      {profile.latitude.toFixed(6)}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-monke-primary/60 font-medium">Longitude:</span>
+                    <p className="font-mono font-bold text-monke-primary mt-1">
+                      {profile.longitude.toFixed(6)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </motion.div>
 
