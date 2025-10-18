@@ -7,6 +7,9 @@ use crate::errors::*;
 
 #[derive(Accounts)]
 pub struct RedeemCoupon<'info> {
+    /// Coupon data account (PDA derived from NFT mint)
+    /// Seeds: ["coupon", nft_mint_pubkey]
+    /// Tracks redemptions remaining and active status
     #[account(
         mut,
         seeds = [b"coupon", nft_mint.key().as_ref()],
@@ -14,15 +17,21 @@ pub struct RedeemCoupon<'info> {
     )]
     pub coupon_data: Account<'info, CouponData>,
 
+    /// Merchant account (PDA derived from merchant authority)
+    /// Seeds: ["merchant", merchant_authority_pubkey]
+    /// Used for event logging and analytics
     #[account(
         seeds = [b"merchant", merchant.authority.as_ref()],
         bump = merchant.bump
     )]
     pub merchant: Account<'info, Merchant>,
 
+    /// NFT mint account (must match coupon_data.mint)
     #[account(mut)]
     pub nft_mint: Account<'info, Mint>,
 
+    /// User's token account holding the NFT
+    /// Validates ownership via mint and owner constraints
     #[account(
         mut,
         constraint = nft_token_account.mint == nft_mint.key(),
@@ -30,6 +39,7 @@ pub struct RedeemCoupon<'info> {
     )]
     pub nft_token_account: Account<'info, TokenAccount>,
 
+    /// User redeeming the coupon (must own the NFT)
     #[account(mut)]
     pub user: Signer<'info>,
 
@@ -39,36 +49,43 @@ pub struct RedeemCoupon<'info> {
 pub fn handler(ctx: Context<RedeemCoupon>) -> Result<()> {
     let coupon_data = &mut ctx.accounts.coupon_data;
 
-    // Validate coupon is active
+    // Security checks: Validate coupon state before redemption
+
+    // 1. Coupon must be active (merchant can deactivate via update_coupon_status)
     require!(coupon_data.is_active, CouponError::CouponNotActive);
 
-    // Validate coupon hasn't expired
+    // 2. Coupon must not be expired (checked against on-chain clock)
     let current_time = Clock::get()?.unix_timestamp;
     require!(
         coupon_data.expiry_date > current_time,
         CouponError::CouponExpired
     );
 
-    // Validate redemptions remaining
+    // 3. Coupon must have redemptions remaining (prevents double-spend)
     require!(
         coupon_data.redemptions_remaining > 0,
         CouponError::CouponFullyRedeemed
     );
 
-    // Verify user owns the NFT
+    // 4. User must own the NFT (verified by token account constraints + amount check)
     require!(
         ctx.accounts.nft_token_account.amount >= 1,
         CouponError::UnauthorizedOwner
     );
 
-    // Decrement redemptions remaining
+    // Decrement redemption counter atomically (prevents overflow attacks)
     coupon_data.redemptions_remaining = coupon_data
         .redemptions_remaining
         .checked_sub(1)
         .ok_or(CouponError::ArithmeticOverflow)?;
 
-    // If single-use or last redemption, burn the NFT
+    // Multi-use coupon support (bonus feature beyond requirements):
+    // - Single-use (max_redemptions=1): Burn NFT immediately
+    // - Multi-use (max_redemptions>1): Keep NFT until last redemption
+    // This allows "buy 5 coffees, get 1 free" style coupons
     if coupon_data.max_redemptions == 1 || coupon_data.redemptions_remaining == 0 {
+        // CPI: Burn NFT to prevent reuse
+        // Burns from user's token account, requires user signature
         burn(
             CpiContext::new(
                 ctx.accounts.token_program.to_account_info(),
@@ -86,6 +103,7 @@ pub fn handler(ctx: Context<RedeemCoupon>) -> Result<()> {
             ctx.accounts.nft_mint.key()
         );
     } else {
+        // Multi-use: NFT remains in wallet for future redemptions
         msg!(
             "Coupon redeemed: {} - {} redemptions remaining",
             ctx.accounts.nft_mint.key(),
@@ -93,7 +111,8 @@ pub fn handler(ctx: Context<RedeemCoupon>) -> Result<()> {
         );
     }
 
-    // Emit redemption event
+    // Emit redemption event for off-chain analytics and indexing
+    // Used by frontend to display redemption history and merchant analytics
     emit!(RedemptionEvent {
         nft_mint: ctx.accounts.nft_mint.key(),
         merchant: coupon_data.merchant,

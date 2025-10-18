@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{AssociatedToken, Create},
-    token::{mint_to, Mint, MintTo, Token, TokenAccount},
+    token::{mint_to, MintTo, Token},
 };
 use mpl_token_metadata::{
     instructions::{CreateV1CpiBuilder},
@@ -12,6 +12,9 @@ use crate::errors::*;
 
 #[derive(Accounts)]
 pub struct CreateCoupon<'info> {
+    /// Merchant account (PDA derived from merchant authority)
+    /// Seeds: ["merchant", merchant_authority_pubkey]
+    /// Validates that the merchant authority owns this merchant account
     #[account(
         mut,
         seeds = [b"merchant", merchant_authority.key().as_ref()],
@@ -20,6 +23,9 @@ pub struct CreateCoupon<'info> {
     )]
     pub merchant: Account<'info, Merchant>,
 
+    /// Coupon data account (PDA derived from NFT mint address)
+    /// Seeds: ["coupon", nft_mint_pubkey]
+    /// Stores discount %, expiry date, category, redemption tracking
     #[account(
         init,
         payer = merchant_authority,
@@ -84,7 +90,7 @@ pub fn handler(
         CouponError::InvalidRedemptionAmount
     );
 
-    // Initialize coupon data
+    // Initialize coupon data with validated parameters
     let coupon_data = &mut ctx.accounts.coupon_data;
     coupon_data.mint = ctx.accounts.nft_mint.key();
     coupon_data.merchant = ctx.accounts.merchant.key();
@@ -96,7 +102,11 @@ pub fn handler(
     coupon_data.is_active = true;
     coupon_data.bump = ctx.bumps.coupon_data;
 
-    // Create Metaplex NFT metadata (this also creates the mint)
+    // CPI: Create Metaplex NFT metadata using Token Metadata v5.0.0
+    // This creates both the mint account and metadata account in a single instruction
+    // - NonFungible token standard (unique NFT, not semi-fungible)
+    // - PrintSupply::Zero prevents any editions/prints from being created
+    // - URI points to Arweave/IPFS for off-chain metadata (image, description)
     CreateV1CpiBuilder::new(&ctx.accounts.token_metadata_program.to_account_info())
         .metadata(&ctx.accounts.metadata_account.to_account_info())
         .mint(&ctx.accounts.nft_mint.to_account_info(), true)
@@ -113,7 +123,9 @@ pub fn handler(
         .print_supply(PrintSupply::Zero)
         .invoke()?;
 
-    // Create associated token account for merchant
+    // CPI: Create associated token account for merchant to hold the NFT
+    // Associated Token Account (ATA) is deterministically derived from:
+    // [merchant_authority, token_program, nft_mint]
     anchor_spl::associated_token::create(
         CpiContext::new(
             ctx.accounts.associated_token_program.to_account_info(),
@@ -128,7 +140,8 @@ pub fn handler(
         ),
     )?;
 
-    // Mint NFT to merchant's token account
+    // CPI: Mint exactly 1 NFT to merchant's token account
+    // Merchant can then transfer to users (claiming) or list on marketplace
     mint_to(
         CpiContext::new(
             ctx.accounts.token_program.to_account_info(),

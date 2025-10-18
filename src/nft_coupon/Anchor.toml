@@ -18,5 +18,11 @@ url = "https://api.apr.dev"
 cluster = "devnet"
 wallet = "/Users/rz/.config/solana/REC-devnet.json"
 
+[test.validator]
+url = "https://api.devnet.solana.com"
+
+[[test.validator.clone]]
+address = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+
 [scripts]
 test = "npx ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
