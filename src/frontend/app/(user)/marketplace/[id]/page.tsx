@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/database/supabase';
 import { Database } from '@/lib/database/types';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -9,6 +9,9 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Calendar, Tag, TrendingUp, ArrowLeft, Share2, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { claimCoupon } from '@/lib/solana/purchase';
+import RatingSystem from '@/components/user/RatingSystem';
+import VoteButtons from '@/components/user/VoteButtons';
+import ShareButtons from '@/components/user/ShareButtons';
 
 type Deal = Database['public']['Tables']['deals']['Row'];
 type Merchant = Database['public']['Tables']['merchants']['Row'];
@@ -16,12 +19,16 @@ type Merchant = Database['public']['Tables']['merchants']['Row'];
 export default function DealDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { publicKey, signTransaction } = useWallet();
   const [deal, setDeal] = useState<Deal | null>(null);
   const [merchant, setMerchant] = useState<Merchant | null>(null);
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  // Get referrer wallet from URL params (if shared via referral link)
+  const referrerWallet = searchParams.get('ref');
 
   useEffect(() => {
     async function fetchDealAndMerchant() {
@@ -77,6 +84,24 @@ export default function DealDetailPage() {
         user_wallet: publicKey.toBase58(),
         metadata: { signature },
       });
+
+      // Record referral if user came via referral link
+      if (referrerWallet && referrerWallet !== publicKey.toBase58()) {
+        try {
+          await fetch('/api/referrals', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              deal_id: deal.id,
+              referrer_wallet: referrerWallet,
+              referee_wallet: publicKey.toBase58(),
+            }),
+          });
+          // Silently continue even if referral recording fails
+        } catch (referralError) {
+          console.error('Failed to record referral:', referralError);
+        }
+      }
 
       alert('Coupon claimed successfully! Check your wallet and My Coupons.');
       router.push('/coupons');
@@ -218,6 +243,17 @@ export default function DealDetailPage() {
               </div>
             </div>
 
+            {/* Community Voting */}
+            <div className="bg-[#0d2a13]/5 rounded-lg p-4 mb-6">
+              <h3 className="text-sm font-bold text-[#0d2a13] mb-3">Community Rating</h3>
+              <div className="flex items-center justify-center">
+                <VoteButtons dealId={deal.id} size="lg" showScore={true} />
+              </div>
+              <p className="text-xs text-[#174622] text-center mt-2">
+                Help others discover great deals by voting
+              </p>
+            </div>
+
             {/* NFT Metadata */}
             <div className="bg-[#0d2a13]/5 rounded-lg p-4 mb-6">
               <h3 className="text-sm font-bold text-[#0d2a13] mb-2">NFT Coupon Details</h3>
@@ -259,12 +295,21 @@ export default function DealDetailPage() {
                 </button>
               )}
 
-              {/* Share Button */}
-              <button className="w-full bg-[#174622] hover:bg-[#174622]/90 text-[#f2eecb] font-semibold py-3 rounded-lg transition-colors flex items-center justify-center">
-                <Share2 className="w-5 h-5 mr-2" />
-                Share Deal
-              </button>
+              {/* Share Buttons */}
+              <div className="bg-[#f2eecb]/50 rounded-lg p-4">
+                <ShareButtons dealId={deal.id} dealTitle={deal.title} variant="default" />
+              </div>
             </div>
+          </motion.div>
+
+          {/* Reviews Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mt-8"
+          >
+            <RatingSystem dealId={params.id as string} />
           </motion.div>
         </div>
       </div>

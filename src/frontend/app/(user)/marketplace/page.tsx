@@ -5,6 +5,7 @@ import { supabase } from '@/lib/database/supabase';
 import { Database } from '@/lib/database/types';
 import DealCard from '@/components/user/DealCard';
 import DealFilters from '@/components/user/DealFilters';
+import ActivityFeed from '@/components/user/ActivityFeed';
 import { motion } from 'framer-motion';
 
 type Deal = Database['public']['Tables']['deals']['Row'];
@@ -149,58 +150,70 @@ export default function MarketplacePage() {
         />
       </div>
 
-      {/* Deals Grid */}
+      {/* Main Content - Two Column Layout */}
       <div className="max-w-7xl mx-auto px-4 pb-16">
-        {/* Results Count */}
-        {!loading && filteredDeals.length > 0 && (
-          <div className="mb-6">
-            <p className="text-[#0d2a13] font-semibold">
-              {filteredDeals.length} {filteredDeals.length === 1 ? 'deal' : 'deals'} found
-            </p>
-          </div>
-        )}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Main Column - Deals */}
+          <div className="lg:col-span-8">
+            {/* Results Count */}
+            {!loading && filteredDeals.length > 0 && (
+              <div className="mb-6">
+                <p className="text-[#0d2a13] font-semibold">
+                  {filteredDeals.length} {filteredDeals.length === 1 ? 'deal' : 'deals'} found
+                </p>
+              </div>
+            )}
 
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="h-96 bg-white/50 rounded-2xl animate-pulse shadow-lg"
-              />
-            ))}
-          </div>
-        ) : filteredDeals.length === 0 ? (
-          <div className="text-center py-24 bg-white/50 rounded-2xl border-2 border-dashed border-[#174622]/30">
-            <div className="mb-4 text-6xl">🔍</div>
-            <p className="text-[#0d2a13] text-2xl font-bold mb-2">
-              {searchQuery || selectedCategory !== 'All'
-                ? 'No deals found'
-                : 'No active deals yet'}
-            </p>
-            <p className="text-[#174622] mb-6">
-              {searchQuery || selectedCategory !== 'All'
-                ? 'Try adjusting your search or filters'
-                : 'Check back soon for amazing deals!'}
-            </p>
-          </div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {filteredDeals.map((deal, index) => (
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-96 bg-white/50 rounded-2xl animate-pulse shadow-lg"
+                  />
+                ))}
+              </div>
+            ) : filteredDeals.length === 0 ? (
+              <div className="text-center py-24 bg-white/50 rounded-2xl border-2 border-dashed border-[#174622]/30">
+                <div className="mb-4 text-6xl">🔍</div>
+                <p className="text-[#0d2a13] text-2xl font-bold mb-2">
+                  {searchQuery || selectedCategory !== 'All'
+                    ? 'No deals found'
+                    : 'No active deals yet'}
+                </p>
+                <p className="text-[#174622] mb-6">
+                  {searchQuery || selectedCategory !== 'All'
+                    ? 'Try adjusting your search or filters'
+                    : 'Check back soon for amazing deals!'}
+                </p>
+              </div>
+            ) : (
               <motion.div
-                key={deal.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(index * 0.05, 0.3) }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
               >
-                <DealCard deal={deal} />
+                {filteredDeals.map((deal, index) => (
+                  <motion.div
+                    key={deal.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(index * 0.05, 0.3) }}
+                  >
+                    <DealCard deal={deal} />
+                  </motion.div>
+                ))}
               </motion.div>
-            ))}
-          </motion.div>
-        )}
+            )}
+          </div>
+
+          {/* Sidebar - Activity Feed */}
+          <div className="lg:col-span-4">
+            <div className="sticky top-8">
+              <ActivityFeed limit={10} />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Database } from '@/lib/database/types';
 import { Calendar, Tag, TrendingUp, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
+import VoteButtons from './VoteButtons';
 
 type Deal = Database['public']['Tables']['deals']['Row'];
 
@@ -119,6 +120,13 @@ export default function DealCard({ deal }: DealCardProps) {
               </span>
             </div>
           </div>
+
+          {/* Vote Buttons - Only for platform deals */}
+          {!deal.is_external && (
+            <div className="mt-4 pt-3 border-t border-[#174622]/10 flex justify-center" onClick={(e) => e.stopPropagation()}>
+              <VoteButtons dealId={deal.id} size="sm" showScore={true} />
+            </div>
+          )}
 
           {/* Action Button */}
           {deal.is_external && deal.external_url ? (

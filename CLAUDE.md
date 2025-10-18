@@ -22,9 +22,9 @@ This is a **hackathon project** for the Cypherpunk - MonkeDAO Track on Superteam
 
 ## Project State & Context
 
-### Current Phase: Phase 3 - Differentiation Features (Day 6 - Epic 5 Complete, Social Features Next)
+### Current Phase: Phase 3 - Differentiation Features (Day 6 - Epic 6 Complete, Web3 Abstraction Next)
 
-**Implementation Status:** Epic 1-5 Complete ✅ | Testing Infrastructure Added ✅ | 83% Complete (65/77 tasks)
+**Implementation Status:** Epic 1-6 Complete ✅ | Testing Infrastructure Added ✅ | 88% Complete (70/80 tasks)
 
 **Current Progress:**
 - ✅ **Epic 1: NFT Coupons (100% Complete)** - Smart contracts implemented, tested, and deployed to devnet
@@ -34,7 +34,7 @@ This is a **hackathon project** for the Cypherpunk - MonkeDAO Track on Superteam
 - ✅ **Testing Infrastructure (100% Complete)** - Jest + React Testing Library configured, 27 component tests passing, coverage reporting
 - ✅ **Epic 4: Redemption Flow (100% Complete)** - QR generation with signatures, merchant scanner, off-chain verification, on-chain NFT burning, event recording
 - ✅ **Epic 5: Deal Aggregator Feed (100% Complete)** - RapidAPI integration, 1-hour caching, mock data fallback, Partner Deal badges, seamless marketplace integration
-- ⏳ Epic 6: Social Discovery Layer (Not Started)
+- ✅ **Epic 6: Social Discovery Layer (100% Complete)** - Ratings & reviews, upvote/downvote, social sharing, referral tracking, live activity feed
 - ⏳ Epic 7: Web3 Abstraction (Not Started)
 - ⏳ Epic 8-10: Bonus Features (Planning Complete - Pick ONE if ahead of schedule)
 - ⏳ Epic 11: Submission Preparation (Not Started)
@@ -112,14 +112,44 @@ This is a **hackathon project** for the Cypherpunk - MonkeDAO Track on Superteam
 - ✅ **ExtendedDeal type** - TypeScript support for both internal and external deals
 - ✅ **Environment documentation** - RapidAPI setup instructions in .env.local
 
+**What exists now (Epic 6 Complete - Day 6):**
+- ✅ **Rating & Review System** - /api/reviews with POST & GET endpoints
+  - 5-star rating system with hover preview
+  - Optional text review (500 character limit)
+  - Create, update, and fetch reviews with average rating stats
+  - RatingSystem.tsx component integrated into deal detail pages
+- ✅ **Upvote/Downvote System** - /api/votes with Reddit-style voting
+  - Toggle voting (same vote removes it, different vote updates)
+  - Score calculation (upvotes - downvotes)
+  - VoteButtons.tsx component with 3 sizes (sm, md, lg)
+  - Optimistic UI updates for instant feedback
+  - Integrated into marketplace cards and deal detail pages
+- ✅ **Social Sharing** - ShareButtons.tsx with multi-platform support
+  - Twitter/X sharing
+  - Telegram sharing
+  - Copy link to clipboard
+  - Native Web Share API support (mobile-friendly)
+  - Automatic referral URL generation with wallet address
+- ✅ **Referral Tracking System** - /api/referrals with complete tracking
+  - URL parameter tracking (?ref=wallet_address)
+  - Automatic referral capture in claim coupon flow
+  - Anti-self-referral protection
+  - Referral stats and deal breakdown by referrer
+- ✅ **Live Activity Feed** - /api/activity-feed with real-time aggregation
+  - Recent claims (last 10 purchases)
+  - Recent reviews (last 10 ratings)
+  - Trending deals (most upvoted in 7 days)
+  - ActivityFeed.tsx component with time-ago formatting
+  - Sticky sidebar positioning in marketplace
+  - Compact and full display variants
+
 **What doesn't exist yet (Differentiation Features - Phase 3):**
 - ❌ Web3 Abstraction (email login, hidden crypto jargon, sponsored fees) - Epic 7
-- ❌ Social/viral features (ratings, reviews, referral tracking) - Epic 6
 - ❌ Actual NFT minting integration (currently mock - needs Metaplex integration)
 - ❌ Real-time deal updates and notifications
 - ❌ Production deployment (mainnet contracts, Vercel hosting) - Epic 11
 
-**Next Steps:** Epic 6 - Social Discovery Layer (Ratings, Reviews, Referrals)
+**Next Steps:** Epic 7 - Web3 Abstraction (Email Login, Hide Crypto Jargon)
 
 ## Architecture and Structure
 
@@ -817,7 +847,7 @@ CREATE TABLE users (
 ---
 
 **Created:** October 17, 2025
-**Last Updated:** October 18, 2025 (Day 6 Complete - All 4 Core Epics Complete, MVP Ready, Testing Infrastructure Added)
-**Next Review:** Differentiation features implementation (Day 7-11 - API Integration, Web3 Abstraction, Social Features)
+**Last Updated:** October 18, 2025 (Day 6 Complete - Epic 6 Social Discovery Layer Complete, 88% Done, Web3 Abstraction Next)
+**Next Review:** Epic 7 - Web3 Abstraction (Email Login, Hidden Crypto Jargon)
 
 Bismillah! May Allah grant barakah and ease to all who work on this project. Tawfeeq min Allah!
