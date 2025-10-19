@@ -26,19 +26,18 @@ export default function PrivyAuthProvider({ children }: { children: React.ReactN
           // logo: '/logo.png', // TODO: Add MonkeDAO-themed logo (disabled to fix 404)
           walletChainType: 'solana-only', // Solana-only application
         },
-        // Enable email login (Google/Twitter require Privy Dashboard configuration)
-        // TODO: Enable Google/Twitter after configuring OAuth in Privy Dashboard
-        loginMethods: ['email', 'wallet'],
+        // Enable email, Google OAuth, and wallet login
+        loginMethods: ['email', 'google', 'wallet'],
         // External wallet configuration for Solana
         externalWallets: {
           solana: {
             connectors: solanaConnectors,
           },
         },
-        // Embedded wallet configuration (Privy v3 API - chain-specific)
+        // Embedded wallet configuration (correct structure per Privy types)
         embeddedWallets: {
           solana: {
-            createOnLogin: 'users-without-wallets',
+            createOnLogin: 'all-users', // Auto-create for all users (email/social/wallet)
           },
         },
       }}

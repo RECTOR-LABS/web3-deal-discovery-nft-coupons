@@ -122,51 +122,54 @@ export default function PaymentButton({
 
   return (
     <div className="space-y-4">
+      {/* Note: HelioCheckout doesn't support children prop in types, but works at runtime */}
+      {/* Using 'as any' to bypass strict typing */}
       <HelioCheckout
         config={{
           paylinkId,
         }}
         onSuccess={handlePaymentSuccessInternal}
         onError={handlePaymentErrorInternal}
-        theme="dark" // or "light"
-      >
-        <button
-          disabled={disabled || isProcessing}
-          className={`
-            relative w-full flex items-center justify-center gap-2
-            px-6 py-3 rounded-lg font-semibold transition-all
-            ${
-              disabled || isProcessing
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-purple-600 hover:bg-purple-700 active:scale-95'
-            }
-            text-white shadow-lg
-            ${className}
-          `}
-        >
-          {isProcessing ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              <span>Processing...</span>
-            </>
-          ) : status === 'success' ? (
-            <>
-              <CheckCircle2 className="w-5 h-5" />
-              <span>Payment Successful!</span>
-            </>
-          ) : status === 'error' ? (
-            <>
-              <XCircle className="w-5 h-5" />
-              <span>Payment Failed</span>
-            </>
-          ) : (
-            <>
-              <CreditCard className="w-5 h-5" />
-              <span>Pay {formatUSDC(config.amount)}</span>
-            </>
-          )}
-        </button>
-      </HelioCheckout>
+        theme="dark"
+        {...({ children: (
+          <button
+            disabled={disabled || isProcessing}
+            className={`
+              relative w-full flex items-center justify-center gap-2
+              px-6 py-3 rounded-lg font-semibold transition-all
+              ${
+                disabled || isProcessing
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-purple-600 hover:bg-purple-700 active:scale-95'
+              }
+              text-white shadow-lg
+              ${className}
+            `}
+          >
+            {isProcessing ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Processing...</span>
+              </>
+            ) : status === 'success' ? (
+              <>
+                <CheckCircle2 className="w-5 h-5" />
+                <span>Payment Successful!</span>
+              </>
+            ) : status === 'error' ? (
+              <>
+                <XCircle className="w-5 h-5" />
+                <span>Payment Failed</span>
+              </>
+            ) : (
+              <>
+                <CreditCard className="w-5 h-5" />
+                <span>Pay {formatUSDC(config.amount)}</span>
+              </>
+            )}
+          </button>
+        ) } as any)}
+      />
 
       {status === 'error' && errorMessage && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-lg">

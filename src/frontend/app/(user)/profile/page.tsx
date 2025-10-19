@@ -16,9 +16,24 @@ const PrivyLoginButton = dynamic(
 );
 
 export default function ProfilePage() {
-  const { authenticated } = usePrivy();
+  const { authenticated, user, createWallet } = usePrivy();
   const { wallets } = useWallets();
-  const solanaWallet = wallets.find((wallet) => wallet.walletClientType === 'privy');
+
+  // Debug logging
+  useEffect(() => {
+    console.log('Profile Debug:', {
+      authenticated,
+      walletsCount: wallets.length,
+      wallets: wallets.map(w => ({
+        chainType: (w as { chainType?: string }).chainType,
+        walletClientType: w.walletClientType
+      })),
+      user: user ? { id: user.id, email: user.email?.address } : null
+    });
+  }, [authenticated, wallets, user]);
+
+  // Support both external wallets and embedded wallets from Privy
+  const solanaWallet = wallets.find((wallet) => (wallet as { chainType?: string }).chainType === 'solana');
 
   const [loading, setLoading] = useState(true);
   const [tierInfo, setTierInfo] = useState<UserTierInfo | null>(null);
@@ -73,7 +88,8 @@ export default function ProfilePage() {
     }
   }, [authenticated, solanaWallet, fetchUserProfile]);
 
-  if (!authenticated || !solanaWallet) {
+  // Show sign-in only if not authenticated
+  if (!authenticated) {
     return (
       <div className="min-h-screen bg-[#f2eecb] flex items-center justify-center p-6">
         <motion.div
@@ -89,6 +105,45 @@ export default function ProfilePage() {
             Connect your account to view your tier, badges, and stats
           </p>
           <PrivyLoginButton />
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Show loading if authenticated but wallet not ready yet
+  if (authenticated && !solanaWallet) {
+    const handleCreateWallet = async () => {
+      try {
+        console.log('Manually creating wallet...');
+        await createWallet();
+      } catch (error) {
+        console.error('Failed to create wallet:', error);
+      }
+    };
+
+    return (
+      <div className="min-h-screen bg-[#f2eecb] flex items-center justify-center p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-lg"
+        >
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#00ff4d] mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-[#0d2a13] mb-2">
+            Setting up your wallet...
+          </h2>
+          <p className="text-[#174622] mb-6">
+            Please wait while we create your Solana wallet
+          </p>
+          <button
+            onClick={handleCreateWallet}
+            className="bg-[#00ff4d] text-[#0d2a13] font-bold py-2 px-6 rounded-lg hover:bg-[#00cc3d] transition-colors"
+          >
+            Create Wallet Manually
+          </button>
+          <p className="text-xs text-[#174622] mt-4">
+            Having trouble? Click above to manually create your wallet
+          </p>
         </motion.div>
       </div>
     );
@@ -143,7 +198,7 @@ export default function ProfilePage() {
             <div>
               <h3 className="text-lg font-bold text-[#0d2a13] mb-1">Account</h3>
               <p className="text-sm font-mono text-[#174622] break-all">
-                {solanaWallet.address}
+                {solanaWallet?.address || 'Unknown'}
               </p>
             </div>
             <User className="w-12 h-12 text-[#00ff4d]" />

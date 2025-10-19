@@ -42,7 +42,7 @@ Sentry.init({
   ],
 
   // Filter sensitive data
-  beforeSend(event, hint) {
+  beforeSend(event, _hint) {
     // Don't send events if DSN not configured
     if (!process.env.NEXT_PUBLIC_SENTRY_DSN) {
       return null;

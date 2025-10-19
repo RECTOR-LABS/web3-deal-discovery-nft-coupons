@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/database/supabase';
 import { Database } from '@/lib/database/types';
@@ -47,13 +48,21 @@ const categories = [
   { name: 'Services', icon: TrendingUp, color: '#98d8c8' },
 ];
 
-export default function Home() {
-  const { authenticated } = usePrivy();
+function HomePage() {
+  const { authenticated, login } = usePrivy();
+  const searchParams = useSearchParams();
   const [deals, setDeals] = useState<ExtendedDeal[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryOption>('All');
   const [location, setLocation] = useState('Worldwide');
+
+  // Trigger login modal if ?login=true is in URL
+  useEffect(() => {
+    if (searchParams.get('login') === 'true' && !authenticated) {
+      login();
+    }
+  }, [searchParams, authenticated, login]);
 
   // Fetch deals (platform + external)
   useEffect(() => {
@@ -399,5 +408,14 @@ export default function Home() {
         }
       `}</style>
     </div>
+  );
+}
+
+// Wrap with Suspense for useSearchParams
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#f2eecb] flex items-center justify-center">Loading...</div>}>
+      <HomePage />
+    </Suspense>
   );
 }

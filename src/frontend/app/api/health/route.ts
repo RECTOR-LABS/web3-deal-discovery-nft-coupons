@@ -10,7 +10,7 @@ import { Connection } from '@solana/web3.js';
  *
  * GET /api/health - Returns health status
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const timestamp = Date.now();
   const checks: Record<string, { status: 'healthy' | 'degraded' | 'unhealthy'; latency?: number; error?: string }> = {};
 
@@ -136,7 +136,7 @@ export async function GET(request: NextRequest) {
  *
  * HEAD /api/health - Lightweight health check (no body)
  */
-export async function HEAD(request: NextRequest) {
+export async function HEAD(_request: NextRequest) {
   try {
     // Minimal check - just verify service is running
     return new NextResponse(null, {
@@ -145,7 +145,7 @@ export async function HEAD(request: NextRequest) {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
       }
     });
-  } catch (error) {
+  } catch {
     return new NextResponse(null, { status: 503 });
   }
 }

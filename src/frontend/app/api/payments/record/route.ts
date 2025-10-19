@@ -28,11 +28,18 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient();
 
+    // Note: 'payments' table doesn't exist in current schema
+    // Using 'events' table to log payment events instead
+    // TODO: Create payments table if needed for production
+
     // Check if payment already recorded (prevent duplicates)
     const { data: existing } = await supabase
-      .from('payments')
+      .from('events')
       .select('id')
-      .eq('transaction_id', transactionId)
+      .eq('event_type', 'payment_received')
+      .eq('user_wallet', userWallet)
+      .eq('deal_id', dealId)
+      .contains('metadata', { transaction_id: transactionId })
       .single();
 
     if (existing) {
@@ -42,18 +49,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Record payment in database
+    // Record payment event in database
     const { data, error } = await supabase
-      .from('payments')
+      .from('events')
       .insert({
-        transaction_id: transactionId,
+        event_type: 'payment_received',
         deal_id: dealId,
         user_wallet: userWallet,
-        amount,
-        currency: currency || 'USDC',
-        status: status || 'completed',
-        payment_method: 'moonpay',
-        created_at: timestamp || new Date().toISOString(),
+        metadata: {
+          transaction_id: transactionId,
+          amount,
+          currency: currency || 'USDC',
+          status: status || 'completed',
+          payment_method: 'moonpay',
+          timestamp: timestamp || new Date().toISOString(),
+        },
       })
       .select()
       .single();

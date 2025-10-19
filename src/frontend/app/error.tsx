@@ -55,7 +55,7 @@ export default function Error({
           Oops! Something went wrong
         </h1>
         <p className="text-gray-600 mb-6">
-          We encountered an unexpected error. Don't worry, our team has been notified and we're working on it.
+          We encountered an unexpected error. Don&apos;t worry, our team has been notified and we&apos;re working on it.
         </p>
 
         {/* Error Details (only in development) */}

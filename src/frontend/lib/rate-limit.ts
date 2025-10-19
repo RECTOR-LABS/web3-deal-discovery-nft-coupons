@@ -164,7 +164,7 @@ export function applyRateLimit(
   limiter: RateLimiter = moderateLimiter
 ): Response | null {
   const identifier = getClientIdentifier(request);
-  const { success, limit, remaining, reset } = limiter.check(identifier);
+  const { success, limit, remaining: _remaining, reset } = limiter.check(identifier);
 
   if (!success) {
     return new Response(

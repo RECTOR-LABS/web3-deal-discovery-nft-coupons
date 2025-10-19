@@ -1,4 +1,5 @@
 import Arweave from 'arweave';
+import type { JWKInterface } from 'arweave/node/lib/wallet';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -18,12 +19,12 @@ function getArweaveClient(): Arweave {
  * Load Arweave wallet from keyfile
  * Keyfile location: ../arweave-wallet.json (project root)
  */
-function loadWallet(): object {
+function loadWallet(): JWKInterface {
   try {
     const keyfilePath = process.env.ARWEAVE_WALLET_PATH || '../arweave-wallet.json';
     const absolutePath = join(process.cwd(), keyfilePath);
     const keyfile = readFileSync(absolutePath, 'utf-8');
-    return JSON.parse(keyfile);
+    return JSON.parse(keyfile) as JWKInterface;
   } catch (error) {
     console.error('Failed to load Arweave wallet:', error);
     throw new Error('Arweave wallet keyfile not found. Please ensure arweave-wallet.json exists.');

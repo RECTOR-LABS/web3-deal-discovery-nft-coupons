@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { Home, Tag, ShoppingBag, User, TrendingUp } from 'lucide-react';
+import { Tag, ShoppingBag, User, TrendingUp } from 'lucide-react';
 import { usePrivy } from '@privy-io/react-auth';
 
 const PrivyLoginButton = dynamic(

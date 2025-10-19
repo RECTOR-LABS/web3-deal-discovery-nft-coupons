@@ -21,7 +21,7 @@ Sentry.init({
   tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.05 : 1.0,
 
   // Filter sensitive data
-  beforeSend(event, hint) {
+  beforeSend(event, _hint) {
     // Don't send if DSN not configured
     if (!process.env.NEXT_PUBLIC_SENTRY_DSN) {
       return null;
