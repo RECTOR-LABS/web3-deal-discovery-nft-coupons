@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useWallets } from '@privy-io/react-auth';
@@ -20,7 +20,13 @@ type CouponStatus = 'all' | 'active' | 'expired' | 'redeemed';
 export default function MyCouponsPage() {
   const { wallets } = useWallets();
   const solanaWallet = wallets.find((wallet) => wallet.walletClientType === 'privy');
-  const publicKey = solanaWallet ? new PublicKey(solanaWallet.address) : null;
+
+  // Memoize publicKey to prevent unnecessary re-renders
+  const publicKey = useMemo(
+    () => (solanaWallet ? new PublicKey(solanaWallet.address) : null),
+    [solanaWallet]
+  );
+
   const [coupons, setCoupons] = useState<UserCoupon[]>([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<CouponStatus>('all');

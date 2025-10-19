@@ -1,5 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// RapidAPI response item structure (based on Coupons by API-Ninjas)
+interface RapidAPICouponItem {
+  name?: string;
+  title?: string;
+  description?: string;
+  discount?: string;
+  code?: string;
+  merchant?: string;
+  store?: string;
+  category?: string;
+  expires?: string;
+  url?: string;
+}
+
 interface ExternalDeal {
   name: string;
   description: string;
@@ -61,7 +75,7 @@ async function fetchFromRapidAPI(): Promise<ExternalDeal[]> {
     const data = await response.json();
 
     // Transform API response to our ExternalDeal format
-    return data.map((item: any) => ({
+    return data.map((item: RapidAPICouponItem) => ({
       name: item.name || item.title || 'Limited Time Offer',
       description: item.description || 'Check out this amazing deal!',
       discount: item.discount || item.code || '',
