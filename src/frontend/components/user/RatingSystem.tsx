@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { Star, Send, Loader } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -36,11 +36,7 @@ export default function RatingSystem({ dealId }: RatingSystemProps) {
   const [showReviewForm, setShowReviewForm] = useState(false);
 
   // Fetch reviews
-  useEffect(() => {
-    fetchReviews();
-  }, [dealId]);
-
-  async function fetchReviews() {
+  const fetchReviews = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/reviews?deal_id=${dealId}`);
@@ -54,7 +50,11 @@ export default function RatingSystem({ dealId }: RatingSystemProps) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [dealId]);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
 
   async function handleSubmitReview() {
     if (!publicKey || userRating === 0) return;

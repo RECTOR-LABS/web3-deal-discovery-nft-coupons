@@ -1,6 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/database/supabase';
 
+// Referral data types for grouping
+interface ReferralItem {
+  id: string;
+  referee_wallet: string;
+  claimed_at: string | null;
+}
+
+interface DealReferralGroup {
+  deal_id: string;
+  deal_title: string;
+  discount_percentage: number;
+  image_url: string | null;
+  count: number;
+  referrals: ReferralItem[];
+}
+
+type ReferralsByDealAccumulator = Record<string, DealReferralGroup>;
+
 // POST - Record a referral
 export async function POST(request: NextRequest) {
   try {
@@ -118,7 +136,7 @@ export async function GET(request: NextRequest) {
     // Group referrals by deal (filter out referrals without deal_id)
     const referralsByDeal = (referrals || [])
       .filter(referral => referral.deal_id !== null)
-      .reduce((acc: any, referral) => {
+      .reduce((acc: ReferralsByDealAccumulator, referral) => {
         const dealId = referral.deal_id as string; // Now guaranteed to be non-null
         if (!acc[dealId]) {
           acc[dealId] = {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -39,11 +39,7 @@ export default function VoteButtons({ dealId, size = 'md', showScore = true }: V
   };
 
   // Fetch vote stats
-  useEffect(() => {
-    fetchVoteStats();
-  }, [dealId, publicKey]);
-
-  async function fetchVoteStats() {
+  const fetchVoteStats = useCallback(async () => {
     try {
       setLoading(true);
       const url = `/api/votes?deal_id=${dealId}${publicKey ? `&user_wallet=${publicKey.toBase58()}` : ''}`;
@@ -59,7 +55,11 @@ export default function VoteButtons({ dealId, size = 'md', showScore = true }: V
     } finally {
       setLoading(false);
     }
-  }
+  }, [dealId, publicKey]);
+
+  useEffect(() => {
+    fetchVoteStats();
+  }, [fetchVoteStats]);
 
   async function handleVote(voteType: 'upvote' | 'downvote') {
     if (!publicKey) {

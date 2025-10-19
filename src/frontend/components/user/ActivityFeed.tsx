@@ -1,10 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Activity, TrendingUp, Star, ShoppingBag, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
+
+// Activity metadata types matching the API response
+type ActivityMetadata =
+  | { discount?: number }  // claim
+  | { rating: number; reviewText?: string | null }  // review
+  | { score: number };  // trending
 
 interface ActivityItem {
   id: string;
@@ -14,7 +19,7 @@ interface ActivityItem {
   dealTitle: string;
   dealImage?: string;
   userWallet?: string;
-  metadata?: any;
+  metadata?: ActivityMetadata;
 }
 
 interface ActivityFeedProps {
@@ -26,11 +31,7 @@ export default function ActivityFeed({ limit = 10, compact = false }: ActivityFe
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchActivities();
-  }, [limit]);
-
-  async function fetchActivities() {
+  const fetchActivities = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/activity-feed?limit=${limit}`);
@@ -43,7 +44,11 @@ export default function ActivityFeed({ limit = 10, compact = false }: ActivityFe
     } finally {
       setLoading(false);
     }
-  }
+  }, [limit]);
+
+  useEffect(() => {
+    fetchActivities();
+  }, [fetchActivities]);
 
   const formatWallet = (wallet: string) => {
     return `${wallet.slice(0, 4)}...${wallet.slice(-4)}`;
@@ -105,7 +110,7 @@ export default function ActivityFeed({ limit = 10, compact = false }: ActivityFe
             </Link>
             {' '}
             <span className="text-yellow-500 font-semibold">
-              {activity.metadata?.rating}/5 ★
+              {activity.metadata && 'rating' in activity.metadata ? activity.metadata.rating : 0}/5 ★
             </span>
           </span>
         );
@@ -120,7 +125,7 @@ export default function ActivityFeed({ limit = 10, compact = false }: ActivityFe
             </Link>
             {' '}is trending 🔥{' '}
             <span className="text-blue-500 font-semibold">
-              +{activity.metadata?.score} votes
+              +{activity.metadata && 'score' in activity.metadata ? activity.metadata.score : 0} votes
             </span>
           </span>
         );

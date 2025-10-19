@@ -16,6 +16,17 @@ import { List, Map } from 'lucide-react';
 
 type Deal = Database['public']['Tables']['deals']['Row'];
 
+// Deal with joined merchant data
+type DealWithMerchant = Deal & {
+  merchants?: {
+    latitude?: number | null;
+    longitude?: number | null;
+    city?: string | null;
+    state?: string | null;
+    business_name?: string | null;
+  } | null;
+};
+
 // Extended Deal type to support external deals, tier requirements, and location (Epic 10)
 export type ExtendedDeal = Deal & {
   is_external?: boolean;
@@ -108,8 +119,9 @@ export default function MarketplacePage() {
         if (error) throw error;
 
         // Flatten merchant location data into deals (Epic 10)
-        const dealsWithLocation = (platformDeals || []).map((deal: any) => ({
+        const dealsWithLocation: ExtendedDeal[] = (platformDeals || []).map((deal: DealWithMerchant) => ({
           ...deal,
+          min_tier: deal.min_tier as TierLevel | null,
           latitude: deal.merchants?.latitude || null,
           longitude: deal.merchants?.longitude || null,
           merchant_city: deal.merchants?.city || null,

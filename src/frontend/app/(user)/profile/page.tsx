@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { User, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -33,15 +33,7 @@ export default function ProfilePage() {
     totalUpvotes: 0,
   });
 
-  useEffect(() => {
-    if (authenticated && solanaWallet) {
-      fetchUserProfile();
-    } else {
-      setLoading(false);
-    }
-  }, [authenticated, solanaWallet]);
-
-  async function fetchUserProfile() {
+  const fetchUserProfile = useCallback(async () => {
     if (!solanaWallet) return;
 
     try {
@@ -71,7 +63,15 @@ export default function ProfilePage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [solanaWallet]);
+
+  useEffect(() => {
+    if (authenticated && solanaWallet) {
+      fetchUserProfile();
+    } else {
+      setLoading(false);
+    }
+  }, [authenticated, solanaWallet, fetchUserProfile]);
 
   if (!authenticated || !solanaWallet) {
     return (

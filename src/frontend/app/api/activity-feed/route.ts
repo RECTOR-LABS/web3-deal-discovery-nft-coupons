@@ -1,6 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/database/supabase';
 
+// Database query result types
+interface DealData {
+  id?: string;
+  title?: string;
+  image_url?: string | null;
+  discount_percentage?: number | null;
+}
+
+interface ClaimEvent {
+  id: string;
+  user_wallet: string | null;
+  timestamp: string | null;
+  deal_id: string | null;
+  deals?: DealData | null;
+}
+
+interface ReviewEvent {
+  id: string;
+  user_wallet: string;
+  rating: number | null;
+  review_text?: string | null;
+  created_at: string | null;
+  deal_id: string | null;
+  deals?: DealData | null;
+}
+
+interface VoteEvent {
+  deal_id: string | null;
+  vote_type: string | null;
+  created_at: string | null;
+  deals?: DealData | null;
+}
+
+interface DealScore {
+  score: number;
+  deal: DealData | null;
+  latestVote: string;
+}
+
+// Activity metadata types
+type ActivityMetadata =
+  | { discount?: number }  // claim
+  | { rating: number; reviewText?: string | null }  // review
+  | { score: number };  // trending
+
 interface ActivityItem {
   id: string;
   type: 'claim' | 'review' | 'trending';
@@ -9,7 +54,7 @@ interface ActivityItem {
   dealTitle: string;
   dealImage?: string;
   userWallet?: string;
-  metadata?: any;
+  metadata?: ActivityMetadata;
 }
 
 // GET - Fetch recent platform activity
@@ -39,17 +84,20 @@ export async function GET(request: NextRequest) {
       .limit(10);
 
     if (recentClaims) {
-      recentClaims.forEach((claim: any) => {
+      recentClaims.forEach((claim: ClaimEvent) => {
+        // Skip if missing critical fields
+        if (!claim.timestamp || !claim.deal_id || !claim.user_wallet) return;
+
         activities.push({
           id: claim.id,
           type: 'claim',
           timestamp: claim.timestamp,
           dealId: claim.deal_id,
           dealTitle: claim.deals?.title || 'Unknown Deal',
-          dealImage: claim.deals?.image_url,
+          dealImage: claim.deals?.image_url || undefined,
           userWallet: claim.user_wallet,
           metadata: {
-            discount: claim.deals?.discount_percentage,
+            discount: claim.deals?.discount_percentage || undefined,
           },
         });
       });
@@ -74,14 +122,17 @@ export async function GET(request: NextRequest) {
       .limit(10);
 
     if (recentReviews) {
-      recentReviews.forEach((review: any) => {
+      recentReviews.forEach((review: ReviewEvent) => {
+        // Skip if missing critical fields
+        if (!review.created_at || !review.deal_id || review.rating === null) return;
+
         activities.push({
           id: review.id,
           type: 'review',
           timestamp: review.created_at,
           dealId: review.deal_id,
           dealTitle: review.deals?.title || 'Unknown Deal',
-          dealImage: review.deals?.image_url,
+          dealImage: review.deals?.image_url || undefined,
           userWallet: review.user_wallet,
           metadata: {
             rating: review.rating,
@@ -112,14 +163,17 @@ export async function GET(request: NextRequest) {
 
     // Calculate trending deals (by net score)
     if (recentVotes) {
-      const dealScores: { [key: string]: { score: number; deal: any; latestVote: string } } = {};
+      const dealScores: { [key: string]: DealScore } = {};
 
-      recentVotes.forEach((vote: any) => {
+      recentVotes.forEach((vote: VoteEvent) => {
+        // Skip if missing critical fields
+        if (!vote.deal_id || !vote.vote_type || !vote.created_at) return;
+
         const dealId = vote.deal_id;
         if (!dealScores[dealId]) {
           dealScores[dealId] = {
             score: 0,
-            deal: vote.deals,
+            deal: vote.deals || null,
             latestVote: vote.created_at,
           };
         }
@@ -149,10 +203,10 @@ export async function GET(request: NextRequest) {
           timestamp: data.latestVote,
           dealId: dealId,
           dealTitle: data.deal?.title || 'Unknown Deal',
-          dealImage: data.deal?.image_url,
+          dealImage: data.deal?.image_url || undefined,
           metadata: {
             score: data.score,
-            discount: data.deal?.discount_percentage,
+            discount: data.deal?.discount_percentage || undefined,
           },
         });
       });
