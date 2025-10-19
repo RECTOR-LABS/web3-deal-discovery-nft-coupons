@@ -1,14 +1,45 @@
 import { createClient } from '@/lib/database/supabase';
+import { uploadImageToArweave } from './arweave';
 
 /**
- * Upload image to Supabase Storage
- * Bucket: deal-images (must be created in Supabase dashboard)
+ * Upload image to Arweave (permanent storage)
+ * Falls back to Supabase if Arweave fails
  */
 export async function uploadDealImage(
   file: File,
   merchantWallet: string
 ): Promise<{ url: string; path: string } | { error: string }> {
   try {
+    // Try Arweave first (permanent, decentralized storage)
+    const useArweave = process.env.ARWEAVE_WALLET_PATH !== undefined;
+
+    if (useArweave) {
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const filename = `${merchantWallet.slice(0, 8)}_${Date.now()}.${file.name.split('.').pop()}`;
+
+        const arweaveResult = await uploadImageToArweave(
+          buffer,
+          file.type,
+          filename
+        );
+
+        if ('error' in arweaveResult) {
+          console.warn('Arweave upload failed, falling back to Supabase:', arweaveResult.error);
+        } else {
+          console.log('✅ Image uploaded to Arweave:', arweaveResult.url);
+          return {
+            url: arweaveResult.url,
+            path: arweaveResult.txId,
+          };
+        }
+      } catch (arweaveError) {
+        console.warn('Arweave upload error, falling back to Supabase:', arweaveError);
+      }
+    }
+
+    // Fallback to Supabase Storage
     const supabase = createClient();
 
     // Generate unique filename
@@ -38,6 +69,8 @@ export async function uploadDealImage(
     if (!publicUrlData) {
       return { error: 'Failed to get public URL' };
     }
+
+    console.log('📦 Image uploaded to Supabase (fallback):', publicUrlData.publicUrl);
 
     return {
       url: publicUrlData.publicUrl,

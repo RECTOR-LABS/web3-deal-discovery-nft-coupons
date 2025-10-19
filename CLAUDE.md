@@ -124,13 +124,29 @@ anchor deploy --provider.cluster mainnet  # contracts
 
 **Required:**
 ```bash
+# Solana & Smart Contracts
 NEXT_PUBLIC_SOLANA_NETWORK=devnet
 NEXT_PUBLIC_NFT_PROGRAM_ID=REC6VwdAzaaNdrUCWbXmqqN8ryoSAphQkft2BX1P1b1
+
+# Database
 NEXT_PUBLIC_SUPABASE_URL=https://mdxrtyqsusczmmpgspgn.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
 SUPABASE_SERVICE_ROLE_KEY=<service-key>
+
+# Authentication
 NEXT_PUBLIC_PRIVY_APP_ID=<privy-id>
-RAPIDAPI_KEY=<rapidapi-key>  # Optional: falls back to mock data
+
+# External APIs
+RAPIDAPI_KEY=<rapidapi-key>  # Get Promo Codes API
+
+# Arweave Storage (configured)
+ARWEAVE_WALLET_PATH=../arweave-wallet.json
+ARWEAVE_GATEWAY=https://arweave.net
+NEXT_PUBLIC_ARWEAVE_GATEWAY=https://arweave.net
+
+# MoonPay Commerce (configured)
+NEXT_PUBLIC_MOONPAY_PUBLIC_KEY=<public-key>
+MOONPAY_SECRET_KEY=<secret-key>
 ```
 
 ## Implementation Notes
@@ -149,8 +165,11 @@ RAPIDAPI_KEY=<rapidapi-key>  # Optional: falls back to mock data
 **Blockchain:** Solana + Anchor 0.28+ + Metaplex v5.0.0
 **Backend:** Next.js 15 API + Supabase PostgreSQL + Privy Auth
 **Frontend:** Next.js 15 + TypeScript strict + Tailwind v4 + React-Leaflet
+**Storage:** Arweave (permanent) + Supabase Storage (fallback)
+**Payments:** MoonPay Commerce (Helio) - USDC on Solana
+**External APIs:** RapidAPI (Get Promo Codes)
 **Tools:** Jest/RTL (27 tests), ESLint, npm
-**Libraries:** qrcode.react, html5-qrcode, tweetnacl
+**Libraries:** qrcode.react, html5-qrcode, tweetnacl, arweave, @heliofi/checkout-react
 
 ## MonkeDAO Branding
 
@@ -177,12 +196,31 @@ RAPIDAPI_KEY=<rapidapi-key>  # Optional: falls back to mock data
 - [ ] Demo video URL
 - [ ] Technical write-up (2-4 pages)
 
-## External APIs (Implemented)
+## External APIs & Integrations (Implemented)
 
-**RapidAPI Integration ✅**
-- Using Coupons by API-Ninjas (100 req/day free)
+**1. RapidAPI Integration ✅**
+- API: "Get Promo Codes" (1M+ coupons, 10K+ merchants)
+- Endpoint: `get-promo-codes.p.rapidapi.com/data/get-coupons/`
 - 1-hour cache, mock fallback
 - "Partner Deal" badges in marketplace
+- Location: `app/api/deals/aggregated/route.ts`
+
+**2. Arweave Permanent Storage ✅**
+- Network: AR.IO Testnet (10,000 AR balance)
+- Wallet: `sY6VBEWpDPmN6oL9Zt_8KjJMR1PWexpmWKEAojtbwsc`
+- Usage: NFT image and metadata permanent storage
+- Fallback: Supabase Storage (graceful degradation)
+- Location: `lib/storage/arweave.ts`, `lib/storage/upload.ts`
+
+**3. MoonPay Commerce (Helio) Payment Integration ✅**
+- 8 paylinks configured: $1, $2, $5, $10, $15, $20, $25, $50 USDC
+- Dashboard: https://moonpay.hel.io/dashboard
+- Network: Solana (USDC payments)
+- Widget: `@heliofi/checkout-react@^4.0.0`
+- Configuration: `lib/payments/paylink-config.ts`
+- Components: `components/payments/SimplePaymentButton.tsx`
+- Test page: `/test-payment`
+- Note: Backend SDK incompatible with new MoonPay API (using dashboard paylinks)
 
 ## Common Risks
 
@@ -194,9 +232,27 @@ RAPIDAPI_KEY=<rapidapi-key>  # Optional: falls back to mock data
 
 ## Key Files
 
-**Docs:** README.md, docs/planning/{PRD,TIMELINE,TRACK-REQUIREMENTS}.md
-**Contracts:** src/contracts/programs/nft_coupon/src/lib.rs, Anchor.toml
-**Frontend:** src/frontend/app/{layout,page}.tsx, .env.local
+**Docs:**
+- README.md, CLAUDE.md
+- docs/planning/{PRD,TIMELINE,TRACK-REQUIREMENTS}.md
+- MOONPAY-SETUP-GUIDE.md, MOONPAY-SOLUTION.md, PAYLINK-CHECKLIST.md
+
+**Contracts:**
+- src/contracts/programs/nft_coupon/src/lib.rs
+- Anchor.toml
+
+**Frontend Core:**
+- src/frontend/app/{layout,page}.tsx
+- .env.local
+- arweave-wallet.json (gitignored)
+
+**Integrations:**
+- lib/storage/arweave.ts (Arweave uploads)
+- lib/storage/upload.ts (unified upload with fallback)
+- lib/payments/paylink-config.ts (MoonPay paylink mapping)
+- lib/payments/moonpay.ts (payment utilities)
+- components/payments/SimplePaymentButton.tsx (payment widget)
+- app/api/deals/aggregated/route.ts (RapidAPI integration)
 
 ## Guidelines
 
@@ -213,6 +269,42 @@ RAPIDAPI_KEY=<rapidapi-key>  # Optional: falls back to mock data
 
 ---
 
-**Last Updated:** 2025-10-19 (All Epics 1-10 Audited ✅, Ready for Epic 11)
+---
+
+## Recent Updates (2025-10-19)
+
+**Three Major Integrations Completed:**
+
+1. **RapidAPI - Deal Aggregation ✅**
+   - Switched from non-existent API to "Get Promo Codes" (1M+ coupons)
+   - Successfully fetching 20 deals per request
+   - Tested and working
+
+2. **Arweave - Permanent Storage ✅**
+   - Wallet created and funded (10,000 AR on testnet)
+   - Keyfile secured (gitignored)
+   - Upload functions implemented with Supabase fallback
+   - Ready for NFT metadata storage
+
+3. **MoonPay Commerce - Payments ✅**
+   - 8 paylinks created ($1, $2, $5, $10, $15, $20, $25, $50 USDC)
+   - Configuration complete in `paylink-config.ts`
+   - Payment widget integrated with automatic paylink routing
+   - Test page available at `/test-payment`
+   - Issue documented: Backend SDK incompatible (using dashboard paylinks)
+
+**Files Created:**
+- MOONPAY-SETUP-GUIDE.md (setup instructions)
+- MOONPAY-SOLUTION.md (technical details)
+- PAYLINK-CHECKLIST.md (tracking document)
+- lib/storage/arweave.ts
+- lib/payments/paylink-config.ts
+- components/payments/SimplePaymentButton.tsx
+
+**Status:** All core integrations complete and tested. Ready for Epic 11 (deployment).
+
+---
+
+**Last Updated:** 2025-10-19 (All Epics 1-10 Audited ✅ + 3 Major Integrations Complete ✅ + Ready for Epic 11)
 
 *Bismillah! Tawfeeq min Allah.*

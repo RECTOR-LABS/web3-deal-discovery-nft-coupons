@@ -58,3 +58,4 @@ logs
 # Temporary files
 tmp/
 temp/
+arweave-wallet.json

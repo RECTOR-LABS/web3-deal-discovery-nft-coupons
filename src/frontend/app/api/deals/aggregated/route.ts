@@ -1,17 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// RapidAPI response item structure (based on Coupons by API-Ninjas)
+// RapidAPI response item structure (Get Promo Codes API)
+// Flexible structure to handle multiple response formats
 interface RapidAPICouponItem {
   name?: string;
   title?: string;
   description?: string;
   discount?: string;
+  discount_amount?: string;
+  discount_percentage?: string;
   code?: string;
   merchant?: string;
   store?: string;
+  retailer?: string;
   category?: string;
+  categories?: string[];
   expires?: string;
+  expiry?: string;
+  expiration_date?: string;
   url?: string;
+  link?: string;
 }
 
 interface ExternalDeal {
@@ -59,34 +67,53 @@ async function fetchFromRapidAPI(): Promise<ExternalDeal[]> {
   }
 
   try {
-    // Using Coupons by API-Ninjas
-    const response = await fetch('https://coupons-by-api-ninjas.p.rapidapi.com/v1/coupons', {
+    // Using Get Promo Codes API
+    // Endpoint: /data/get-coupons/ (supports ?page=1 for pagination)
+    const apiHost = 'get-promo-codes.p.rapidapi.com';
+    const endpoint = '/data/get-coupons/';
+    const params = '?page=1'; // Start with page 1
+
+    const response = await fetch(`https://${apiHost}${endpoint}${params}`, {
       method: 'GET',
       headers: {
-        'X-RapidAPI-Key': apiKey,
-        'X-RapidAPI-Host': 'coupons-by-api-ninjas.p.rapidapi.com',
+        'x-rapidapi-key': apiKey,
+        'x-rapidapi-host': apiHost,
       },
     });
 
     if (!response.ok) {
+      console.error(`RapidAPI error: ${response.status} ${response.statusText}`);
       throw new Error(`RapidAPI returned ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
 
+    // Handle different response formats (array or object with data property)
+    const coupons = Array.isArray(data) ? data : (data.data || data.coupons || data.results || []);
+
+    if (!Array.isArray(coupons) || coupons.length === 0) {
+      console.warn('No coupons returned from API, using mock data');
+      return getMockDeals();
+    }
+
     // Transform API response to our ExternalDeal format
-    return data.map((item: RapidAPICouponItem) => ({
+    return coupons.slice(0, 20).map((item: RapidAPICouponItem) => ({
       name: item.name || item.title || 'Limited Time Offer',
       description: item.description || 'Check out this amazing deal!',
-      discount: item.discount || item.code || '',
-      merchant: item.merchant || item.store || 'Partner Store',
-      category: mapCategory(item.category || 'Other'),
-      expires: item.expires || undefined,
-      url: item.url || undefined,
+      discount: item.discount || item.discount_percentage || item.discount_amount || item.code || '10',
+      merchant: item.merchant || item.store || item.retailer || 'Partner Store',
+      category: mapCategory(
+        item.category ||
+        (Array.isArray(item.categories) ? item.categories[0] : undefined) ||
+        'Other'
+      ),
+      expires: item.expires || item.expiry || item.expiration_date || undefined,
+      url: item.url || item.link || undefined,
       source: 'rapidapi' as const,
     }));
   } catch (error) {
     console.error('Error fetching from RapidAPI:', error);
+    console.warn('Falling back to mock data');
     return getMockDeals();
   }
 }

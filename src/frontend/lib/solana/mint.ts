@@ -115,14 +115,37 @@ function createMetadata(
 }
 
 /**
- * Upload metadata to Supabase Storage
- * (For production, consider Arweave or IPFS for permanent storage)
+ * Upload metadata to Arweave (permanent storage)
+ * Falls back to Supabase if Arweave fails
  */
 async function uploadMetadata(
   metadata: NFTMetadata,
   nftMint: string
 ): Promise<{ url: string; path: string } | { error: string }> {
   try {
+    // Try Arweave first (permanent, immutable storage - perfect for NFT metadata)
+    const useArweave = process.env.ARWEAVE_WALLET_PATH !== undefined;
+
+    if (useArweave) {
+      try {
+        const { uploadMetadataToArweave } = await import('@/lib/storage/arweave');
+        const arweaveResult = await uploadMetadataToArweave(metadata, nftMint);
+
+        if ('error' in arweaveResult) {
+          console.warn('Arweave metadata upload failed, falling back to Supabase:', arweaveResult.error);
+        } else {
+          console.log('✅ Metadata uploaded to Arweave:', arweaveResult.url);
+          return {
+            url: arweaveResult.url,
+            path: arweaveResult.txId,
+          };
+        }
+      } catch (arweaveError) {
+        console.warn('Arweave metadata upload error, falling back to Supabase:', arweaveError);
+      }
+    }
+
+    // Fallback to Supabase Storage
     const supabase = createClient();
 
     const fileName = `${nftMint}.json`;
@@ -150,6 +173,8 @@ async function uploadMetadata(
     if (!publicUrlData) {
       return { error: 'Failed to get metadata URL' };
     }
+
+    console.log('📦 Metadata uploaded to Supabase (fallback):', publicUrlData.publicUrl);
 
     return {
       url: publicUrlData.publicUrl,
