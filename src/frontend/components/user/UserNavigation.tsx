@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Home, Tag, ShoppingBag, User, TrendingUp } from 'lucide-react';
+import { usePrivy } from '@privy-io/react-auth';
 
 const PrivyLoginButton = dynamic(
   async () => (await import('@/components/shared/PrivyLoginButton')).default,
@@ -12,21 +13,30 @@ const PrivyLoginButton = dynamic(
 
 export default function UserNavigation() {
   const pathname = usePathname();
+  const { authenticated } = usePrivy();
 
-  const navLinks = [
-    { href: '/', label: 'Home', icon: Home },
+  // Guest-friendly links (no authentication required) - Groupon-like experience
+  const guestLinks = [
+    { href: '/marketplace', label: 'Browse Deals', icon: ShoppingBag },
+  ];
+
+  // Authenticated user links (full navigation)
+  const authLinks = [
     { href: '/marketplace', label: 'Marketplace', icon: ShoppingBag },
     { href: '/coupons', label: 'My Coupons', icon: Tag },
     { href: '/staking', label: 'Staking', icon: TrendingUp },
     { href: '/profile', label: 'Profile', icon: User },
   ];
 
+  // Show appropriate links based on authentication status
+  const navLinks = authenticated ? authLinks : guestLinks;
+
   return (
     <nav className="bg-[#0d2a13] border-b border-[#174622]">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/marketplace" className="flex items-center space-x-2">
             <ShoppingBag className="w-8 h-8 text-[#00ff4d]" />
             <span className="text-[#f2eecb] text-xl font-bold">
               DealCoupon

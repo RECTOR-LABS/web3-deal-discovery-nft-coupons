@@ -23,11 +23,12 @@ export default function PrivyAuthProvider({ children }: { children: React.ReactN
         appearance: {
           theme: 'light',
           accentColor: '#00ff4d', // MonkeDAO neon green
-          logo: '/logo.png', // TODO: Add MonkeDAO-themed logo
+          // logo: '/logo.png', // TODO: Add MonkeDAO-themed logo (disabled to fix 404)
           walletChainType: 'solana-only', // Solana-only application
         },
-        // Enable email and social logins
-        loginMethods: ['email', 'google', 'twitter', 'wallet'],
+        // Enable email login (Google/Twitter require Privy Dashboard configuration)
+        // TODO: Enable Google/Twitter after configuring OAuth in Privy Dashboard
+        loginMethods: ['email', 'wallet'],
         // External wallet configuration for Solana
         externalWallets: {
           solana: {

@@ -451,6 +451,45 @@ SENTRY_AUTH_TOKEN=your_sentry_auth_token
 
 ---
 
-**Last Updated:** 2025-10-19 (All Epics 1-10 Audited ✅ + 3 Major Integrations ✅ + Production Readiness 95+/100 ✅)
+## Recent Updates (2025-10-19) - Continued
+
+**Homepage UX Transformation (Groupon-Style Marketplace):**
+
+1. **Guest Browsing Enabled ✅**
+   - Homepage completely redesigned as Groupon-style marketplace
+   - Users can now browse, search, and filter deals WITHOUT authentication
+   - Category chips with icons (All, Food, Travel, Entertainment, etc.)
+   - Trending deals section (top 6 by discount)
+   - Search functionality with location dropdown
+   - Framer Motion animations for smooth UX
+
+2. **Guest-Friendly Navigation ✅**
+   - Simplified navigation for unauthenticated users
+   - "Browse Deals" as primary CTA instead of "Sign In"
+   - Full navigation unlocked after authentication (Marketplace, My Coupons, Staking, Profile)
+   - Seamless transition from guest to authenticated experience
+
+3. **Authentication Configuration Refinement ✅**
+   - Disabled Google/Twitter OAuth (require Privy Dashboard setup)
+   - Email + Wallet authentication fully functional
+   - Removed broken logo reference (404 fix)
+   - Production-ready auth flow
+
+**Impact:**
+- **UX Strategy:** Browse-first, claim-to-login (proven Groupon conversion funnel)
+- **Web3 Abstraction:** Guests see value before requiring signup (lowers barrier)
+- **Conversion Optimization:** Only prompt login when claiming deals
+- **Documentation:** New `docs/USER-PERMISSIONS.md` details guest vs authenticated capabilities
+
+**Files Modified:**
+- `app/page.tsx` - Complete homepage rewrite (488 lines changed)
+- `components/shared/PrivyAuthProvider.tsx` - Auth config fixes
+- `components/user/UserNavigation.tsx` - Guest-friendly navigation
+- `docs/USER-PERMISSIONS.md` - NEW comprehensive permission guide (299 lines)
+- `docs/audits/EPIC-7-AUDIT-REPORT.md` - Accuracy fix (removed incorrect OAuth claims)
+
+---
+
+**Last Updated:** 2025-10-19 (All Epics 1-10 Audited ✅ + 3 Major Integrations ✅ + Production Readiness 95+/100 ✅ + Homepage UX Transformation ✅)
 
 *Bismillah! Tawfeeq min Allah.*
