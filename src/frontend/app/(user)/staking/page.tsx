@@ -6,10 +6,31 @@ import { useWallets } from '@privy-io/react-auth';
 import StakingDashboard from '@/components/user/StakingDashboard';
 import PrivyLoginButton from '@/components/shared/PrivyLoginButton';
 
+interface CashbackTransaction {
+  created_at: string;
+  tier: string;
+  cashback_amount: number;
+  cashback_rate: number;
+}
+
+interface StakingInfo {
+  staking: {
+    stakedAmount: number;
+    pendingRewards: number;
+    totalRewards: number;
+    apyPercentage: number;
+    lastStakeTime?: string;
+  };
+  cashback: {
+    lifetimeCashback: number;
+    recentTransactions?: CashbackTransaction[];
+  };
+}
+
 export default function StakingPage() {
   const { authenticated } = usePrivy();
   const { wallets } = useWallets();
-  const [stakingInfo, setStakingInfo] = useState<any>(null);
+  const [stakingInfo, setStakingInfo] = useState<StakingInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
   const solanaWallet = wallets.find((w) => w.walletClientType === 'privy');

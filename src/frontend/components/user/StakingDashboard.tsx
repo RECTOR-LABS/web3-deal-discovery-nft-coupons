@@ -3,8 +3,29 @@
 import { useState } from 'react';
 import { TrendingUp, DollarSign, Gift, Clock } from 'lucide-react';
 
+interface CashbackTransaction {
+  created_at: string;
+  tier: string;
+  cashback_amount: number;
+  cashback_rate: number;
+}
+
+interface StakingInfo {
+  staking: {
+    stakedAmount: number;
+    pendingRewards: number;
+    totalRewards: number;
+    apyPercentage: number;
+    lastStakeTime?: string;
+  };
+  cashback: {
+    lifetimeCashback: number;
+    recentTransactions?: CashbackTransaction[];
+  };
+}
+
 interface StakingDashboardProps {
-  stakingInfo: any;
+  stakingInfo: StakingInfo | null;
   walletAddress: string;
   onUpdate: () => void;
 }
@@ -252,7 +273,7 @@ export default function StakingDashboard({ stakingInfo, walletAddress, onUpdate 
       </div>
 
       {/* Recent Cashback History */}
-      {stakingInfo?.cashback?.recentTransactions?.length > 0 && (
+      {stakingInfo?.cashback?.recentTransactions && stakingInfo.cashback.recentTransactions.length > 0 && (
         <div className="bg-white rounded-2xl p-6 shadow-lg">
           <h2 className="text-2xl font-bold text-[#0d2a13] mb-4">Recent Cashback Transactions</h2>
           <div className="overflow-x-auto">
@@ -266,7 +287,7 @@ export default function StakingDashboard({ stakingInfo, walletAddress, onUpdate 
                 </tr>
               </thead>
               <tbody>
-                {stakingInfo.cashback.recentTransactions.map((tx: any, index: number) => (
+                {stakingInfo.cashback.recentTransactions.map((tx: CashbackTransaction, index: number) => (
                   <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="py-3 px-4 text-sm text-gray-600">
                       {new Date(tx.created_at).toLocaleDateString()}
