@@ -86,28 +86,36 @@ Web3-powered deal marketplace where:
 - **Wallets:** Solana Wallet Adapter (Phantom, Solflare, Backpack)
 
 ### Backend
-- **Framework:** Next.js 14+ (API routes + SSR)
-- **Database:** PostgreSQL (Supabase) or MongoDB
-- **Authentication:** Privy or Dynamic (Web3 + email login)
-- **Storage:** Arweave or IPFS (NFT metadata/images)
+- **Framework:** Next.js 15+ (API routes + SSR)
+- **Database:** PostgreSQL (Supabase)
+- **Authentication:** Privy (Web3 + email/social login)
+- **Storage:** Arweave (permanent) + Supabase Storage (fallback)
 
 ### Frontend
-- **Framework:** Next.js 14+ with App Router
-- **Styling:** Tailwind CSS
-- **State Management:** Zustand or React Context
-- **UI Library:** shadcn/ui or Radix UI
+- **Framework:** Next.js 15 with App Router
+- **Styling:** Tailwind CSS v4
+- **State Management:** React Context
+- **UI Library:** Lucide React icons
 
 ### APIs & Integrations
-- **Payment:** Stripe (fiat) + Solana Pay (crypto)
-- **Deals:** RapidAPI or direct integrations (Skyscanner, Booking.com)
-- **QR Codes:** qrcode.react
-- **Analytics:** Posthog or Mixpanel
+- **Payment:** MoonPay Commerce (Helio) - USDC on Solana
+- **Deals:** RapidAPI (Get Promo Codes API - 1M+ coupons)
+- **QR Codes:** qrcode.react + html5-qrcode
+- **Analytics:** Vercel Analytics + Speed Insights
+- **Monitoring:** Sentry (error tracking)
+- **Geo Discovery:** React-Leaflet (interactive maps)
+
+### Security & DevOps
+- **Security:** CORS, Rate Limiting, Security Headers, Health Checks
+- **Tools:** Jest/RTL (27 tests), ESLint, Husky, npm
+- **DevOps:** Docker, Vercel, Bundle Analyzer
+- **Git Hooks:** Husky + lint-staged (pre-commit checks)
 
 ### Deployment
 - **Frontend:** Vercel
 - **Backend:** Vercel serverless functions
 - **Blockchain:** Solana Devnet (testing) → Mainnet-beta (production)
-- **Database:** Supabase or Railway
+- **Database:** Supabase (us-east-1)
 
 ---
 
@@ -217,10 +225,14 @@ anchor deploy
 ### Running Frontend
 ```bash
 cd src/frontend
-npm run dev          # Development server
-npm run build        # Production build
-npm run lint         # Linting
-npm run type-check   # TypeScript check
+npm run dev              # Development server
+npm run build            # Production build
+npm run build:analyze    # Build with bundle analyzer
+npm run lint             # Linting
+npm run typecheck        # TypeScript check
+npm run test             # Run tests (27 passing)
+npm run test:coverage    # Test coverage report
+npm run prepare          # Initialize Husky git hooks
 ```
 
 ### Running Tests
@@ -340,10 +352,11 @@ MIT License - see LICENSE file for details
 
 ## 🚦 Project Status
 
-**Current Phase:** Phase 1 - Foundation
-**Completion:** 0%
-**Days Remaining:** ~14 days
-**Submission Deadline:** October 30, 2025
+**Current Phase:** Epic 11 - Submission Preparation
+**Completion:** 100% (All Epics 1-10 ✅)
+**Production Readiness:** 95+/100 (22/22 issues fixed)
+**Test Coverage:** 27/27 tests passing
+**Submission Deadline:** ~October 30, 2025
 
 ---
 

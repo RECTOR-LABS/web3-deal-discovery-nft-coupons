@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { applyRateLimit, lenientLimiter } from '@/lib/rate-limit';
 
 // RapidAPI response item structure (Get Promo Codes API)
 // Flexible structure to handle multiple response formats
@@ -62,7 +63,7 @@ async function fetchFromRapidAPI(): Promise<ExternalDeal[]> {
   const apiKey = process.env.RAPIDAPI_KEY;
 
   if (!apiKey) {
-    console.warn('RAPIDAPI_KEY not set - returning mock data');
+    console.warn('External API not configured - returning mock data');
     return getMockDeals();
   }
 
@@ -231,7 +232,13 @@ function getCategoryImage(category: string): string {
   return imageMap[category] || imageMap['Other'];
 }
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
+  // Apply rate limiting (300 requests per minute for public reads)
+  const rateLimitResponse = applyRateLimit(request, lenientLimiter);
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   try {
     const now = Date.now();
 

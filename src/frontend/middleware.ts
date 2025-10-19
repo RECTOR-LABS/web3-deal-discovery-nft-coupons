@@ -63,8 +63,29 @@ export async function middleware(request: NextRequest) {
     console.log(`[Middleware] Authenticated access to ${pathname}`);
   }
 
-  // Allow request to proceed
-  return NextResponse.next();
+  // Create response with CORS and security headers
+  const response = NextResponse.next();
+
+  // CORS Headers - restrict to allowed origins in production
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['*'];
+  const origin = request.headers.get('origin');
+
+  if (origin && (allowedOrigins.includes('*') || allowedOrigins.includes(origin))) {
+    response.headers.set('Access-Control-Allow-Origin', origin);
+  } else if (allowedOrigins.includes('*')) {
+    response.headers.set('Access-Control-Allow-Origin', '*');
+  }
+
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  response.headers.set('Access-Control-Max-Age', '86400');
+
+  // Handle preflight requests
+  if (request.method === 'OPTIONS') {
+    return new NextResponse(null, { status: 200, headers: response.headers });
+  }
+
+  return response;
 }
 
 export const config = {
@@ -72,5 +93,6 @@ export const config = {
     '/dashboard/:path*',
     '/merchant/:path*',
     '/coupons/:path*',
+    '/api/:path*', // Apply CORS to all API routes
   ],
 };
