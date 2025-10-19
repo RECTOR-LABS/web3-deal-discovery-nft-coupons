@@ -235,7 +235,7 @@ MOONPAY_SECRET_KEY=<secret-key>
 **Docs:**
 - README.md, CLAUDE.md
 - docs/planning/{PRD,TIMELINE,TRACK-REQUIREMENTS}.md
-- MOONPAY-SETUP-GUIDE.md, MOONPAY-SOLUTION.md, PAYLINK-CHECKLIST.md
+- docs/resources/{MOONPAY-SETUP-GUIDE,MOONPAY-SOLUTION,PAYLINK-CHECKLIST}.md
 
 **Contracts:**
 - src/contracts/programs/nft_coupon/src/lib.rs
@@ -294,9 +294,9 @@ MOONPAY_SECRET_KEY=<secret-key>
    - Issue documented: Backend SDK incompatible (using dashboard paylinks)
 
 **Files Created:**
-- MOONPAY-SETUP-GUIDE.md (setup instructions)
-- MOONPAY-SOLUTION.md (technical details)
-- PAYLINK-CHECKLIST.md (tracking document)
+- docs/resources/MOONPAY-SETUP-GUIDE.md (setup instructions)
+- docs/resources/MOONPAY-SOLUTION.md (technical details)
+- docs/resources/PAYLINK-CHECKLIST.md (tracking document)
 - lib/storage/arweave.ts
 - lib/payments/paylink-config.ts
 - components/payments/SimplePaymentButton.tsx
