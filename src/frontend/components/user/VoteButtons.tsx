@@ -18,8 +18,13 @@ interface VoteButtonsProps {
   showScore?: boolean;
 }
 
+interface VoteCacheData {
+  stats: VoteStats;
+  userVote: 'upvote' | 'downvote' | null;
+}
+
 // Request cache to prevent duplicate API calls
-const voteCache = new Map<string, { data: any; timestamp: number }>();
+const voteCache = new Map<string, { data: VoteCacheData; timestamp: number }>();
 const CACHE_DURATION = 5000; // 5 seconds
 
 export default function VoteButtons({ dealId, size = 'md', showScore = true }: VoteButtonsProps) {

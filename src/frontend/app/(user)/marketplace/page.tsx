@@ -73,13 +73,13 @@ export default function MarketplacePage() {
   // Fetch user's tier
   useEffect(() => {
     async function fetchUserTier() {
-      if (!authenticated || !solanaWallet) {
+      if (!connected || !publicKey) {
         setUserTier('Bronze');
         return;
       }
 
       try {
-        const response = await fetch(`/api/user/tier?wallet=${solanaWallet.address}`);
+        const response = await fetch(`/api/user/tier?wallet=${publicKey.toBase58()}`);
         if (response.ok) {
           const data = await response.json();
           setUserTier(data.tierInfo.currentTier);
@@ -90,7 +90,7 @@ export default function MarketplacePage() {
     }
 
     fetchUserTier();
-  }, [authenticated, solanaWallet]);
+  }, [connected, publicKey]);
 
   // Fetch both platform and external deals
   useEffect(() => {

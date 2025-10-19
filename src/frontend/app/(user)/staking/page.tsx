@@ -98,10 +98,10 @@ export default function StakingPage() {
         {/* Staking Dashboard */}
         <StakingDashboard
           stakingInfo={stakingInfo}
-          walletAddress={solanaWallet.address}
+          walletAddress={publicKey.toBase58()}
           onUpdate={() => {
             // Refresh staking info
-            fetch(`/api/staking/info?wallet=${solanaWallet.address}`)
+            fetch(`/api/staking/info?wallet=${publicKey.toBase58()}`)
               .then((res) => res.json())
               .then(setStakingInfo);
           }}

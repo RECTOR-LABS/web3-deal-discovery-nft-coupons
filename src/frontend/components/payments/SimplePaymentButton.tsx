@@ -15,6 +15,14 @@ interface SimplePaymentButtonProps {
   disabled?: boolean;
 }
 
+// Type for HelioCheckout extra props (not in official types but work at runtime)
+interface HelioCheckoutExtraProps {
+  children: React.ReactNode;
+  onSuccess?: (transaction: unknown) => void | Promise<void>;
+  onError?: (error: unknown) => void;
+  theme?: string;
+}
+
 /**
  * Simplified Payment Button
  * Works directly with Helio Checkout without backend paylink creation
@@ -89,14 +97,14 @@ export default function SimplePaymentButton({
         </div>
       )}
 
-      {/* Note: HelioCheckout doesn't support children prop in types, but works at runtime */}
-      {/* Using spread operator to bypass strict typing */}
+      {/* Note: HelioCheckout doesn't support extra props in types, but works at runtime */}
       <HelioCheckout
         config={checkoutConfig}
-        onSuccess={handlePaymentSuccessInternal}
-        onError={handlePaymentErrorInternal}
-        theme="dark"
-        {...({ children: (
+        {...({
+          theme: "dark",
+          onSuccess: handlePaymentSuccessInternal,
+          onError: handlePaymentErrorInternal,
+          children: (
           <button
             disabled={disabled || isProcessing}
             className={`
@@ -133,7 +141,7 @@ export default function SimplePaymentButton({
             </>
           )}
         </button>
-        ) } as any)}
+        ) } as HelioCheckoutExtraProps)}
       />
 
       {status === 'error' && errorMessage && (

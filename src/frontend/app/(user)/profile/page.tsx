@@ -16,7 +16,7 @@ const WalletMultiButton = dynamic(
 );
 
 export default function ProfilePage() {
-  const { publicKey, connected, connecting } = useWallet();
+  const { publicKey, connected, connecting: _connecting } = useWallet();
 
   const [loading, setLoading] = useState(true);
   const [tierInfo, setTierInfo] = useState<UserTierInfo | null>(null);

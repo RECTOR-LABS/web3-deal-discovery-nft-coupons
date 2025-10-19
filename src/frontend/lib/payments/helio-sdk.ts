@@ -42,8 +42,8 @@ export async function createCouponPaylink(params: {
     const sdk = getHelioSDK();
 
     // Note: SDK types may not match actual API
-    // Using 'as any' to bypass strict typing for SDK methods
-    const paylink = await (sdk.paylink as any).create({
+    // Using unknown + type assertion to bypass strict typing for SDK methods
+    const paylink = await (sdk.paylink as unknown as { create: (params: unknown) => Promise<{ id: string; url?: string }> }).create({
       name: `${params.discountPercentage}% Off - ${params.dealTitle}`,
       description: params.dealDescription,
       // amount: params.priceUSDC, // Removed - not in SDK types
@@ -65,7 +65,7 @@ export async function createCouponPaylink(params: {
 
     return {
       paylinkId: paylink.id,
-      url: (paylink as any).url || '', // url may exist at runtime
+      url: paylink.url || '', // url may exist at runtime
     };
   } catch (error) {
     console.error('Paylink creation error:', error);
@@ -81,8 +81,8 @@ export async function createCouponPaylink(params: {
 export async function getPaylink(paylinkId: string) {
   try {
     const sdk = getHelioSDK();
-    // SDK types may not include .get() method - using 'as any'
-    return await (sdk.paylink as any).get(paylinkId);
+    // SDK types may not include .get() method - using unknown with type assertion
+    return await (sdk.paylink as unknown as { get: (id: string) => Promise<unknown> }).get(paylinkId);
   } catch (error) {
     console.error('Get paylink error:', error);
     return null;
@@ -95,8 +95,8 @@ export async function getPaylink(paylinkId: string) {
 export async function listPaylinks(limit = 10) {
   try {
     const sdk = getHelioSDK();
-    // SDK types may not include .list() method - using 'as any'
-    return await (sdk.paylink as any).list({ limit });
+    // SDK types may not include .list() method - using unknown with type assertion
+    return await (sdk.paylink as unknown as { list: (params: { limit: number }) => Promise<unknown[]> }).list({ limit });
   } catch (error) {
     console.error('List paylinks error:', error);
     return [];

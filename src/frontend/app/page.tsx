@@ -55,7 +55,7 @@ const categories = [
 ];
 
 function HomePage() {
-  const searchParams = useSearchParams();
+  const _searchParams = useSearchParams();
   const { connected } = useWallet();
   const [deals, setDeals] = useState<ExtendedDeal[]>([]);
   const [loading, setLoading] = useState(true);
