@@ -1,10 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usePrivy } from '@privy-io/react-auth';
-import { useWallets } from '@privy-io/react-auth';
+import { useWallet } from '@solana/wallet-adapter-react';
 import StakingDashboard from '@/components/user/StakingDashboard';
-import PrivyLoginButton from '@/components/shared/PrivyLoginButton';
+import dynamic from 'next/dynamic';
+
+const WalletMultiButton = dynamic(
+  async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
+  { ssr: false }
+);
 
 interface CashbackTransaction {
   created_at: string;
@@ -28,23 +32,19 @@ interface StakingInfo {
 }
 
 export default function StakingPage() {
-  const { authenticated } = usePrivy();
-  const { wallets } = useWallets();
+  const { publicKey, connected } = useWallet();
   const [stakingInfo, setStakingInfo] = useState<StakingInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Support both embedded and external Solana wallets
-  const solanaWallet = wallets.find((w) => (w as { chainType?: string }).chainType === 'solana');
-
   useEffect(() => {
     async function fetchStakingInfo() {
-      if (!authenticated || !solanaWallet) {
+      if (!connected || !publicKey) {
         setLoading(false);
         return;
       }
 
       try {
-        const response = await fetch(`/api/staking/info?wallet=${solanaWallet.address}`);
+        const response = await fetch(`/api/staking/info?wallet=${publicKey.toBase58()}`);
         const data = await response.json();
         setStakingInfo(data);
       } catch (error) {
@@ -55,17 +55,19 @@ export default function StakingPage() {
     }
 
     fetchStakingInfo();
-  }, [authenticated, solanaWallet]);
+  }, [connected, publicKey]);
 
-  if (!authenticated || !solanaWallet) {
+  if (!connected || !publicKey) {
     return (
       <div className="min-h-screen bg-[#f2eecb] flex items-center justify-center p-6">
         <div className="bg-white rounded-2xl p-8 shadow-lg max-w-md w-full text-center">
           <h1 className="text-3xl font-bold text-[#0d2a13] mb-4">DEAL Token Staking</h1>
           <p className="text-gray-600 mb-6">
-            Sign in to stake your DEAL tokens and earn 12% APY rewards
+            Connect your wallet to stake DEAL tokens and earn 12% APY rewards
           </p>
-          <PrivyLoginButton />
+          <div className="wallet-adapter-button-container">
+            <WalletMultiButton />
+          </div>
         </div>
       </div>
     );

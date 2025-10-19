@@ -14,16 +14,16 @@ import { clusterApiUrl } from '@solana/web3.js';
 import '@solana/wallet-adapter-react-ui/styles.css';
 
 export const SolanaWalletProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  // Use devnet for development, can be switched to mainnet-beta for production
+  // Get network from environment or default to devnet
   const network = (process.env.NEXT_PUBLIC_SOLANA_NETWORK as WalletAdapterNetwork) || WalletAdapterNetwork.Devnet;
 
-  // Use custom RPC endpoint if provided, otherwise use default
-  const endpoint = useMemo(
-    () => process.env.NEXT_PUBLIC_SOLANA_RPC_ENDPOINT || clusterApiUrl(network),
-    [network]
-  );
+  // Get RPC endpoint from environment or use default
+  const endpoint = useMemo(() => {
+    const rpcUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
+    return rpcUrl || clusterApiUrl(network);
+  }, [network]);
 
-  // Initialize wallet adapters
+  // Configure supported wallets (Phantom, Solflare - most popular Solana wallets)
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),

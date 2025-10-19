@@ -1,32 +1,23 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { useWallets } from '@privy-io/react-auth';
-import { PublicKey } from '@solana/web3.js';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { getUserCoupons, type UserCoupon } from '@/lib/solana/getUserCoupons';
 import CouponCard from '@/components/user/CouponCard';
 import { motion } from 'framer-motion';
 import { Tag, Filter } from 'lucide-react';
 
-const PrivyLoginButton = dynamic(
-  async () => (await import('@/components/shared/PrivyLoginButton')).default,
+const WalletMultiButton = dynamic(
+  async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
   { ssr: false }
 );
 
 type CouponStatus = 'all' | 'active' | 'expired' | 'redeemed';
 
 export default function MyCouponsPage() {
-  const { wallets } = useWallets();
-  // Support both embedded and external Solana wallets
-  const solanaWallet = wallets.find((wallet) => (wallet as { chainType?: string }).chainType === 'solana');
-
-  // Memoize publicKey to prevent unnecessary re-renders
-  const publicKey = useMemo(
-    () => (solanaWallet ? new PublicKey(solanaWallet.address) : null),
-    [solanaWallet]
-  );
+  const { publicKey, connected, connecting } = useWallet();
 
   const [coupons, setCoupons] = useState<UserCoupon[]>([]);
   const [loading, setLoading] = useState(false);
@@ -61,7 +52,24 @@ export default function MyCouponsPage() {
     return true;
   });
 
-  if (!publicKey) {
+  // Show connecting state
+  if (connecting) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0d2a13] to-[#174622] flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center"
+        >
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#00ff4d] mx-auto mb-4"></div>
+          <p className="text-[#f2eecb] font-semibold">Connecting wallet...</p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Show connect wallet message if not connected
+  if (!connected || !publicKey) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0d2a13] to-[#174622] flex items-center justify-center p-4">
         <motion.div
@@ -71,12 +79,14 @@ export default function MyCouponsPage() {
         >
           <Tag className="w-16 h-16 text-[#0d2a13] mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-[#0d2a13] mb-4">
-            Sign In to View Your Coupons
+            Connect Your Wallet
           </h1>
           <p className="text-[#174622] mb-6">
-            Sign in to access all your saved coupons
+            Connect your Solana wallet to view and manage your coupons
           </p>
-          <PrivyLoginButton />
+          <div className="wallet-adapter-button-container">
+            <WalletMultiButton />
+          </div>
         </motion.div>
       </div>
     );

@@ -1,9 +1,15 @@
 'use client';
 
 import { useState, useEffect, useMemo, Suspense } from 'react';
-import { usePrivy } from '@privy-io/react-auth';
 import { useSearchParams } from 'next/navigation';
+import { useWallet } from '@solana/wallet-adapter-react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
+
+const WalletMultiButton = dynamic(
+  async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
+  { ssr: false }
+);
 import { supabase } from '@/lib/database/supabase';
 import { Database } from '@/lib/database/types';
 import DealCard from '@/components/user/DealCard';
@@ -49,20 +55,13 @@ const categories = [
 ];
 
 function HomePage() {
-  const { authenticated, login } = usePrivy();
   const searchParams = useSearchParams();
+  const { connected } = useWallet();
   const [deals, setDeals] = useState<ExtendedDeal[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryOption>('All');
   const [location, setLocation] = useState('Worldwide');
-
-  // Trigger login modal if ?login=true is in URL
-  useEffect(() => {
-    if (searchParams.get('login') === 'true' && !authenticated) {
-      login();
-    }
-  }, [searchParams, authenticated, login]);
 
   // Fetch deals (platform + external)
   useEffect(() => {
@@ -168,7 +167,7 @@ function HomePage() {
             </div>
 
             <div className="flex items-center gap-4">
-              {authenticated ? (
+              {connected ? (
                 <>
                   <Link href="/coupons" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium">
                     My Coupons
@@ -178,12 +177,9 @@ function HomePage() {
                   </Link>
                 </>
               ) : (
-                <Link
-                  href="/?login=true"
-                  className="px-6 py-2 bg-[#00ff4d] text-[#0d2a13] font-bold rounded-lg hover:bg-[#00cc3d] transition-all"
-                >
-                  Sign In
-                </Link>
+                <div className="wallet-adapter-button-container">
+                  <WalletMultiButton />
+                </div>
               )}
             </div>
           </div>
@@ -379,21 +375,18 @@ function HomePage() {
       </div>
 
       {/* Footer CTA */}
-      {!authenticated && (
+      {!connected && (
         <div className="bg-[#0d2a13] text-white py-16 mt-16">
           <div className="max-w-4xl mx-auto text-center px-4">
             <h2 className="text-4xl font-black mb-4">
               Ready to Start Saving?
             </h2>
             <p className="text-xl text-[#f2eecb] mb-8">
-              Sign in to claim deals, collect NFT coupons, and unlock exclusive rewards
+              Connect your wallet to claim deals, collect NFT coupons, and unlock exclusive rewards
             </p>
-            <Link
-              href="/?login=true"
-              className="inline-block px-10 py-4 bg-[#00ff4d] text-[#0d2a13] font-black text-lg rounded-lg hover:bg-[#00cc3d] transition-all shadow-lg"
-            >
-              Sign In Now
-            </Link>
+            <div className="flex justify-center wallet-adapter-button-container">
+              <WalletMultiButton />
+            </div>
           </div>
         </div>
       )}

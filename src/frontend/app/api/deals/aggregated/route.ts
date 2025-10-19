@@ -60,6 +60,14 @@ const cache: {
 const CACHE_TTL = 60 * 60 * 1000; // 1 hour in milliseconds
 
 async function fetchFromRapidAPI(): Promise<ExternalDeal[]> {
+  // Disable RapidAPI to avoid rate limits during development
+  const disableRapidAPI = process.env.DISABLE_RAPIDAPI === 'true';
+
+  if (disableRapidAPI) {
+    console.log('RapidAPI disabled (DISABLE_RAPIDAPI=true), using mock data');
+    return getMockDeals();
+  }
+
   const apiKey = process.env.RAPIDAPI_KEY;
 
   if (!apiKey) {

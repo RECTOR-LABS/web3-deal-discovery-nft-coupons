@@ -4,16 +4,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Tag, ShoppingBag, User, TrendingUp } from 'lucide-react';
-import { usePrivy } from '@privy-io/react-auth';
+import { useWallet } from '@solana/wallet-adapter-react';
 
-const PrivyLoginButton = dynamic(
-  async () => (await import('@/components/shared/PrivyLoginButton')).default,
+// Dynamic import to avoid SSR issues with wallet button
+const WalletMultiButton = dynamic(
+  async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
   { ssr: false }
 );
 
 export default function UserNavigation() {
   const pathname = usePathname();
-  const { authenticated } = usePrivy();
+  const { connected } = useWallet();
 
   // Guest-friendly links (no authentication required) - Groupon-like experience
   const guestLinks = [
@@ -28,8 +29,8 @@ export default function UserNavigation() {
     { href: '/profile', label: 'Profile', icon: User },
   ];
 
-  // Show appropriate links based on authentication status
-  const navLinks = authenticated ? authLinks : guestLinks;
+  // Show appropriate links based on wallet connection status
+  const navLinks = connected ? authLinks : guestLinks;
 
   return (
     <nav className="bg-[#0d2a13] border-b border-[#174622]">
@@ -66,9 +67,9 @@ export default function UserNavigation() {
             })}
           </div>
 
-          {/* Sign In Button */}
-          <div className="flex items-center" style={{ outline: 'none', border: 'none' }}>
-            <PrivyLoginButton />
+          {/* Connect Wallet Button */}
+          <div className="flex items-center wallet-adapter-button-container">
+            <WalletMultiButton />
           </div>
         </div>
       </div>

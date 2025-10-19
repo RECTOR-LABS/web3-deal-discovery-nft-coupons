@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { usePrivy, useWallets } from '@privy-io/react-auth';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { supabase } from '@/lib/database/supabase';
 import { Database } from '@/lib/database/types';
 import DealCard from '@/components/user/DealCard';
@@ -46,10 +46,7 @@ type SortOption = 'newest' | 'expiring-soon' | 'highest-discount' | 'nearest';
 type CategoryOption = 'All' | 'Food & Beverage' | 'Retail' | 'Services' | 'Travel' | 'Entertainment' | 'Other';
 
 export default function MarketplacePage() {
-  const { authenticated } = usePrivy();
-  const { wallets } = useWallets();
-  // Support both embedded and external Solana wallets
-  const solanaWallet = wallets.find((wallet) => (wallet as { chainType?: string }).chainType === 'solana');
+  const { publicKey, connected } = useWallet();
 
   const [deals, setDeals] = useState<ExtendedDeal[]>([]);
   const [loading, setLoading] = useState(true);
