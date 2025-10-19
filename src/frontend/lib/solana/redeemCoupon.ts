@@ -1,4 +1,4 @@
-import { Connection, PublicKey, Transaction, SystemProgram } from '@solana/web3.js';
+import { PublicKey, Transaction } from '@solana/web3.js';
 import {
   TOKEN_PROGRAM_ID,
   getAssociatedTokenAddress,
@@ -123,8 +123,8 @@ export async function redeemCouponOnChain(
  * This doesn't burn the NFT but marks it as used in the smart contract
  */
 export async function markCouponRedeemed(
-  params: RedemptionParams,
-  signTransaction: (transaction: Transaction) => Promise<Transaction>
+  _params: RedemptionParams,
+  _signTransaction: (transaction: Transaction) => Promise<Transaction>
 ): Promise<RedemptionResult> {
   try {
     // This would call the smart contract's updateCouponStatus or redeemCoupon instruction

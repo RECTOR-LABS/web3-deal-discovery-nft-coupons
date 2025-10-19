@@ -16,7 +16,7 @@ interface BadgeCollectionProps {
 
 export default function BadgeCollection({ earnedBadges, nextBadges = [] }: BadgeCollectionProps) {
   const allBadgeTypes = Object.keys(BADGE_CONFIGS);
-  const earnedBadgeTypes = new Set(earnedBadges.map((b) => b.badgeType));
+  const _earnedBadgeTypes = new Set(earnedBadges.map((b) => b.badgeType));
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-lg">

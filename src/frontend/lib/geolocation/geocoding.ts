@@ -1,6 +1,21 @@
 import { GeocodingResult } from './types';
 
 /**
+ * Nominatim API response interface
+ */
+interface NominatimResult {
+  lat: string;
+  lon: string;
+  display_name: string;
+  address?: {
+    city?: string;
+    town?: string;
+    village?: string;
+    country?: string;
+  };
+}
+
+/**
  * Sleep helper for retry logic
  */
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -154,7 +169,7 @@ export async function searchPlaces(
       return [];
     }
 
-    return data.map((result: any) => ({
+    return data.map((result: NominatimResult) => ({
       latitude: parseFloat(result.lat),
       longitude: parseFloat(result.lon),
       displayName: result.display_name,

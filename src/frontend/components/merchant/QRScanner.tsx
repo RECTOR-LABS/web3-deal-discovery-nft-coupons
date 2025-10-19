@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { Camera, X, CheckCircle, XCircle } from 'lucide-react';
+import { Camera, X, XCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface QRScannerProps {

@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { getConnection } from './connection';
 import nacl from 'tweetnacl';
 
@@ -128,8 +128,8 @@ export async function getNFTMetadata(mintAddress: string): Promise<{
   attributes?: Array<{ trait_type: string; value: string }>;
 } | null> {
   try {
-    const connection = getConnection();
-    const mint = new PublicKey(mintAddress);
+    const _connection = getConnection();
+    const _mint = new PublicKey(mintAddress);
 
     // This is a simplified version - in production, you'd use Metaplex SDK
     // to properly fetch and parse NFT metadata from Arweave/IPFS

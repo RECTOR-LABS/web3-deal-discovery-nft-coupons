@@ -15,7 +15,7 @@ export default function StakingDashboard({ stakingInfo, walletAddress, onUpdate 
   const [message, setMessage] = useState('');
 
   const stakedAmount = stakingInfo?.staking?.stakedAmount || 0;
-  const pendingRewards = stakingInfo?.staking?.pendingRewards || 0;
+  const _pendingRewards = stakingInfo?.staking?.pendingRewards || 0;
   const totalRewards = stakingInfo?.staking?.totalRewards || 0;
   const apyPercentage = stakingInfo?.staking?.apyPercentage || 12;
   const lifetimeCashback = stakingInfo?.cashback?.lifetimeCashback || 0;
@@ -52,7 +52,7 @@ export default function StakingDashboard({ stakingInfo, walletAddress, onUpdate 
       } else {
         setMessage(`❌ ${data.error}`);
       }
-    } catch (error) {
+    } catch {
       setMessage('❌ Failed to stake tokens');
     } finally {
       setLoading(false);
@@ -83,7 +83,7 @@ export default function StakingDashboard({ stakingInfo, walletAddress, onUpdate 
       } else {
         setMessage(`❌ ${data.error}`);
       }
-    } catch (error) {
+    } catch {
       setMessage('❌ Failed to unstake tokens');
     } finally {
       setLoading(false);
@@ -114,7 +114,7 @@ export default function StakingDashboard({ stakingInfo, walletAddress, onUpdate 
       } else {
         setMessage(`❌ ${data.error}`);
       }
-    } catch (error) {
+    } catch {
       setMessage('❌ Failed to claim rewards');
     } finally {
       setLoading(false);

@@ -1,7 +1,6 @@
 'use client';
 
 import { FC, useEffect, useState } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 /**
@@ -10,7 +9,6 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
  * Supports: Phantom, Solflare, Backpack wallets
  */
 export const WalletButton: FC = () => {
-  const { publicKey, connected } = useWallet();
   const [mounted, setMounted] = useState(false);
 
   // Prevent hydration mismatch by only rendering wallet button after mount

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { usePrivy, useWallets } from '@privy-io/react-auth';
+import { useWallets } from '@privy-io/react-auth';
 import { PublicKey } from '@solana/web3.js';
 import { getUserCoupons, type UserCoupon } from '@/lib/solana/getUserCoupons';
 import CouponCard from '@/components/user/CouponCard';
@@ -18,7 +18,6 @@ const PrivyLoginButton = dynamic(
 type CouponStatus = 'all' | 'active' | 'expired' | 'redeemed';
 
 export default function MyCouponsPage() {
-  const { authenticated } = usePrivy();
   const { wallets } = useWallets();
   const solanaWallet = wallets.find((wallet) => wallet.walletClientType === 'privy');
   const publicKey = solanaWallet ? new PublicKey(solanaWallet.address) : null;

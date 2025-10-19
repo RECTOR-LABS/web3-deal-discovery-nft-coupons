@@ -17,7 +17,7 @@ export default function TierBadge({
   size = 'md',
   showLabel = true,
 }: TierBadgeProps) {
-  const tierConfig = TIER_CONFIGS[requiredTier];
+  const _tierConfig = TIER_CONFIGS[requiredTier];
   const hasAccess = userTier ? hasAccessToDeal(userTier, requiredTier) : false;
 
   const sizeClasses = {

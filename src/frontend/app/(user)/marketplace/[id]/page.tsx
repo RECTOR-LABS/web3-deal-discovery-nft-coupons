@@ -6,7 +6,7 @@ import { supabase } from '@/lib/database/supabase';
 import { Database } from '@/lib/database/types';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { Calendar, Tag, TrendingUp, ArrowLeft, Share2, ExternalLink } from 'lucide-react';
+import { Calendar, Tag, TrendingUp, ArrowLeft, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { claimCoupon } from '@/lib/solana/purchase';
 import RatingSystem from '@/components/user/RatingSystem';

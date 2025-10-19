@@ -10,7 +10,7 @@ interface TierProgressProps {
 }
 
 export default function TierProgress({ tierInfo }: TierProgressProps) {
-  const currentTierConfig = TIER_CONFIGS[tierInfo.currentTier];
+  const _currentTierConfig = TIER_CONFIGS[tierInfo.currentTier];
   const progress = getTierProgressPercentage(tierInfo.currentTier, tierInfo.totalRedemptions);
 
   const getTierIcon = (tier: UserTierInfo['currentTier']) => {

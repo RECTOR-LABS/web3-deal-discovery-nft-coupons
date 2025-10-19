@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Upsert user stats (create if doesn't exist, update if exists)
-    const { data: user, error: upsertError } = await supabase
+    const { data: _user, error: upsertError } = await supabase
       .from('users')
       .upsert(
         {
