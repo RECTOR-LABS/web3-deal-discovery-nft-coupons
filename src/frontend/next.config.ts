@@ -11,6 +11,20 @@ const nextConfig: NextConfig = {
   // Fix workspace root detection
   outputFileTracingRoot: path.join(__dirname),
 
+  // Suppress Sentry OpenTelemetry warnings
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.ignoreWarnings = [
+        ...(config.ignoreWarnings || []),
+        {
+          module: /@opentelemetry\/instrumentation/,
+          message: /Critical dependency: the request of a dependency is an expression/,
+        },
+      ];
+    }
+    return config;
+  },
+
   // Allow external images (for NFT metadata) - restricted to known domains
   images: {
     remotePatterns: [

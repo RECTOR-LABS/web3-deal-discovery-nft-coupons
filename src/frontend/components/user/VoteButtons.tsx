@@ -18,6 +18,10 @@ interface VoteButtonsProps {
   showScore?: boolean;
 }
 
+// Request cache to prevent duplicate API calls
+const voteCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_DURATION = 5000; // 5 seconds
+
 export default function VoteButtons({ dealId, size = 'md', showScore = true }: VoteButtonsProps) {
   const { publicKey } = useWallet();
   const [stats, setStats] = useState<VoteStats>({ upvotes: 0, downvotes: 0, score: 0, total: 0 });
@@ -38,15 +42,30 @@ export default function VoteButtons({ dealId, size = 'md', showScore = true }: V
     lg: 'w-6 h-6',
   };
 
-  // Fetch vote stats
+  // Fetch vote stats with caching and deduplication
   const fetchVoteStats = useCallback(async () => {
     try {
       setLoading(true);
       const url = `/api/votes?deal_id=${dealId}${publicKey ? `&user_wallet=${publicKey.toBase58()}` : ''}`;
+      const cacheKey = url;
+
+      // Check cache first
+      const cached = voteCache.get(cacheKey);
+      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+        setStats(cached.data.stats || { upvotes: 0, downvotes: 0, score: 0, total: 0 });
+        setUserVote(cached.data.userVote || null);
+        setLoading(false);
+        return;
+      }
+
       const response = await fetch(url);
 
       if (response.ok) {
         const data = await response.json();
+
+        // Cache the response
+        voteCache.set(cacheKey, { data, timestamp: Date.now() });
+
         setStats(data.stats || { upvotes: 0, downvotes: 0, score: 0, total: 0 });
         setUserVote(data.userVote || null);
       }
@@ -135,7 +154,9 @@ export default function VoteButtons({ dealId, size = 'md', showScore = true }: V
         console.error('Vote error:', error);
         alert(error.error || 'Failed to submit vote');
       } else {
-        // Refresh to get accurate stats from server
+        // Invalidate cache and refresh to get accurate stats from server
+        const url = `/api/votes?deal_id=${dealId}${publicKey ? `&user_wallet=${publicKey.toBase58()}` : ''}`;
+        voteCache.delete(url);
         await fetchVoteStats();
       }
     } catch (error) {

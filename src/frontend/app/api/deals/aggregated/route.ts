@@ -83,6 +83,12 @@ async function fetchFromRapidAPI(): Promise<ExternalDeal[]> {
     });
 
     if (!response.ok) {
+      // 429 = Rate limit exceeded (expected on free tier), use mock data silently
+      if (response.status === 429) {
+        console.warn('RapidAPI rate limit reached, using mock data');
+        return getMockDeals();
+      }
+      // Other errors should be logged
       console.error(`RapidAPI error: ${response.status} ${response.statusText}`);
       throw new Error(`RapidAPI returned ${response.status}: ${response.statusText}`);
     }
