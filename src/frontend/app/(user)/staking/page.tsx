@@ -33,7 +33,8 @@ export default function StakingPage() {
   const [stakingInfo, setStakingInfo] = useState<StakingInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const solanaWallet = wallets.find((w) => w.walletClientType === 'privy');
+  // Support both embedded and external Solana wallets
+  const solanaWallet = wallets.find((w) => (w as { chainType?: string }).chainType === 'solana');
 
   useEffect(() => {
     async function fetchStakingInfo() {

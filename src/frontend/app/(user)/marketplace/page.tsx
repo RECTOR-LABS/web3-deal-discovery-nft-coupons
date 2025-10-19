@@ -48,7 +48,8 @@ type CategoryOption = 'All' | 'Food & Beverage' | 'Retail' | 'Services' | 'Trave
 export default function MarketplacePage() {
   const { authenticated } = usePrivy();
   const { wallets } = useWallets();
-  const solanaWallet = wallets.find((wallet) => wallet.walletClientType === 'privy');
+  // Support both embedded and external Solana wallets
+  const solanaWallet = wallets.find((wallet) => (wallet as { chainType?: string }).chainType === 'solana');
 
   const [deals, setDeals] = useState<ExtendedDeal[]>([]);
   const [loading, setLoading] = useState(true);

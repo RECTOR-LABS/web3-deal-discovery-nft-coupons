@@ -19,7 +19,8 @@ type CouponStatus = 'all' | 'active' | 'expired' | 'redeemed';
 
 export default function MyCouponsPage() {
   const { wallets } = useWallets();
-  const solanaWallet = wallets.find((wallet) => wallet.walletClientType === 'privy');
+  // Support both embedded and external Solana wallets
+  const solanaWallet = wallets.find((wallet) => (wallet as { chainType?: string }).chainType === 'solana');
 
   // Memoize publicKey to prevent unnecessary re-renders
   const publicKey = useMemo(
