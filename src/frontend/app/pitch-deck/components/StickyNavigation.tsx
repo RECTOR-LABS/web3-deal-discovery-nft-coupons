@@ -17,6 +17,7 @@ const sections = [
   { id: 'tech', label: 'Tech Stack' },
   { id: 'features', label: 'Features' },
   { id: 'ux', label: 'UX' },
+  { id: 'screenshots', label: 'Screenshots' },
   { id: 'scalability', label: 'Scalability' },
   { id: 'team', label: 'Team' },
   { id: 'resources', label: 'Resources' },

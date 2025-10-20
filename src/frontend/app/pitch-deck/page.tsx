@@ -8,7 +8,7 @@ import {
 import { useState, useEffect } from 'react';
 
 // Import section components
-import VideoHero from './components/VideoHero';
+// import VideoHero from './components/VideoHero'; // Hidden until video is ready
 import StickyNavigation from './components/StickyNavigation';
 import FloatingCTA from './components/FloatingCTA';
 import ProblemSolution from './components/ProblemSolution';
@@ -19,6 +19,7 @@ import UXShowcase from './components/UXShowcase';
 import ScalabilitySection from './components/ScalabilitySection';
 import TeamSection from './components/TeamSection';
 import ResourcesHub from './components/ResourcesHub';
+import ScreenshotCarousel from './components/ScreenshotCarousel';
 
 export default function PitchDeckPage() {
   const [activeSection, setActiveSection] = useState('hero');
@@ -30,6 +31,18 @@ export default function PitchDeckPage() {
       document.documentElement.style.scrollBehavior = '';
     };
   }, []);
+
+  // Scroll to screenshots handler
+  const scrollToScreenshots = () => {
+    try {
+      const element = document.getElementById('screenshots');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } catch (error) {
+      console.error('Scroll error:', error);
+    }
+  };
 
   // Intersection Observer for active section tracking
   useEffect(() => {
@@ -124,15 +137,15 @@ export default function PitchDeckPage() {
               whileHover={{ scale: 1.1, color: '#00ff4d' }}
               transition={{ repeat: Infinity, duration: 2 }}
               className="inline-flex flex-col items-center text-[#00ff4d]/60 cursor-pointer hover:text-[#00ff4d]"
-              onClick={() => document.getElementById('video')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={scrollToScreenshots}
             >
-              <span className="text-sm mb-2">Watch Demo</span>
+              <span className="text-sm mb-2">See Visual Proof</span>
               <ChevronDown className="w-6 h-6" />
             </motion.div>
           </motion.div>
 
-          {/* Premium Video Component */}
-          <motion.div
+          {/* Video Demo - Hidden until ready */}
+          {/* <motion.div
             id="video"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -143,6 +156,26 @@ export default function PitchDeckPage() {
               videoUrl="https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Replace with actual demo video
               posterImage="/og-image.png"
             />
+          </motion.div> */}
+
+          {/* Visual Divider */}
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="w-full max-w-4xl mx-auto mt-16 mb-8"
+          >
+            <div className="h-px bg-gradient-to-r from-transparent via-[#00ff4d]/30 to-transparent" />
+          </motion.div>
+
+          {/* Screenshot Gallery - Visual Proof Inside Hero */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.8 }}
+            className="mt-8"
+          >
+            <ScreenshotCarousel />
           </motion.div>
         </div>
       </section>

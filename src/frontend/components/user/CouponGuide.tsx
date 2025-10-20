@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { ShoppingBag, QrCode, Sparkles, CheckCircle, AlertCircle, Gift } from 'lucide-react';
+import Link from 'next/link';
 
 export default function CouponGuide() {
   const steps = [
@@ -47,7 +48,7 @@ export default function CouponGuide() {
           4 Simple Steps to Save Money
         </h2>
         <p className="text-[#174622] text-lg max-w-2xl mx-auto">
-          Your coupons are NFTs on Solana - secure, transferable, and easy to redeem. Here's everything you need to know:
+          Your coupons are NFTs on Solana - secure, transferable, and easy to redeem. Here&apos;s everything you need to know:
         </p>
       </div>
 
@@ -142,13 +143,13 @@ export default function CouponGuide() {
           Need help? Our coupons are designed to be simple and secure.
         </p>
         <div className="flex justify-center gap-4">
-          <a
+          <Link
             href="/marketplace"
             className="inline-flex items-center gap-2 bg-[#00ff4d] hover:bg-[#00cc3d] text-[#0d2a13] font-bold px-6 py-3 rounded-xl transition-all shadow-lg hover:shadow-xl hover:scale-105"
           >
             <ShoppingBag className="w-5 h-5" />
             Browse Deals
-          </a>
+          </Link>
         </div>
       </div>
     </div>

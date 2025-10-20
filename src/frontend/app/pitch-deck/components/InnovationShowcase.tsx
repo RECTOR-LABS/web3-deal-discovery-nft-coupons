@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Coins, Flame, Eye, Database, CheckCircle, X } from 'lucide-react';
+import CodeEvidence from './CodeEvidence';
 
 export default function InnovationShowcase() {
   const innovations = [
@@ -250,6 +251,21 @@ export default function InnovationShowcase() {
             ))}
           </div>
         </motion.div>
+
+        {/* Code Evidence */}
+        <CodeEvidence
+          title="📁 Web3 Innovation Files"
+          files={[
+            { name: 'lib.rs', path: 'src/contracts/programs/nft_coupon/src/', type: 'contract' },
+            { name: 'arweave.ts', path: 'src/frontend/lib/storage/', type: 'lib' },
+            { name: 'upload.ts', path: 'src/frontend/lib/storage/', type: 'lib' },
+            { name: 'reviews/route.ts', path: 'src/frontend/app/api/', type: 'api' },
+            { name: 'votes/route.ts', path: 'src/frontend/app/api/', type: 'api' },
+            { name: 'referrals/route.ts', path: 'src/frontend/app/api/', type: 'api' },
+            { name: 'activity-feed/route.ts', path: 'src/frontend/app/api/', type: 'api' },
+            { name: 'WalletProvider.tsx', path: 'src/frontend/components/shared/', type: 'frontend' },
+          ]}
+        />
       </div>
     </section>
   );

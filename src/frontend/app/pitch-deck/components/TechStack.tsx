@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Layers, Code, Database, Shield, CheckCircle, ExternalLink, Zap } from 'lucide-react';
+import CodeEvidence from './CodeEvidence';
 
 export default function TechStack() {
   const layers = [
@@ -337,6 +338,22 @@ export default function TechStack() {
             ))}
           </div>
         </motion.div>
+
+        {/* Code Evidence */}
+        <CodeEvidence
+          title="📁 Tech Stack Implementation"
+          files={[
+            { name: 'Anchor.toml', path: 'src/contracts/', type: 'config' },
+            { name: 'next.config.ts', path: 'src/frontend/', type: 'config' },
+            { name: 'middleware.ts', path: 'src/frontend/', type: 'lib' },
+            { name: 'database/types.ts', path: 'src/frontend/lib/', type: 'lib' },
+            { name: 'solana.ts', path: 'src/frontend/lib/', type: 'lib' },
+            { name: 'logger.ts', path: 'src/frontend/lib/', type: 'lib' },
+            { name: 'metrics.ts', path: 'src/frontend/lib/', type: 'lib' },
+            { name: 'health/route.ts', path: 'src/frontend/app/api/', type: 'api' },
+            { name: 'layout.tsx', path: 'src/frontend/app/', type: 'frontend' },
+          ]}
+        />
       </div>
     </section>
   );

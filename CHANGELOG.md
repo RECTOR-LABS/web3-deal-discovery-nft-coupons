@@ -7,6 +7,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2025-10-20
+
+### Added - Pitch Deck Enhancements & Deployment Infrastructure
+- **Screenshot Carousel Component:**
+  - Interactive carousel displaying 39 production screenshots (`app/pitch-deck/components/ScreenshotCarousel.tsx`)
+  - 6 themed categories: User Journey, Merchant Dashboard, NFT/Blockchain, Testing, Auth/UX, Highlights
+  - Auto-play functionality with 5-second intervals
+  - Keyboard navigation (arrow keys) and touch support
+  - Lightbox modal for full-size viewing
+  - Dot indicators and thumbnail strip navigation
+  - Organized screenshot directory structure (`public/screenshots/` with 6 subdirectories)
+
+- **Code Evidence Component:**
+  - Reusable component for displaying source code file references (`app/pitch-deck/components/CodeEvidence.tsx`)
+  - Type-coded badges for 5 file types: contract, frontend, API, library, config
+  - Color-coded gradient backgrounds per file type
+  - Hover effects and animations
+  - Integrated into 4 pitch deck sections showing 36 real source files
+
+- **Real Blockchain Verification:**
+  - Replaced placeholder links with actual transaction addresses in ResourcesHub
+  - NFT mint transaction: `5iyFVpW4YUR4VcZmgCVfVRtJfPCXzMSpEpvXQd4yjSSnveQ1XeuyqiXrRW3WUtREdhmpPQkAyvaBhxWW3Dr9Dz9u`
+  - NFT mint address: `9e6QS6JVbKHhnhRgtfUdpd9cDo6htL3j4rNRzuGwjhZv`
+  - Linked to Solana Explorer devnet for verification
+
+- **Deployment Infrastructure:**
+  - Comprehensive Vercel deployment guide (`docs/deployment/VERCEL-DEPLOYMENT-GUIDE.md`, 12 KB)
+  - Quick deployment checklist (`docs/deployment/QUICK-DEPLOY-CHECKLIST.md`, 3.3 KB)
+  - Environment variable preparation script (`scripts/prepare-vercel-env.sh`)
+  - Detailed instructions for CLI and Dashboard deployment methods
+  - Special handling for Arweave wallet configuration in serverless environment
+  - Post-deployment verification checklist
+  - Common issues troubleshooting guide
+
+### Changed
+- **Pitch Deck Page:**
+  - Added screenshot carousel to hero section with gradient divider
+  - Integrated scroll-to-screenshots functionality with error handling
+  - Hidden video section until demo video is ready
+  - Updated sticky navigation with "Screenshots" section
+  - Improved visual hierarchy and user flow
+
+- **Pitch Deck Components:**
+  - Added CodeEvidence sections to ProblemSolution, InnovationShowcase, TechStack, and FeaturesMatrix
+  - Enhanced blockchain verification section with real transaction links
+  - Improved cursor pointer consistency across all interactive elements
+
+### Fixed
+- **ESLint Compliance:**
+  - Escaped apostrophes in `MerchantOnboarding.tsx` ("What's Included")
+  - Escaped apostrophes in `CouponGuide.tsx` ("Here's everything")
+  - Replaced `<a>` tag with Next.js `<Link>` component in CouponGuide for internal navigation
+
+- **Runtime Errors:**
+  - Fixed scroll indicator error by creating dedicated `scrollToScreenshots()` function
+  - Improved error handling with try-catch blocks
+
+### Documentation
+- Updated CLAUDE.md with Epic 12 completion status and deployment readiness
+- Updated Epic 11 status with deployment guide locations
+- Documented new components: ScreenshotCarousel and CodeEvidence
+- Added deployment preparation instructions for Vercel
+
+### Bundle Size
+- Pitch deck page: 27.8 kB (increased from 20 kB due to carousel and code evidence features)
+- Total screenshots: 39 files organized in 6 categories
+- Code evidence: 36 source files referenced across 4 sections
+
 ## [0.3.0] - 2025-10-20
 
 ### Added - Advanced Observability & DevOps

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { CheckCircle, Coins, LayoutDashboard, ShoppingCart, QrCode, Zap, Share2, DollarSign, Award, MapPin } from 'lucide-react';
+import CodeEvidence from './CodeEvidence';
 
 export default function FeaturesMatrix() {
   const coreFeatures = [
@@ -299,6 +300,23 @@ export default function FeaturesMatrix() {
             </p>
           </div>
         </motion.div>
+
+        {/* Code Evidence */}
+        <CodeEvidence
+          title="📁 Feature Implementation Files"
+          files={[
+            { name: 'staking/route.ts', path: 'src/frontend/app/api/', type: 'api' },
+            { name: 'staking/stake/route.ts', path: 'src/frontend/app/api/', type: 'api' },
+            { name: 'badges/mint/route.ts', path: 'src/frontend/app/api/', type: 'api' },
+            { name: 'user/tier/route.ts', path: 'src/frontend/app/api/', type: 'api' },
+            { name: 'geolocation.ts', path: 'src/frontend/lib/', type: 'lib' },
+            { name: 'redemptions/route.ts', path: 'src/frontend/app/api/', type: 'api' },
+            { name: 'reviews/route.ts', path: 'src/frontend/app/api/', type: 'api' },
+            { name: 'votes/route.ts', path: 'src/frontend/app/api/', type: 'api' },
+            { name: 'deals/aggregated/route.ts', path: 'src/frontend/app/api/', type: 'api' },
+            { name: 'payments/create-paylink/route.ts', path: 'src/frontend/app/api/', type: 'api' },
+          ]}
+        />
       </div>
     </section>
   );

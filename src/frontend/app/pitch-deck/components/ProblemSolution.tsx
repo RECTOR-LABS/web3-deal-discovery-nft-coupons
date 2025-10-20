@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Lock, Unlock, TrendingDown, Database, AlertCircle, CheckCircle, Zap, Shield } from 'lucide-react';
+import CodeEvidence from './CodeEvidence';
 
 export default function ProblemSolution() {
   const problems = [
@@ -217,6 +218,22 @@ export default function ProblemSolution() {
               ))}
             </div>
           </motion.div>
+
+          {/* Code Evidence */}
+          <CodeEvidence
+            title="📁 Solution Implementation"
+            files={[
+              { name: 'lib.rs', path: 'src/contracts/programs/nft_coupon/src/', type: 'contract' },
+              { name: 'create_coupon.rs', path: 'src/contracts/programs/nft_coupon/instructions/', type: 'contract' },
+              { name: 'redeem_coupon.rs', path: 'src/contracts/programs/nft_coupon/instructions/', type: 'contract' },
+              { name: 'marketplace/page.tsx', path: 'src/frontend/app/(user)/', type: 'frontend' },
+              { name: 'coupons/page.tsx', path: 'src/frontend/app/(user)/', type: 'frontend' },
+              { name: 'deals/route.ts', path: 'src/frontend/app/api/', type: 'api' },
+              { name: 'redemptions/route.ts', path: 'src/frontend/app/api/', type: 'api' },
+              { name: 'solana.ts', path: 'src/frontend/lib/', type: 'lib' },
+              { name: 'database/types.ts', path: 'src/frontend/lib/', type: 'lib' },
+            ]}
+          />
         </div>
       </section>
     </>

@@ -52,13 +52,18 @@ export default function ResourcesHub() {
     },
     {
       name: 'Example NFT Mint',
-      value: 'View on Solana Explorer',
-      url: 'https://explorer.solana.com/?cluster=devnet',
+      value: '5iyFVpW...3Dr9Dz9u',
+      url: 'https://explorer.solana.com/tx/5iyFVpW4YUR4VcZmgCVfVRtJfPCXzMSpEpvXQd4yjSSnveQ1XeuyqiXrRW3WUtREdhmpPQkAyvaBhxWW3Dr9Dz9u?cluster=devnet',
     },
     {
-      name: 'Example Redemption',
-      value: 'View burn transaction',
-      url: 'https://explorer.solana.com/?cluster=devnet',
+      name: 'NFT Mint Address',
+      value: '9e6QS6J...GwjhZv',
+      url: 'https://explorer.solana.com/address/9e6QS6JVbKHhnhRgtfUdpd9cDo6htL3j4rNRzuGwjhZv?cluster=devnet',
+    },
+    {
+      name: 'Redeem Instruction',
+      value: 'View smart contract code',
+      url: 'https://github.com/RECTOR-LABS/web3-deal-discovery-nft-coupons/blob/main/src/contracts/programs/nft_coupon/src/instructions/redeem_coupon.rs',
     },
   ];
 

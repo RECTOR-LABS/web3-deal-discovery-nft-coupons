@@ -284,7 +284,7 @@ export default function MerchantOnboarding() {
             <div className="flex items-start gap-3">
               <CheckCircle className="w-6 h-6 text-[#00ff4d] flex-shrink-0 mt-1" />
               <div>
-                <h4 className="font-bold text-[#0d2a13] mb-2">What's Included</h4>
+                <h4 className="font-bold text-[#0d2a13] mb-2">What&apos;s Included</h4>
                 <ul className="space-y-2 text-[#174622] text-sm">
                   <li className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 bg-[#00ff4d] rounded-full" />
