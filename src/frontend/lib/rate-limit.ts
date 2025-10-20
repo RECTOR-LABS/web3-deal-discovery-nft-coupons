@@ -1,0 +1,271 @@
+/**
+ * Simple In-Memory Rate Limiter
+ *
+ * ⚠️ PRODUCTION WARNING: This in-memory implementation does NOT work across
+ * Vercel serverless instances. Each instance maintains its own cache, making
+ * rate limiting inconsistent in production.
+ *
+ * For production, MUST migrate to Upstash Redis for distributed rate limiting:
+ *
+ * 1. Install dependencies:
+ *    npm install @upstash/ratelimit @upstash/redis
+ *
+ * 2. Create Upstash Redis database:
+ *    - Sign up at: https://upstash.com/
+ *    - Create a Redis database
+ *    - Get REST URL and token from dashboard
+ *
+ * 3. Add environment variables to .env.local:
+ *    UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
+ *    UPSTASH_REDIS_REST_TOKEN=your_token_here
+ *
+ * 4. Replace this file with Upstash implementation:
+ *
+ * ```typescript
+ * import { Ratelimit } from "@upstash/ratelimit";
+ * import { Redis } from "@upstash/redis";
+ *
+ * // Initialize Redis client
+ * const redis = new Redis({
+ *   url: process.env.UPSTASH_REDIS_REST_URL!,
+ *   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+ * });
+ *
+ * // Create rate limiters (same 3 tiers)
+ * export const strictRateLimiter = new Ratelimit({
+ *   redis,
+ *   limiter: Ratelimit.slidingWindow(10, "1 m"), // 10 req/min
+ *   analytics: true,
+ * });
+ *
+ * export const moderateRateLimiter = new Ratelimit({
+ *   redis,
+ *   limiter: Ratelimit.slidingWindow(60, "1 m"), // 60 req/min
+ *   analytics: true,
+ * });
+ *
+ * export const lenientRateLimiter = new Ratelimit({
+ *   redis,
+ *   limiter: Ratelimit.slidingWindow(300, "1 m"), // 300 req/min
+ *   analytics: true,
+ * });
+ *
+ * // Usage in API routes (same interface)
+ * const { success } = await strictRateLimiter.limit(identifier);
+ * if (!success) {
+ *   return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+ * }
+ * ```
+ *
+ * 5. Benefits of Upstash migration:
+ *    - Works across all Vercel serverless instances
+ *    - Built-in analytics and monitoring
+ *    - Sliding window algorithm (more accurate)
+ *    - Redis-backed persistence
+ *    - Free tier: 10k commands/day
+ *
+ * This in-memory implementation is suitable for:
+ * - Single-instance deployments
+ * - Development and testing
+ * - Low to medium traffic (local dev server)
+ *
+ * See: docs/deployment/VERCEL-DEPLOYMENT-GUIDE.md for production migration steps
+ */
+
+interface RateLimitEntry {
+  count: number;
+  resetTime: number;
+}
+
+class RateLimiter {
+  private cache: Map<string, RateLimitEntry>;
+  private maxSize: number;
+  private windowMs: number;
+  private maxRequests: number;
+
+  constructor(options: {
+    windowMs?: number;
+    maxRequests?: number;
+    maxSize?: number;
+  } = {}) {
+    this.cache = new Map();
+    this.windowMs = options.windowMs || 60 * 1000; // 1 minute default
+    this.maxRequests = options.maxRequests || 100; // 100 requests per window
+    this.maxSize = options.maxSize || 10000; // Max 10k unique IPs in cache
+  }
+
+  /**
+   * Check if request should be rate limited
+   * @param identifier - Unique identifier (IP address, user ID, etc.)
+   * @returns Object with success status and remaining requests
+   */
+  check(identifier: string): {
+    success: boolean;
+    limit: number;
+    remaining: number;
+    reset: number;
+  } {
+    const now = Date.now();
+    const entry = this.cache.get(identifier);
+
+    // Clean up old entry
+    if (entry && now > entry.resetTime) {
+      this.cache.delete(identifier);
+    }
+
+    // Get or create entry
+    const current = this.cache.get(identifier) || {
+      count: 0,
+      resetTime: now + this.windowMs,
+    };
+
+    // Increment count
+    current.count++;
+
+    // LRU eviction if cache is too large
+    if (this.cache.size >= this.maxSize && !this.cache.has(identifier)) {
+      const firstKey = this.cache.keys().next().value;
+      if (firstKey) {
+        this.cache.delete(firstKey);
+      }
+    }
+
+    // Update cache
+    this.cache.set(identifier, current);
+
+    const success = current.count <= this.maxRequests;
+    const remaining = Math.max(0, this.maxRequests - current.count);
+    const reset = Math.ceil(current.resetTime / 1000);
+
+    return {
+      success,
+      limit: this.maxRequests,
+      remaining,
+      reset,
+    };
+  }
+
+  /**
+   * Reset rate limit for a specific identifier
+   * @param identifier - Unique identifier to reset
+   */
+  reset(identifier: string): void {
+    this.cache.delete(identifier);
+  }
+
+  /**
+   * Clear all rate limit entries
+   */
+  clear(): void {
+    this.cache.clear();
+  }
+
+  /**
+   * Get current cache size
+   */
+  size(): number {
+    return this.cache.size;
+  }
+}
+
+// Export singleton instances for different rate limit tiers
+
+/**
+ * Strict rate limiter - 10 requests per minute
+ * Use for: Authentication, password reset, account operations
+ */
+export const strictLimiter = new RateLimiter({
+  windowMs: 60 * 1000,
+  maxRequests: 10,
+});
+
+/**
+ * Moderate rate limiter - 60 requests per minute
+ * Use for: API routes, data mutations, write operations
+ */
+export const moderateLimiter = new RateLimiter({
+  windowMs: 60 * 1000,
+  maxRequests: 60,
+});
+
+/**
+ * Lenient rate limiter - 300 requests per minute
+ * Use for: Public reads, search, browse operations
+ */
+export const lenientLimiter = new RateLimiter({
+  windowMs: 60 * 1000,
+  maxRequests: 300,
+});
+
+/**
+ * Get client identifier from request
+ * Uses IP address or custom header
+ */
+export function getClientIdentifier(request: Request): string {
+  // Try to get real IP from headers (Vercel, Cloudflare, etc.)
+  const forwarded = request.headers.get('x-forwarded-for');
+  const realIp = request.headers.get('x-real-ip');
+  const cfConnectingIp = request.headers.get('cf-connecting-ip');
+
+  const ip = cfConnectingIp || realIp || forwarded?.split(',')[0] || 'unknown';
+
+  // For authenticated users, you could also use user ID
+  // const userId = request.headers.get('x-user-id');
+  // return userId ? `user-${userId}` : `ip-${ip}`;
+
+  return `ip-${ip.trim()}`;
+}
+
+/**
+ * Apply rate limit to a request
+ * Returns Response with 429 status if rate limit exceeded
+ */
+export function applyRateLimit(
+  request: Request,
+  limiter: RateLimiter = moderateLimiter
+): Response | null {
+  const identifier = getClientIdentifier(request);
+  const { success, limit, remaining: _remaining, reset } = limiter.check(identifier);
+
+  if (!success) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: 'Rate limit exceeded',
+        message: 'Too many requests. Please try again later.',
+        limit,
+        remaining: 0,
+        reset,
+      }),
+      {
+        status: 429,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-RateLimit-Limit': limit.toString(),
+          'X-RateLimit-Remaining': '0',
+          'X-RateLimit-Reset': reset.toString(),
+          'Retry-After': Math.ceil((reset * 1000 - Date.now()) / 1000).toString(),
+        },
+      }
+    );
+  }
+
+  return null;
+}
+
+/**
+ * Add rate limit headers to response
+ */
+export function addRateLimitHeaders(
+  response: Response,
+  limiter: RateLimiter,
+  identifier: string
+): Response {
+  const result = limiter.check(identifier);
+
+  response.headers.set('X-RateLimit-Limit', result.limit.toString());
+  response.headers.set('X-RateLimit-Remaining', result.remaining.toString());
+  response.headers.set('X-RateLimit-Reset', result.reset.toString());
+
+  return response;
+}

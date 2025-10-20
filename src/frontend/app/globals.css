@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+/* MonkeDAO Brand Colors */
+:root {
+  --background: #f2eecb; /* Cream background */
+  --foreground: #0d2a13; /* Dark forest green text */
+  --monke-primary: #0d2a13; /* Primary dark green */
+  --monke-accent: #174622; /* Accent green */
+  --monke-cream: #f2eecb; /* Off-white/cream */
+  --monke-neon: #00ff4d; /* Neon green highlight */
+  --monke-border: #f3efcd; /* Border accent */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-monke-primary: var(--monke-primary);
+  --color-monke-accent: var(--monke-accent);
+  --color-monke-cream: var(--monke-cream);
+  --color-monke-neon: var(--monke-neon);
+  --color-monke-border: var(--monke-border);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --radius: 8px; /* MonkeDAO border radius standard */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0d2a13; /* Dark green background */
+    --foreground: #f2eecb; /* Cream text for dark mode */
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Override Solana Wallet Adapter button colors with MonkeDAO branding */
+.wallet-adapter-button {
+  background-color: var(--monke-neon) !important;
+  color: var(--monke-primary) !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.wallet-adapter-button:not([disabled]):hover {
+  background-color: #00cc3d !important;
+  box-shadow: 0 6px 12px rgba(0, 255, 77, 0.3) !important;
+  transform: translateY(-1px) !important;
+}
+
+.wallet-adapter-button[disabled] {
+  background-color: var(--monke-accent) !important;
+  opacity: 0.6;
+}
+
+/* Override wallet adapter modal colors */
+.wallet-adapter-modal-wrapper {
+  background: rgba(13, 42, 19, 0.95) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.wallet-adapter-modal {
+  background: var(--monke-primary) !important;
+  border: 2px solid var(--monke-accent) !important;
+  border-radius: 12px !important;
+}
+
+.wallet-adapter-modal-title {
+  color: var(--monke-cream) !important;
+  font-weight: 700 !important;
+  font-size: 1.25rem !important;
+}
+
+.wallet-adapter-modal-list .wallet-adapter-button {
+  background-color: var(--monke-accent) !important;
+  border: 2px solid var(--monke-accent) !important;
+  color: var(--monke-cream) !important;
+  font-weight: 600 !important;
+  border-radius: 0 !important;
+}
+
+.wallet-adapter-modal-list .wallet-adapter-button:hover {
+  background-color: var(--monke-neon) !important;
+  border-color: var(--monke-neon) !important;
+  color: var(--monke-primary) !important;
+  border-radius: 0 !important;
+}
+
+/* Modal close button */
+.wallet-adapter-modal-button-close {
+  color: var(--monke-cream) !important;
+}
+
+.wallet-adapter-modal-button-close:hover {
+  color: var(--monke-neon) !important;
+}
+
+/* Animated gradient for dashboard CTA */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 6s ease infinite;
+}

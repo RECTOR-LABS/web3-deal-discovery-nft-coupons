@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run lint-staged to check staged files
+cd src/frontend && npx lint-staged
+
+# Run type checking
+echo "Running TypeScript type check..."
+npm run typecheck
+
+# Run tests (optional - remove if too slow)
+# echo "Running tests..."
+# npm test -- --bail --findRelatedTests

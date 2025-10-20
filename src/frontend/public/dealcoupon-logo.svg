@@ -1,0 +1,44 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="95" fill="#0d2a13"/>
+  <circle cx="100" cy="100" r="95" fill="url(#gradient)" opacity="0.3"/>
+
+  <!-- Gradient Definition -->
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ff4d;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#174622;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00ff4d;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f2eecb;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Stylized Ticket/Coupon Icon -->
+  <g transform="translate(100, 100)">
+    <!-- Main Ticket Shape -->
+    <rect x="-50" y="-30" width="100" height="60" rx="8" fill="#00ff4d"/>
+
+    <!-- Left Notch (circular cutout) -->
+    <circle cx="-50" cy="0" r="10" fill="#0d2a13"/>
+
+    <!-- Right Notch (circular cutout) -->
+    <circle cx="50" cy="0" r="10" fill="#0d2a13"/>
+
+    <!-- Dashed Line (perforated edge) -->
+    <line x1="-35" y1="-25" x2="-35" y2="25" stroke="#0d2a13" stroke-width="2" stroke-dasharray="4,4" opacity="0.5"/>
+
+    <!-- Percentage Symbol -->
+    <text x="0" y="10" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="bold" fill="#0d2a13" text-anchor="middle">%</text>
+
+    <!-- Shine Effect -->
+    <circle cx="-25" cy="-15" r="8" fill="#f2eecb" opacity="0.6"/>
+  </g>
+
+  <!-- Text: DC (initials) -->
+  <text x="100" y="170" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900" fill="url(#textGradient)" text-anchor="middle" letter-spacing="2">DC</text>
+
+  <!-- Border Ring -->
+  <circle cx="100" cy="100" r="95" stroke="#00ff4d" stroke-width="3" fill="none" opacity="0.8"/>
+</svg>

@@ -1,0 +1,693 @@
+{
+  "address": "RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7",
+  "metadata": {
+    "name": "nft_coupon",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "create_coupon",
+      "docs": [
+        "Create a new NFT coupon",
+        "Mints an NFT with Metaplex metadata and creates coupon data"
+      ],
+      "discriminator": [
+        29,
+        170,
+        159,
+        88,
+        211,
+        20,
+        13,
+        56
+      ],
+      "accounts": [
+        {
+          "name": "merchant",
+          "docs": [
+            "Merchant account (PDA derived from merchant authority)",
+            "Seeds: [\"merchant\", merchant_authority_pubkey]",
+            "Validates that the merchant authority owns this merchant account"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  114,
+                  99,
+                  104,
+                  97,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "merchant_authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "coupon_data",
+          "docs": [
+            "Coupon data account (PDA derived from NFT mint address)",
+            "Seeds: [\"coupon\", nft_mint_pubkey]",
+            "Stores discount %, expiry date, category, redemption tracking"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  117,
+                  112,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "nft_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_mint",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "metadata_account",
+          "writable": true
+        },
+        {
+          "name": "master_edition",
+          "writable": true
+        },
+        {
+          "name": "nft_token_account",
+          "writable": true
+        },
+        {
+          "name": "merchant_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "authority",
+          "relations": [
+            "merchant"
+          ]
+        },
+        {
+          "name": "token_metadata_program",
+          "address": "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        },
+        {
+          "name": "sysvar_instructions",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "discount_percentage",
+          "type": "u8"
+        },
+        {
+          "name": "expiry_date",
+          "type": "i64"
+        },
+        {
+          "name": "category",
+          "type": {
+            "defined": {
+              "name": "CouponCategory"
+            }
+          }
+        },
+        {
+          "name": "max_redemptions",
+          "type": "u8"
+        },
+        {
+          "name": "metadata_uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "initialize_merchant",
+      "docs": [
+        "Initialize a merchant account",
+        "Merchants must register before creating coupons"
+      ],
+      "discriminator": [
+        7,
+        90,
+        74,
+        38,
+        99,
+        111,
+        142,
+        77
+      ],
+      "accounts": [
+        {
+          "name": "merchant",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  114,
+                  99,
+                  104,
+                  97,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "business_name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "redeem_coupon",
+      "docs": [
+        "Redeem a coupon",
+        "Burns the NFT or decrements redemption counter"
+      ],
+      "discriminator": [
+        66,
+        181,
+        163,
+        197,
+        244,
+        189,
+        153,
+        0
+      ],
+      "accounts": [
+        {
+          "name": "coupon_data",
+          "docs": [
+            "Coupon data account (PDA derived from NFT mint)",
+            "Seeds: [\"coupon\", nft_mint_pubkey]",
+            "Tracks redemptions remaining and active status"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  117,
+                  112,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "nft_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "merchant",
+          "docs": [
+            "Merchant account (PDA derived from merchant authority)",
+            "Seeds: [\"merchant\", merchant_authority_pubkey]",
+            "Used for event logging and analytics"
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  114,
+                  99,
+                  104,
+                  97,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "merchant.authority",
+                "account": "Merchant"
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_mint",
+          "docs": [
+            "NFT mint account (must match coupon_data.mint)"
+          ],
+          "writable": true
+        },
+        {
+          "name": "nft_token_account",
+          "docs": [
+            "User's token account holding the NFT",
+            "Validates ownership via mint and owner constraints"
+          ],
+          "writable": true
+        },
+        {
+          "name": "user",
+          "docs": [
+            "User redeeming the coupon (must own the NFT)"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "update_coupon_status",
+      "docs": [
+        "Update coupon active status",
+        "Allows merchant to deactivate/reactivate a coupon"
+      ],
+      "discriminator": [
+        122,
+        226,
+        151,
+        161,
+        164,
+        22,
+        246,
+        242
+      ],
+      "accounts": [
+        {
+          "name": "merchant",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  114,
+                  99,
+                  104,
+                  97,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "merchant_authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "coupon_data",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  117,
+                  112,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "coupon_data.mint",
+                "account": "CouponData"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "relations": [
+            "merchant"
+          ]
+        },
+        {
+          "name": "merchant_authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "is_active",
+          "type": "bool"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "CouponData",
+      "discriminator": [
+        234,
+        18,
+        183,
+        25,
+        77,
+        39,
+        32,
+        19
+      ]
+    },
+    {
+      "name": "Merchant",
+      "discriminator": [
+        71,
+        235,
+        30,
+        40,
+        231,
+        21,
+        32,
+        64
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "RedemptionEvent",
+      "discriminator": [
+        72,
+        165,
+        70,
+        6,
+        179,
+        67,
+        82,
+        183
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "CouponExpired",
+      "msg": "The coupon has expired and can no longer be redeemed"
+    },
+    {
+      "code": 6001,
+      "name": "CouponFullyRedeemed",
+      "msg": "The coupon has already been fully redeemed"
+    },
+    {
+      "code": 6002,
+      "name": "CouponNotActive",
+      "msg": "The coupon is not active"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidDiscountPercentage",
+      "msg": "Invalid discount percentage (must be 1-100)"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidExpiryDate",
+      "msg": "Expiry date must be in the future"
+    },
+    {
+      "code": 6005,
+      "name": "UnauthorizedMerchant",
+      "msg": "Unauthorized: only the merchant can perform this action"
+    },
+    {
+      "code": 6006,
+      "name": "UnauthorizedOwner",
+      "msg": "Unauthorized: only the coupon owner can perform this action"
+    },
+    {
+      "code": 6007,
+      "name": "BusinessNameTooLong",
+      "msg": "Business name is too long (max 100 characters)"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidRedemptionAmount",
+      "msg": "Invalid redemption amount"
+    },
+    {
+      "code": 6009,
+      "name": "ArithmeticOverflow",
+      "msg": "Arithmetic overflow occurred"
+    }
+  ],
+  "types": [
+    {
+      "name": "CouponCategory",
+      "docs": [
+        "Coupon categories for filtering and organization"
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "FoodAndBeverage"
+          },
+          {
+            "name": "Retail"
+          },
+          {
+            "name": "Services"
+          },
+          {
+            "name": "Travel"
+          },
+          {
+            "name": "Entertainment"
+          },
+          {
+            "name": "Other"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CouponData",
+      "docs": [
+        "Coupon metadata structure",
+        "This data is stored on-chain and linked to the NFT"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "docs": [
+              "Mint address of the NFT coupon"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "merchant",
+            "docs": [
+              "Merchant who created this coupon"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "discount_percentage",
+            "docs": [
+              "Discount percentage (0-100)"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "expiry_date",
+            "docs": [
+              "Expiry date (Unix timestamp)"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "category",
+            "docs": [
+              "Category of the deal"
+            ],
+            "type": {
+              "defined": {
+                "name": "CouponCategory"
+              }
+            }
+          },
+          {
+            "name": "redemptions_remaining",
+            "docs": [
+              "Redemptions remaining (0 = fully redeemed)"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "max_redemptions",
+            "docs": [
+              "Original number of redemptions allowed"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "is_active",
+            "docs": [
+              "Whether the coupon is still active"
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Bump seed for PDA"
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Merchant",
+      "docs": [
+        "Merchant account - PDA to track merchant info and coupon creation"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "docs": [
+              "Merchant's wallet address (authority)"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "business_name",
+            "docs": [
+              "Business name"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "total_coupons_created",
+            "docs": [
+              "Total coupons created by this merchant"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Bump seed for PDA"
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RedemptionEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "nft_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "merchant",
+            "type": "pubkey"
+          },
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "redemptions_remaining",
+            "type": "u8"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ]
+}
