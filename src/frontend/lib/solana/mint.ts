@@ -1,12 +1,8 @@
 import {
   Connection,
   Keypair,
-  SystemProgram,
-  SYSVAR_RENT_PUBKEY,
 } from '@solana/web3.js';
 import {
-  TOKEN_PROGRAM_ID,
-  ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
 } from '@solana/spl-token';
 import { WalletContextState } from '@solana/wallet-adapter-react';
@@ -14,7 +10,6 @@ import {
   getMerchantPDA,
   getCouponDataPDA,
   getMetadataAccount,
-  TOKEN_METADATA_PROGRAM_ID,
 } from './program';
 import {
   createCouponDirect,
@@ -253,8 +248,8 @@ export async function mintCoupon(
     const metadataUri = metadataUploadResult.url;
 
     // Step 5: Get PDAs
-    const [merchantPDA] = getMerchantPDA(wallet.publicKey);
-    const [couponDataPDA] = getCouponDataPDA(nftMint.publicKey);
+    const [_merchantPDA] = getMerchantPDA(wallet.publicKey);
+    const [_couponDataPDA] = getCouponDataPDA(nftMint.publicKey);
     const metadataAccount = getMetadataAccount(nftMint.publicKey);
     const nftTokenAccount = getAssociatedTokenAddressSync(
       nftMint.publicKey,

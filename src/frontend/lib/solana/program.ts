@@ -18,7 +18,7 @@ export function getProgram(connection: Connection, wallet: AnchorWallet) {
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return new Program(idl as any, PROGRAM_ID, provider);
+  return new Program(idl as any, provider);
 }
 
 /**

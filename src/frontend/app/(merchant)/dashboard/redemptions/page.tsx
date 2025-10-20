@@ -17,6 +17,22 @@ interface Redemption {
   category: string;
 }
 
+interface EventWithDeal {
+  id: string;
+  created_at: string;
+  user_wallet: string;
+  transaction_signature: string | null;
+  deal_id: string;
+  deals: {
+    id: string;
+    title: string;
+    discount_percentage: number;
+    original_price: number | null;
+    category: string;
+    merchant_id: string;
+  } | null;
+}
+
 export default function RedemptionsPage() {
   const { publicKey } = useWallet();
   const [redemptions, setRedemptions] = useState<Redemption[]>([]);
@@ -79,19 +95,23 @@ export default function RedemptionsPage() {
         }
 
         // Transform data
-        const redemptionData: Redemption[] = (events || [])
+        const typedEvents = (events || []) as unknown as EventWithDeal[];
+        const redemptionData: Redemption[] = typedEvents
           .filter(event => event.deals) // Filter out events without deal data
-          .map(event => ({
-            id: event.id,
-            created_at: event.created_at,
-            deal_title: (event.deals as any).title,
-            deal_id: event.deal_id,
-            user_wallet: event.user_wallet,
-            transaction_signature: event.transaction_signature,
-            discount_percentage: (event.deals as any).discount_percentage,
-            original_price: (event.deals as any).original_price,
-            category: (event.deals as any).category,
-          }));
+          .map(event => {
+            const deal = event.deals!;
+            return {
+              id: event.id,
+              created_at: event.created_at,
+              deal_title: deal.title,
+              deal_id: event.deal_id,
+              user_wallet: event.user_wallet,
+              transaction_signature: event.transaction_signature,
+              discount_percentage: deal.discount_percentage,
+              original_price: deal.original_price,
+              category: deal.category,
+            };
+          });
 
         // Apply date filter
         let filteredData = redemptionData;

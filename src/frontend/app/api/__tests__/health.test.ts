@@ -1,6 +1,7 @@
 import { GET, HEAD } from '../health/route';
 import { createClient } from '@supabase/supabase-js';
 import { Connection } from '@solana/web3.js';
+import { NextRequest } from 'next/server';
 
 // Mock Supabase
 jest.mock('@supabase/supabase-js');
@@ -33,13 +34,14 @@ describe('/api/health', () => {
             }),
           }),
         }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       // Mock Solana RPC success
       mockConnection.prototype.getBlockHeight = jest.fn().mockResolvedValue(100000);
 
-      const mockRequest = new Request('http://localhost:3000/api/health');
-      const response = await GET(mockRequest as any);
+      const mockRequest = new Request('http://localhost:3000/api/health') as NextRequest;
+      const response = await GET(mockRequest);
 
       expect(response.status).toBe(200);
 
@@ -63,13 +65,14 @@ describe('/api/health', () => {
             }),
           }),
         }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       // Mock Solana RPC success
       mockConnection.prototype.getBlockHeight = jest.fn().mockResolvedValue(100000);
 
-      const mockRequest = new Request('http://localhost:3000/api/health');
-      const response = await GET(mockRequest as any);
+      const mockRequest = new Request('http://localhost:3000/api/health') as NextRequest;
+      const response = await GET(mockRequest);
 
       expect(response.status).toBe(503);
 
@@ -89,13 +92,14 @@ describe('/api/health', () => {
             }),
           }),
         }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       // Mock Solana RPC failure
       mockConnection.prototype.getBlockHeight = jest.fn().mockRejectedValue(new Error('RPC timeout'));
 
-      const mockRequest = new Request('http://localhost:3000/api/health');
-      const response = await GET(mockRequest as any);
+      const mockRequest = new Request('http://localhost:3000/api/health') as NextRequest;
+      const response = await GET(mockRequest);
 
       expect(response.status).toBe(503);
 
@@ -115,12 +119,13 @@ describe('/api/health', () => {
             }),
           }),
         }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       mockConnection.prototype.getBlockHeight = jest.fn().mockResolvedValue(100000);
 
-      const mockRequest = new Request('http://localhost:3000/api/health');
-      const response = await GET(mockRequest as any);
+      const mockRequest = new Request('http://localhost:3000/api/health') as NextRequest;
+      const response = await GET(mockRequest);
 
       const data = await response.json();
       expect(data.checks.database).toHaveProperty('latency');
@@ -134,9 +139,9 @@ describe('/api/health', () => {
     it('should return 200 with no body', async () => {
       const mockRequest = new Request('http://localhost:3000/api/health', {
         method: 'HEAD',
-      });
+      }) as NextRequest;
 
-      const response = await HEAD(mockRequest as any);
+      const response = await HEAD(mockRequest);
 
       expect(response.status).toBe(200);
       expect(response.headers.get('Cache-Control')).toBe('no-cache, no-store, must-revalidate');

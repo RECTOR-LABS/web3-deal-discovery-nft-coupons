@@ -3,6 +3,11 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+// Type for Google Analytics gtag function
+interface WindowWithGtag extends Window {
+  gtag?: (command: string, action: string, params: Record<string, string>) => void;
+}
+
 /**
  * GDPR-Compliant Cookie Consent Banner
  * Shows on first visit, stores consent in localStorage
@@ -26,8 +31,8 @@ export function CookieConsentBanner() {
     setShowBanner(false);
 
     // Track consent in analytics (optional)
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('consent', 'update', {
+    if (typeof window !== 'undefined' && (window as WindowWithGtag).gtag) {
+      (window as WindowWithGtag).gtag?.('consent', 'update', {
         analytics_storage: 'granted',
         ad_storage: 'denied', // We don't use ads
       });
@@ -40,8 +45,8 @@ export function CookieConsentBanner() {
     setShowBanner(false);
 
     // Disable analytics if declined
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('consent', 'update', {
+    if (typeof window !== 'undefined' && (window as WindowWithGtag).gtag) {
+      (window as WindowWithGtag).gtag?.('consent', 'update', {
         analytics_storage: 'denied',
         ad_storage: 'denied',
       });

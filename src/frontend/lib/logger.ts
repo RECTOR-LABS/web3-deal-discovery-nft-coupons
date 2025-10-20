@@ -43,7 +43,7 @@ export const logger = pino({
  * Create child logger with context
  * @param context - Context object (e.g., { module: 'auth', userId: '123' })
  */
-export function createLogger(context: Record<string, any>) {
+export function createLogger(context: Record<string, string | number | boolean>) {
   return logger.child(context);
 }
 

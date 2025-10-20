@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { useWallet, useConnection, WalletContextState } from '@solana/wallet-adapter-react';
 import { useRouter } from 'next/navigation';
 import { Store, Loader2 } from 'lucide-react';
 import { WalletButton } from '@/components/shared/WalletButton';
@@ -61,7 +61,7 @@ export default function MerchantRegisterPage() {
           setLoadingMessage('Checking on-chain status...');
           const isInitialized = await isMerchantInitialized(
             connection,
-            wallet as any
+            wallet as Pick<WalletContextState, 'publicKey'>
           );
 
           if (!isInitialized) {
@@ -69,7 +69,7 @@ export default function MerchantRegisterPage() {
             setLoadingMessage('Initializing on-chain account...');
             const initResult = await initializeMerchantDirect(
               connection,
-              wallet as any,
+              wallet as Pick<WalletContextState, 'publicKey' | 'sendTransaction'>,
               formData.businessName
             );
 
@@ -92,7 +92,7 @@ export default function MerchantRegisterPage() {
       setLoadingMessage('Initializing on-chain account (approve in wallet)...');
       const initResult = await initializeMerchantDirect(
         connection,
-        wallet as any,
+        wallet as Pick<WalletContextState, 'publicKey' | 'sendTransaction'>,
         formData.businessName
       );
 

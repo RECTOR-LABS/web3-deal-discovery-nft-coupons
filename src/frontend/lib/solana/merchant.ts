@@ -107,7 +107,8 @@ export async function getMerchantAccount(
     const program = getProgram(connection, wallet);
     const [merchantPDA] = getMerchantPDA(wallet.publicKey);
 
-    const merchantAccount = await program.account.merchant.fetch(merchantPDA);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const merchantAccount = await (program.account as any).merchant.fetch(merchantPDA);
     return merchantAccount;
   } catch (error) {
     console.error('Error fetching merchant account:', error);

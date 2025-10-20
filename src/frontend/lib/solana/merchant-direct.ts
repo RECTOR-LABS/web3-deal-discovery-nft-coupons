@@ -233,6 +233,16 @@ export async function initializeMerchantDirect(
 }
 
 /**
+ * Merchant account data structure
+ */
+interface MerchantAccountData {
+  exists: boolean;
+  pda: string;
+  lamports: number;
+  owner: string;
+}
+
+/**
  * Get merchant account data from the blockchain
  *
  * Note: This function would require implementing Borsh deserialization
@@ -245,7 +255,7 @@ export async function initializeMerchantDirect(
 export async function getMerchantAccountDirect(
   connection: Connection,
   wallet: Pick<WalletContextState, 'publicKey'> | null
-): Promise<any | null> {
+): Promise<MerchantAccountData | null> {
   if (!wallet || !wallet.publicKey) {
     return null;
   }
@@ -313,7 +323,7 @@ export interface CreateCouponResult {
  */
 export async function createCouponDirect(
   connection: Connection,
-  wallet: Pick<WalletContextState, 'publicKey' | 'sendTransaction'>,
+  wallet: Pick<WalletContextState, 'publicKey' | 'sendTransaction' | 'signTransaction'>,
   args: CreateCouponArgs
 ): Promise<CreateCouponResult> {
   try {

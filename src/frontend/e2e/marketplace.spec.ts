@@ -123,9 +123,9 @@ test.describe('Accessibility', () => {
     // Basic accessibility checks
     await expect(page.locator('main')).toBeVisible();
 
-    // Check for skip link
-    const skipLink = page.locator('a[href="#main-content"]');
+    // Check for skip link (if it exists)
     // Some sites have skip links for accessibility
+    // const skipLink = page.locator('a[href="#main-content"]');
   });
 
   test('should support keyboard navigation', async ({ page }) => {
