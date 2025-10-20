@@ -6,7 +6,7 @@
 [![Solana](https://img.shields.io/badge/Solana-Devnet-9945FF?logo=solana)](https://solana.com)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript)](https://www.typescriptlang.org)
-[![Tests](https://img.shields.io/badge/Tests-27%2F27%20Passing-success)](https://github.com)
+[![Tests](https://img.shields.io/badge/Tests-3%20Unit%20%2B%2027%20Manual-success)](https://github.com)
 [![Production Ready](https://img.shields.io/badge/Production%20Ready-v0.3.0-success)](https://github.com)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF)](https://github.com/features/actions)
 
