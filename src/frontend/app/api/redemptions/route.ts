@@ -25,7 +25,50 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Insert redemption event
+    // RACE CONDITION PROTECTION: Check if this NFT has already been redeemed
+    // This prevents duplicate redemptions when two merchants scan the same QR simultaneously
+    const { data: existingRedemption } = await supabase
+      .from('events')
+      .select('id, metadata')
+      .eq('event_type', 'redemption')
+      .contains('metadata', { nft_mint })
+      .single();
+
+    if (existingRedemption) {
+      console.warn(`Duplicate redemption attempt for NFT: ${nft_mint}`);
+      return NextResponse.json(
+        {
+          error: 'Coupon already redeemed',
+          code: 'ALREADY_REDEEMED',
+          redemption_id: existingRedemption.id,
+          details: 'This coupon has already been used and cannot be redeemed again.',
+        },
+        { status: 409 } // 409 Conflict
+      );
+    }
+
+    // IDEMPOTENCY CHECK: Prevent duplicate submission with same transaction signature
+    const { data: existingTransaction } = await supabase
+      .from('events')
+      .select('id')
+      .eq('event_type', 'redemption')
+      .contains('metadata', { transaction_signature })
+      .single();
+
+    if (existingTransaction) {
+      console.warn(`Duplicate transaction signature: ${transaction_signature}`);
+      return NextResponse.json(
+        {
+          error: 'Transaction already processed',
+          code: 'DUPLICATE_TRANSACTION',
+          redemption_id: existingTransaction.id,
+          details: 'This transaction has already been recorded.',
+        },
+        { status: 409 } // 409 Conflict
+      );
+    }
+
+    // Insert redemption event (protected by checks above)
     const { data, error } = await supabase
       .from('events')
       .insert({
@@ -44,6 +87,17 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Database error:', error);
+      // Check if error is due to unique constraint violation (belt-and-suspenders approach)
+      if (error.code === '23505') { // PostgreSQL unique violation code
+        return NextResponse.json(
+          {
+            error: 'Coupon already redeemed',
+            code: 'ALREADY_REDEEMED',
+            details: 'This coupon has already been used.',
+          },
+          { status: 409 }
+        );
+      }
       return NextResponse.json(
         { error: 'Failed to record redemption event' },
         { status: 500 }

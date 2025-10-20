@@ -55,6 +55,12 @@ export default function MarketplacePage() {
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [userTier, setUserTier] = useState<TierLevel>('Bronze');
 
+  // Pagination state (Performance fix from PR review)
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const DEALS_PER_PAGE = 20;
+
   // Geolocation state (Epic 10)
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
   const [selectedDistance, setSelectedDistance] = useState<number | null>(null);
@@ -92,14 +98,19 @@ export default function MarketplacePage() {
     fetchUserTier();
   }, [connected, publicKey]);
 
-  // Fetch both platform and external deals
+  // Fetch both platform and external deals with pagination
   useEffect(() => {
     async function fetchDeals() {
       try {
         setLoading(true);
 
+        // Calculate pagination range
+        const from = page * DEALS_PER_PAGE;
+        const to = from + DEALS_PER_PAGE - 1;
+
         // Fetch platform deals from Supabase with merchant location data (Epic 10)
-        const { data: platformDeals, error } = await supabase
+        // Use .range() for pagination to prevent slow queries with 1000+ deals
+        const { data: platformDeals, error, count } = await supabase
           .from('deals')
           .select(`
             *,
@@ -110,11 +121,16 @@ export default function MarketplacePage() {
               state,
               business_name
             )
-          `)
+          `, { count: 'exact' })
           .eq('is_active', true)
-          .gte('expiry_date', new Date().toISOString());
+          .gte('expiry_date', new Date().toISOString())
+          .range(from, to)
+          .order('created_at', { ascending: false });
 
         if (error) throw error;
+
+        // Check if there are more deals to load
+        setHasMore(count ? count > to + 1 : false);
 
         // Flatten merchant location data into deals (Epic 10)
         const dealsWithLocation: ExtendedDeal[] = (platformDeals || []).map((deal: DealWithMerchant) => ({
@@ -127,37 +143,49 @@ export default function MarketplacePage() {
           merchant_name: deal.merchants?.business_name || null,
         }));
 
-        // Fetch external deals from aggregator API
+        // Fetch external deals from aggregator API (only on first page)
         let externalDeals: ExtendedDeal[] = [];
-        try {
-          const response = await fetch('/api/deals/aggregated');
-          if (response.ok) {
-            const result = await response.json();
-            if (result.success && result.deals) {
-              externalDeals = result.deals;
+        if (page === 0) {
+          try {
+            const response = await fetch('/api/deals/aggregated');
+            if (response.ok) {
+              const result = await response.json();
+              if (result.success && result.deals) {
+                externalDeals = result.deals;
+              }
             }
+          } catch (externalError) {
+            console.error('Error fetching external deals:', externalError);
+            // Continue with platform deals only if external fetch fails
           }
-        } catch (externalError) {
-          console.error('Error fetching external deals:', externalError);
-          // Continue with platform deals only if external fetch fails
         }
 
         // Merge platform and external deals
-        const allDeals: ExtendedDeal[] = [
+        const newDeals: ExtendedDeal[] = [
           ...dealsWithLocation,
           ...externalDeals,
         ];
 
-        setDeals(allDeals);
+        // Append to existing deals or replace if first page
+        setDeals(prevDeals => page === 0 ? newDeals : [...prevDeals, ...newDeals]);
       } catch (error) {
         console.error('Error fetching deals:', error);
       } finally {
         setLoading(false);
+        setLoadingMore(false);
       }
     }
 
     fetchDeals();
-  }, []);
+  }, [page]);
+
+  // Load more deals function
+  const handleLoadMore = () => {
+    if (!loadingMore && hasMore) {
+      setLoadingMore(true);
+      setPage(prevPage => prevPage + 1);
+    }
+  };
 
   // Filter and sort deals
   const filteredDeals = useMemo(() => {
@@ -378,22 +406,62 @@ export default function MarketplacePage() {
               </div>
             ) : (
               // List View (Default)
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="grid grid-cols-1 md:grid-cols-2 gap-6"
-              >
-                {filteredDeals.map((deal, index) => (
-                  <motion.div
-                    key={deal.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: Math.min(index * 0.05, 0.3) }}
-                  >
-                    <DealCard deal={deal} userTier={userTier} />
-                  </motion.div>
-                ))}
-              </motion.div>
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                >
+                  {filteredDeals.map((deal, index) => (
+                    <motion.div
+                      key={deal.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: Math.min(index * 0.05, 0.3) }}
+                    >
+                      <DealCard deal={deal} userTier={userTier} />
+                    </motion.div>
+                  ))}
+                </motion.div>
+
+                {/* Load More Button (Pagination) */}
+                {hasMore && !loading && (
+                  <div className="mt-10 text-center">
+                    <button
+                      onClick={handleLoadMore}
+                      disabled={loadingMore}
+                      className="px-8 py-4 bg-monke-primary text-white font-bold text-lg rounded-lg
+                                 hover:bg-monke-primary/90 disabled:opacity-50 disabled:cursor-not-allowed
+                                 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1
+                                 border-2 border-monke-border"
+                    >
+                      {loadingMore ? (
+                        <span className="flex items-center gap-3">
+                          <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin" />
+                          Loading more deals...
+                        </span>
+                      ) : (
+                        'Load More Deals'
+                      )}
+                    </button>
+                    <p className="mt-3 text-sm text-monke-primary/70">
+                      Showing {filteredDeals.length} deals
+                    </p>
+                  </div>
+                )}
+
+                {/* End of Results Message */}
+                {!hasMore && filteredDeals.length > 0 && (
+                  <div className="mt-10 text-center p-6 bg-monke-cream/30 rounded-lg border-2 border-monke-border">
+                    <p className="text-monke-primary font-semibold">
+                      You&apos;ve reached the end! 🎉
+                    </p>
+                    <p className="text-sm text-monke-primary/70 mt-2">
+                      Showing all {filteredDeals.length} available deals
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </div>
 

@@ -1,14 +1,75 @@
 /**
  * Simple In-Memory Rate Limiter
  *
- * For production, consider upgrading to:
- * - Upstash Redis (@upstash/ratelimit) for distributed rate limiting
- * - next-rate-limit for more advanced features
+ * ⚠️ PRODUCTION WARNING: This in-memory implementation does NOT work across
+ * Vercel serverless instances. Each instance maintains its own cache, making
+ * rate limiting inconsistent in production.
  *
- * This implementation uses LRU cache and is suitable for:
+ * For production, MUST migrate to Upstash Redis for distributed rate limiting:
+ *
+ * 1. Install dependencies:
+ *    npm install @upstash/ratelimit @upstash/redis
+ *
+ * 2. Create Upstash Redis database:
+ *    - Sign up at: https://upstash.com/
+ *    - Create a Redis database
+ *    - Get REST URL and token from dashboard
+ *
+ * 3. Add environment variables to .env.local:
+ *    UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
+ *    UPSTASH_REDIS_REST_TOKEN=your_token_here
+ *
+ * 4. Replace this file with Upstash implementation:
+ *
+ * ```typescript
+ * import { Ratelimit } from "@upstash/ratelimit";
+ * import { Redis } from "@upstash/redis";
+ *
+ * // Initialize Redis client
+ * const redis = new Redis({
+ *   url: process.env.UPSTASH_REDIS_REST_URL!,
+ *   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+ * });
+ *
+ * // Create rate limiters (same 3 tiers)
+ * export const strictRateLimiter = new Ratelimit({
+ *   redis,
+ *   limiter: Ratelimit.slidingWindow(10, "1 m"), // 10 req/min
+ *   analytics: true,
+ * });
+ *
+ * export const moderateRateLimiter = new Ratelimit({
+ *   redis,
+ *   limiter: Ratelimit.slidingWindow(60, "1 m"), // 60 req/min
+ *   analytics: true,
+ * });
+ *
+ * export const lenientRateLimiter = new Ratelimit({
+ *   redis,
+ *   limiter: Ratelimit.slidingWindow(300, "1 m"), // 300 req/min
+ *   analytics: true,
+ * });
+ *
+ * // Usage in API routes (same interface)
+ * const { success } = await strictRateLimiter.limit(identifier);
+ * if (!success) {
+ *   return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+ * }
+ * ```
+ *
+ * 5. Benefits of Upstash migration:
+ *    - Works across all Vercel serverless instances
+ *    - Built-in analytics and monitoring
+ *    - Sliding window algorithm (more accurate)
+ *    - Redis-backed persistence
+ *    - Free tier: 10k commands/day
+ *
+ * This in-memory implementation is suitable for:
  * - Single-instance deployments
  * - Development and testing
- * - Low to medium traffic
+ * - Low to medium traffic (local dev server)
+ *
+ * See: docs/deployment/VERCEL-DEPLOYMENT-GUIDE.md for production migration steps
  */
 
 interface RateLimitEntry {
