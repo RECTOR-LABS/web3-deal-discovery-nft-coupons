@@ -4,6 +4,7 @@ import "./globals.css";
 import { SolanaWalletProvider } from "@/components/shared/WalletProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import FloatingPitchDeckButton from "@/components/shared/FloatingPitchDeckButton";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,6 +19,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "DealCoupon - Best Deals & Coupons Marketplace",
   description: "Discover and trade promotional deals and coupons from your favorite merchants",
+  icons: {
+    icon: '/favicon.svg',
+    apple: '/dealcoupon-logo.svg',
+  },
 };
 
 export default function RootLayout({
@@ -42,6 +47,7 @@ export default function RootLayout({
         <SolanaWalletProvider>
           {children}
         </SolanaWalletProvider>
+        <FloatingPitchDeckButton />
         <Analytics />
         <SpeedInsights />
       </body>

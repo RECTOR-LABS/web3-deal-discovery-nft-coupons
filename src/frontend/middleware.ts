@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { randomUUID } from 'crypto';
 
 /**
  * Middleware for CORS headers and API route handling
@@ -16,8 +15,8 @@ import { randomUUID } from 'crypto';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Generate unique request ID for tracing
-  const requestId = randomUUID();
+  // Generate unique request ID for tracing (using Web Crypto API for Edge Runtime compatibility)
+  const requestId = crypto.randomUUID();
 
   // Log API requests for debugging
   if (pathname.startsWith('/api')) {

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { Tag, ShoppingBag, User, TrendingUp } from 'lucide-react';
+import { Tag, ShoppingBag, User, TrendingUp, LayoutDashboard } from 'lucide-react';
 import { useWallet } from '@solana/wallet-adapter-react';
 
 // Dynamic import to avoid SSR issues with wallet button
@@ -26,6 +26,7 @@ export default function UserNavigation() {
     { href: '/marketplace', label: 'Marketplace', icon: ShoppingBag },
     { href: '/coupons', label: 'My Coupons', icon: Tag },
     { href: '/staking', label: 'Staking', icon: TrendingUp },
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/profile', label: 'Profile', icon: User },
   ];
 
@@ -37,8 +38,8 @@ export default function UserNavigation() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/marketplace" className="flex items-center space-x-2">
-            <ShoppingBag className="w-8 h-8 text-[#00ff4d]" />
+          <Link href="/marketplace" className="flex items-center space-x-2 cursor-pointer">
+            <img src="/dealcoupon-logo.svg" alt="DealCoupon" className="w-8 h-8" />
             <span className="text-[#f2eecb] text-xl font-bold">
               DealCoupon
             </span>
@@ -54,7 +55,7 @@ export default function UserNavigation() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors cursor-pointer ${
                     isActive
                       ? 'bg-[#00ff4d] text-[#0d2a13] font-semibold'
                       : 'text-[#f2eecb] hover:bg-[#174622]'

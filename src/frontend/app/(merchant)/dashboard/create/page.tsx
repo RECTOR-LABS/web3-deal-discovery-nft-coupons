@@ -214,14 +214,14 @@ export default function CreateDealPage() {
           <h1 className="text-3xl font-bold text-monke-primary mb-3">
             Deal Created Successfully! 🎉
           </h1>
-          <p className="text-lg text-foreground/70 mb-8">
+          <p className="text-lg text-[#174622] mb-8">
             Your digital coupon has been created successfully
           </p>
 
           {/* Transaction Details */}
           <div className="bg-monke-cream border-2 border-monke-border rounded-lg p-6 space-y-4 mb-8">
             <div>
-              <p className="text-sm text-foreground/50 mb-1">Transaction Signature</p>
+              <p className="text-sm text-[#174622] font-medium mb-1">Transaction Signature</p>
               <div className="flex items-center justify-center space-x-2">
                 <p className="text-sm font-mono text-monke-primary">
                   {txSignature.slice(0, 8)}...{txSignature.slice(-8)}
@@ -238,7 +238,7 @@ export default function CreateDealPage() {
             </div>
 
             <div>
-              <p className="text-sm text-foreground/50 mb-1">Coupon ID</p>
+              <p className="text-sm text-[#174622] font-medium mb-1">Coupon ID</p>
               <p className="text-sm font-mono text-monke-primary">
                 {nftMint.slice(0, 8)}...{nftMint.slice(-8)}
               </p>
@@ -302,7 +302,7 @@ export default function CreateDealPage() {
           <h1 className="text-3xl font-bold text-monke-primary mb-2">
             Preview Your Deal
           </h1>
-          <p className="text-foreground/60">
+          <p className="text-[#174622]">
             Review your deal before creating it
           </p>
         </div>
@@ -333,26 +333,26 @@ export default function CreateDealPage() {
             </h2>
 
             {/* Description */}
-            <p className="text-foreground/70">{formData.description}</p>
+            <p className="text-[#174622]">{formData.description}</p>
 
             {/* Metadata Grid */}
             <div className="grid grid-cols-2 gap-4 pt-4 border-t-2 border-monke-border">
               <div>
-                <p className="text-sm text-foreground/50">Category</p>
+                <p className="text-sm text-[#174622] font-medium">Category</p>
                 <p className="font-medium text-monke-primary">{formData.category}</p>
               </div>
               <div>
-                <p className="text-sm text-foreground/50">Expires</p>
+                <p className="text-sm text-[#174622] font-medium">Expires</p>
                 <p className="font-medium text-monke-primary">
                   {new Date(formData.expiryDate).toLocaleDateString()}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-foreground/50">Quantity</p>
+                <p className="text-sm text-[#174622] font-medium">Quantity</p>
                 <p className="font-medium text-monke-primary">{formData.quantity}</p>
               </div>
               <div>
-                <p className="text-sm text-foreground/50">Redemptions</p>
+                <p className="text-sm text-[#174622] font-medium">Redemptions</p>
                 <p className="font-medium text-monke-primary">Single-use</p>
               </div>
             </div>
@@ -403,7 +403,7 @@ export default function CreateDealPage() {
         <h1 className="text-3xl font-bold text-monke-primary mb-2">
           Create New Deal
         </h1>
-        <p className="text-foreground/60">
+        <p className="text-[#174622]">
           Create a new digital coupon for your customers to save and redeem
         </p>
       </div>
@@ -420,7 +420,7 @@ export default function CreateDealPage() {
             <div>
               <label
                 htmlFor="title"
-                className="block text-sm font-medium text-foreground/80 mb-2"
+                className="block text-sm font-medium text-[#0d2a13] font-semibold mb-2"
               >
                 Deal Title <span className="text-red-500">*</span>
               </label>
@@ -433,7 +433,7 @@ export default function CreateDealPage() {
                 placeholder="e.g., 50% Off All Coffee Beans"
                 maxLength={100}
               />
-              <p className="text-xs text-foreground/50 mt-1">
+              <p className="text-xs text-[#174622] font-medium mt-1">
                 {formData.title.length}/100 characters
               </p>
             </div>
@@ -441,7 +441,7 @@ export default function CreateDealPage() {
             <div>
               <label
                 htmlFor="description"
-                className="block text-sm font-medium text-foreground/80 mb-2"
+                className="block text-sm font-medium text-[#0d2a13] font-semibold mb-2"
               >
                 Description <span className="text-red-500">*</span>
               </label>
@@ -456,7 +456,7 @@ export default function CreateDealPage() {
                 placeholder="Describe your deal in detail..."
                 maxLength={500}
               />
-              <p className="text-xs text-foreground/50 mt-1">
+              <p className="text-xs text-[#174622] font-medium mt-1">
                 {formData.description.length}/500 characters
               </p>
             </div>
@@ -474,14 +474,14 @@ export default function CreateDealPage() {
             <div>
               <label
                 htmlFor="discount"
-                className="block text-sm font-medium text-foreground/80 mb-2"
+                className="block text-sm font-medium text-[#0d2a13] font-semibold mb-2"
               >
                 Discount Percentage <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <Percent
                   size={20}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#174622]"
                 />
                 <input
                   type="number"
@@ -501,14 +501,14 @@ export default function CreateDealPage() {
             <div>
               <label
                 htmlFor="expiry"
-                className="block text-sm font-medium text-foreground/80 mb-2"
+                className="block text-sm font-medium text-[#0d2a13] font-semibold mb-2"
               >
                 Expiry Date <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <Calendar
                   size={20}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#174622]"
                 />
                 <input
                   type="date"
@@ -526,7 +526,7 @@ export default function CreateDealPage() {
             <div>
               <label
                 htmlFor="category"
-                className="block text-sm font-medium text-foreground/80 mb-2"
+                className="block text-sm font-medium text-[#0d2a13] font-semibold mb-2"
               >
                 Category <span className="text-red-500">*</span>
               </label>
@@ -550,7 +550,7 @@ export default function CreateDealPage() {
             <div>
               <label
                 htmlFor="quantity"
-                className="block text-sm font-medium text-foreground/80 mb-2"
+                className="block text-sm font-medium text-[#0d2a13] font-semibold mb-2"
               >
                 Quantity (Optional)
               </label>
@@ -611,7 +611,7 @@ export default function CreateDealPage() {
                   <p className="text-lg font-medium text-monke-primary mb-2">
                     Upload Deal Image
                   </p>
-                  <p className="text-sm text-foreground/60">
+                  <p className="text-sm text-[#174622]">
                     PNG, JPG, WebP • Max 5MB • Recommended: 16:9 aspect ratio
                   </p>
                 </div>

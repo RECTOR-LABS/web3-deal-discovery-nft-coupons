@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { TrendingUp, DollarSign, Gift, Clock } from 'lucide-react';
+import StakingSimulator from './StakingSimulator';
 
 interface CashbackTransaction {
   created_at: string;
@@ -311,28 +312,8 @@ export default function StakingDashboard({ stakingInfo, walletAddress, onUpdate 
         </div>
       )}
 
-      {/* Info Box */}
-      <div className="bg-gradient-to-r from-[#0d2a13] to-[#174622] rounded-2xl p-6 text-white">
-        <h3 className="text-xl font-bold mb-3">How Staking Works</h3>
-        <ul className="space-y-2 text-sm">
-          <li className="flex items-start">
-            <span className="text-[#00ff4d] mr-2">•</span>
-            <span>Stake DEAL tokens to earn 12% APY rewards calculated per second</span>
-          </li>
-          <li className="flex items-start">
-            <span className="text-[#00ff4d] mr-2">•</span>
-            <span>No lockup period - unstake anytime and keep all earned rewards</span>
-          </li>
-          <li className="flex items-start">
-            <span className="text-[#00ff4d] mr-2">•</span>
-            <span>Earn cashback on coupon redemptions (5-15% based on your loyalty tier)</span>
-          </li>
-          <li className="flex items-start">
-            <span className="text-[#00ff4d] mr-2">•</span>
-            <span>Claim rewards separately or withdraw everything with one click</span>
-          </li>
-        </ul>
-      </div>
+      {/* Interactive Staking Calculator */}
+      <StakingSimulator />
     </div>
   );
 }

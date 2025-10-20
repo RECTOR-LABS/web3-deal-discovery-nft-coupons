@@ -160,8 +160,8 @@ function HomePage() {
           {/* Top Bar */}
           <div className="flex items-center justify-between py-3 border-b border-gray-100">
             <div className="flex items-center gap-6">
-              <Link href="/" className="flex items-center gap-2">
-                <ShoppingBag className="w-8 h-8 text-[#00ff4d]" />
+              <Link href="/" className="flex items-center gap-2 cursor-pointer">
+                <img src="/dealcoupon-logo.svg" alt="DealCoupon" className="w-8 h-8" />
                 <span className="text-2xl font-black text-[#0d2a13]">DealCoupon</span>
               </Link>
             </div>
@@ -169,13 +169,16 @@ function HomePage() {
             <div className="flex items-center gap-4">
               {connected ? (
                 <>
-                  <Link href="/marketplace" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium">
+                  <Link href="/marketplace" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium cursor-pointer">
                     Marketplace
                   </Link>
-                  <Link href="/coupons" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium">
+                  <Link href="/coupons" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium cursor-pointer">
                     My Coupons
                   </Link>
-                  <Link href="/profile" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium">
+                  <Link href="/dashboard" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium cursor-pointer">
+                    Dashboard
+                  </Link>
+                  <Link href="/profile" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium cursor-pointer">
                     Profile
                   </Link>
                   <div className="wallet-adapter-button-container">
@@ -222,7 +225,7 @@ function HomePage() {
               </div>
 
               {/* Search Button */}
-              <button className="px-8 py-3 bg-[#00ff4d] text-[#0d2a13] font-bold rounded-lg hover:bg-[#00cc3d] transition-all shadow-md">
+              <button className="px-8 py-3 bg-[#00ff4d] text-[#0d2a13] font-bold rounded-lg hover:bg-[#00cc3d] transition-all shadow-md cursor-pointer">
                 Search
               </button>
             </div>
@@ -237,7 +240,7 @@ function HomePage() {
                 <button
                   key={cat.name}
                   onClick={() => setSelectedCategory(cat.name as CategoryOption)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition-all cursor-pointer ${
                     isActive
                       ? 'bg-[#0d2a13] text-white font-bold'
                       : 'text-gray-600 hover:bg-gray-100 font-medium'
@@ -296,7 +299,7 @@ function HomePage() {
             </div>
             <Link
               href="/marketplace"
-              className="text-[#0d2a13] font-bold hover:text-[#00ff4d] transition-colors"
+              className="text-[#0d2a13] font-bold hover:text-[#00ff4d] transition-colors cursor-pointer"
             >
               View All →
             </Link>
@@ -370,7 +373,7 @@ function HomePage() {
               <div className="text-center mt-8">
                 <Link
                   href="/marketplace"
-                  className="inline-block px-8 py-4 bg-[#0d2a13] text-white font-bold rounded-lg hover:bg-[#174622] transition-all shadow-lg"
+                  className="inline-block px-8 py-4 bg-[#0d2a13] text-white font-bold rounded-lg hover:bg-[#174622] transition-all shadow-lg cursor-pointer"
                 >
                   View All {filteredDeals.length} Deals →
                 </Link>

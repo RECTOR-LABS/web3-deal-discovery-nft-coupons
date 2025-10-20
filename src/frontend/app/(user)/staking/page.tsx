@@ -45,10 +45,42 @@ export default function StakingPage() {
 
       try {
         const response = await fetch(`/api/staking/info?wallet=${publicKey.toBase58()}`);
+
+        if (!response.ok) {
+          console.error('Failed to fetch staking info:', response.status);
+          setStakingInfo({
+            staking: {
+              stakedAmount: 0,
+              pendingRewards: 0,
+              totalRewards: 0,
+              apyPercentage: 12,
+            },
+            cashback: {
+              lifetimeCashback: 0,
+              recentTransactions: [],
+            },
+          });
+          setLoading(false);
+          return;
+        }
+
         const data = await response.json();
         setStakingInfo(data);
       } catch (error) {
         console.error('Failed to fetch staking info:', error);
+        // Set default data on error
+        setStakingInfo({
+          staking: {
+            stakedAmount: 0,
+            pendingRewards: 0,
+            totalRewards: 0,
+            apyPercentage: 12,
+          },
+          cashback: {
+            lifetimeCashback: 0,
+            recentTransactions: [],
+          },
+        });
       } finally {
         setLoading(false);
       }
@@ -102,8 +134,26 @@ export default function StakingPage() {
           onUpdate={() => {
             // Refresh staking info
             fetch(`/api/staking/info?wallet=${publicKey.toBase58()}`)
-              .then((res) => res.json())
-              .then(setStakingInfo);
+              .then((res) => {
+                if (res.ok) {
+                  return res.json();
+                }
+                // Return default data if fetch fails
+                return {
+                  staking: {
+                    stakedAmount: 0,
+                    pendingRewards: 0,
+                    totalRewards: 0,
+                    apyPercentage: 12,
+                  },
+                  cashback: {
+                    lifetimeCashback: 0,
+                    recentTransactions: [],
+                  },
+                };
+              })
+              .then(setStakingInfo)
+              .catch((err) => console.error('Failed to refresh staking info:', err));
           }}
         />
       </div>

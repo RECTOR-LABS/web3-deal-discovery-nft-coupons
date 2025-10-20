@@ -86,7 +86,11 @@ export default function VoteButtons({ dealId, size = 'md', showScore = true }: V
             voteCache.set(cacheKey, { data, timestamp: Date.now() });
             return data;
           }
-          throw new Error('Failed to fetch vote stats');
+          // Return default values instead of throwing error
+          // This handles cases where API endpoint doesn't exist or deal has no votes yet
+          const defaultData = { stats: { upvotes: 0, downvotes: 0, score: 0, total: 0 }, userVote: null };
+          voteCache.set(cacheKey, { data: defaultData, timestamp: Date.now() });
+          return defaultData;
         })
         .finally(() => {
           // Remove from in-flight tracker when complete

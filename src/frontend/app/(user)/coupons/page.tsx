@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { getUserCoupons, type UserCoupon } from '@/lib/solana/getUserCoupons';
 import CouponCard from '@/components/user/CouponCard';
+import CouponGuide from '@/components/user/CouponGuide';
 import { motion } from 'framer-motion';
 import { Tag, Filter } from 'lucide-react';
 
@@ -109,10 +110,10 @@ export default function MyCouponsPage() {
             className="text-center"
           >
             <h1 className="text-6xl md:text-7xl font-black mb-6 bg-gradient-to-r from-[#f2eecb] via-white to-[#00ff4d] bg-clip-text text-transparent">
-              My Coupons
+              Your Coupon Vault
             </h1>
             <p className="text-xl md:text-2xl text-[#f2eecb] max-w-3xl mx-auto">
-              Your coupon collection
+              Manage your NFT coupons, track savings, and redeem exclusive deals
             </p>
           </motion.div>
         </div>
@@ -139,6 +140,11 @@ export default function MyCouponsPage() {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* How to Use Guide */}
+        <div className="mt-8">
+          <CouponGuide />
         </div>
 
         {/* Coupons Grid */}

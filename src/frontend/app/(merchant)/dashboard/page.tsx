@@ -15,6 +15,7 @@ import {
   Sparkles,
   ArrowUpRight,
 } from 'lucide-react';
+import MerchantOnboarding from '@/components/merchant/MerchantOnboarding';
 
 interface MerchantProfile {
   business_name: string;
@@ -74,6 +75,7 @@ export default function DashboardHomePage() {
   const [merchant, setMerchant] = useState<MerchantProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [walletChecked, setWalletChecked] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [stats] = useState<DashboardStats>({
     totalDeals: 0,
     totalViews: 0,
@@ -118,14 +120,14 @@ export default function DashboardHomePage() {
             // TODO: Fetch actual stats from database
             // For now, showing placeholder zeros
           } else {
-            console.log('Merchant not registered, redirecting...');
-            // Merchant not registered, redirect to registration
-            router.push('/register');
+            console.log('Merchant not registered, showing onboarding...');
+            // Merchant not registered, show onboarding guide
+            setShowOnboarding(true);
           }
         } else if (response.status === 404) {
-          console.log('Merchant not found (404), redirecting to register...');
-          // Merchant not found, redirect to registration
-          router.push('/register');
+          console.log('Merchant not found (404), showing onboarding...');
+          // Merchant not found, show onboarding guide
+          setShowOnboarding(true);
         }
       } catch (error) {
         console.error('Error checking merchant status:', error);
@@ -160,8 +162,13 @@ export default function DashboardHomePage() {
     );
   }
 
+  // Show onboarding for unregistered merchants
+  if (showOnboarding) {
+    return <MerchantOnboarding />;
+  }
+
   if (!merchant) {
-    return null; // Will redirect
+    return null; // Still loading or redirecting
   }
 
   const statCards = [

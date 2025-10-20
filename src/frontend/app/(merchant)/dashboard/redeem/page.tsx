@@ -8,6 +8,7 @@ import { redeemCouponOnChain, recordRedemptionEvent } from '@/lib/solana/redeemC
 import { CheckCircle, XCircle, QrCode, AlertTriangle, ArrowLeft, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import InteractiveRedemptionGuide from '@/components/merchant/InteractiveRedemptionGuide';
 
 // Dynamic import to avoid SSR issues with camera access
 const QRScanner = dynamic(() => import('@/components/merchant/QRScanner'), {
@@ -355,33 +356,9 @@ export default function RedeemPage() {
           )}
         </div>
 
-        {/* Instructions Panel */}
-        <div className="mt-8 bg-white/50 rounded-xl p-6">
-          <h3 className="text-lg font-bold text-[#0d2a13] mb-3">
-            How Redemption Works
-          </h3>
-          <ol className="space-y-2 text-[#174622]">
-            <li className="flex items-start">
-              <span className="font-bold mr-2">1.</span>
-              <span>Customer shows their QR code generated from their digital coupon</span>
-            </li>
-            <li className="flex items-start">
-              <span className="font-bold mr-2">2.</span>
-              <span>You scan the QR code using the scanner</span>
-            </li>
-            <li className="flex items-start">
-              <span className="font-bold mr-2">3.</span>
-              <span>System verifies NFT ownership and coupon validity on-chain</span>
-            </li>
-            <li className="flex items-start">
-              <span className="font-bold mr-2">4.</span>
-              <span>Upon confirmation, coupon is used to prevent reuse</span>
-            </li>
-            <li className="flex items-start">
-              <span className="font-bold mr-2">5.</span>
-              <span>Customer receives the discount/service</span>
-            </li>
-          </ol>
+        {/* Interactive Redemption Guide */}
+        <div className="mt-8">
+          <InteractiveRedemptionGuide />
         </div>
       </div>
 

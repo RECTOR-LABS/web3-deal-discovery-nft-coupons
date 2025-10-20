@@ -1,0 +1,20 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="32" height="32" rx="6" fill="#0d2a13"/>
+
+  <!-- Gradient -->
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ff4d;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#174622;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Ticket Icon -->
+  <g transform="translate(16, 16)">
+    <rect x="-10" y="-6" width="20" height="12" rx="2" fill="#00ff4d"/>
+    <circle cx="-10" cy="0" r="2" fill="#0d2a13"/>
+    <circle cx="10" cy="0" r="2" fill="#0d2a13"/>
+    <text x="0" y="3" font-family="Arial" font-size="10" font-weight="bold" fill="#0d2a13" text-anchor="middle">%</text>
+  </g>
+</svg>

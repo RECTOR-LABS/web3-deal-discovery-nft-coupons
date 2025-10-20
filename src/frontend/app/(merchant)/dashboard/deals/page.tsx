@@ -86,8 +86,8 @@ export default function MyDealsPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-monke-primary mb-2">My Deals</h1>
-          <p className="text-foreground/60">
+          <h1 className="text-3xl font-bold text-[#0d2a13] mb-2">My Deals</h1>
+          <p className="text-[#174622]">
             Manage your digital coupon deals ({deals.length} total)
           </p>
         </div>
@@ -107,8 +107,8 @@ export default function MyDealsPage() {
             <div className="w-20 h-20 bg-monke-cream border-2 border-monke-border rounded-full mx-auto flex items-center justify-center">
               <Package size={40} className="text-monke-primary" />
             </div>
-            <h3 className="text-2xl font-bold text-monke-primary">No Deals Yet</h3>
-            <p className="text-foreground/60">
+            <h3 className="text-2xl font-bold text-[#0d2a13]">No Deals Yet</h3>
+            <p className="text-[#174622]">
               You haven&apos;t created any deals yet. Start by creating your first
               promotional digital coupon.
             </p>
@@ -168,32 +168,32 @@ export default function MyDealsPage() {
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-lg font-bold text-monke-primary line-clamp-2">
+                  <h3 className="text-lg font-bold text-[#0d2a13] line-clamp-2">
                     {deal.title}
                   </h3>
 
                   {/* Description */}
-                  <p className="text-sm text-foreground/60 line-clamp-2">
+                  <p className="text-sm text-[#174622] line-clamp-2">
                     {deal.description}
                   </p>
 
                   {/* Metadata */}
                   <div className="pt-3 border-t border-monke-border space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-foreground/50">Category</span>
-                      <span className="font-medium text-monke-primary">
+                      <span className="text-[#174622] font-medium">Category</span>
+                      <span className="font-bold text-[#0d2a13]">
                         {deal.category}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-foreground/50">Expires</span>
+                      <span className="text-[#174622] font-medium">Expires</span>
                       <span
-                        className={`font-medium ${
+                        className={`font-bold ${
                           isExpired
                             ? 'text-red-600'
                             : daysUntilExpiry <= 3
                             ? 'text-orange-600'
-                            : 'text-monke-primary'
+                            : 'text-[#0d2a13]'
                         }`}
                       >
                         {isExpired
@@ -206,8 +206,8 @@ export default function MyDealsPage() {
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-foreground/50">Coupon ID</span>
-                      <span className="font-mono text-xs text-monke-primary">
+                      <span className="text-[#174622] font-medium">Coupon ID</span>
+                      <span className="font-mono text-xs text-[#0d2a13] font-semibold">
                         {deal.nft_mint_address.slice(0, 4)}...
                         {deal.nft_mint_address.slice(-4)}
                       </span>

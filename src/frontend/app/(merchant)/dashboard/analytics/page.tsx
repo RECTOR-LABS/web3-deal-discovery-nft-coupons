@@ -170,8 +170,8 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-monke-primary mb-2">Analytics</h1>
-        <p className="text-foreground/60">
+        <h1 className="text-3xl font-bold text-[#0d2a13] mb-2">Analytics</h1>
+        <p className="text-[#174622]">
           Track performance metrics for your {analytics.totalDeals} deals
         </p>
       </div>
@@ -191,10 +191,10 @@ export default function AnalyticsPage() {
                   {stat.change}
                 </span>
               </div>
-              <p className="text-3xl font-bold text-monke-primary mb-1">
+              <p className="text-3xl font-bold text-[#0d2a13] mb-1">
                 {stat.value}
               </p>
-              <p className="text-sm text-foreground/60">{stat.label}</p>
+              <p className="text-sm text-[#174622] font-semibold">{stat.label}</p>
             </div>
           );
         })}
@@ -203,25 +203,25 @@ export default function AnalyticsPage() {
       {/* Conversion Rates */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white border-2 border-monke-border rounded-lg p-6">
-          <h3 className="text-lg font-bold text-monke-primary mb-2">
+          <h3 className="text-lg font-bold text-[#0d2a13] mb-2">
             Conversion Rate
           </h3>
-          <p className="text-4xl font-bold text-monke-accent mb-1">
+          <p className="text-4xl font-bold text-[#174622] mb-1">
             {analytics.conversionRate.toFixed(1)}%
           </p>
-          <p className="text-sm text-foreground/50">
+          <p className="text-sm text-[#174622] font-semibold">
             Purchases / Views
           </p>
         </div>
 
         <div className="bg-white border-2 border-monke-border rounded-lg p-6">
-          <h3 className="text-lg font-bold text-monke-primary mb-2">
+          <h3 className="text-lg font-bold text-[#0d2a13] mb-2">
             Redemption Rate
           </h3>
           <p className="text-4xl font-bold text-orange-600 mb-1">
             {analytics.redemptionRate.toFixed(1)}%
           </p>
-          <p className="text-sm text-foreground/50">
+          <p className="text-sm text-[#174622] font-semibold">
             Redemptions / Purchases
           </p>
         </div>
@@ -230,7 +230,7 @@ export default function AnalyticsPage() {
       {/* Deal Performance Chart */}
       {analytics.dealPerformance.length > 0 ? (
         <div className="bg-white border-2 border-monke-border rounded-lg p-8">
-          <h2 className="text-xl font-bold text-monke-primary mb-6">
+          <h2 className="text-xl font-bold text-[#0d2a13] mb-6">
             Top Performing Deals
           </h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -246,13 +246,13 @@ export default function AnalyticsPage() {
         </div>
       ) : (
         <div className="bg-white border-2 border-monke-border rounded-lg p-8">
-          <h2 className="text-xl font-bold text-monke-primary mb-6">
+          <h2 className="text-xl font-bold text-[#0d2a13] mb-6">
             Performance Over Time
           </h2>
-          <div className="h-64 flex items-center justify-center text-foreground/40 border-2 border-dashed border-monke-border rounded-lg">
+          <div className="h-64 flex items-center justify-center text-[#174622] border-2 border-dashed border-monke-border rounded-lg">
             <div className="text-center">
-              <BarChart3 size={48} className="mx-auto mb-4" />
-              <p>Charts will appear once you have data</p>
+              <BarChart3 size={48} className="mx-auto mb-4 text-[#174622]" />
+              <p className="font-semibold">Charts will appear once you have data</p>
               <p className="text-sm mt-2">Create deals to start tracking metrics</p>
             </div>
           </div>
@@ -263,7 +263,7 @@ export default function AnalyticsPage() {
       {analytics.categoryBreakdown.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white border-2 border-monke-border rounded-lg p-8">
-            <h2 className="text-xl font-bold text-monke-primary mb-6">
+            <h2 className="text-xl font-bold text-[#0d2a13] mb-6">
               Deals by Category
             </h2>
             <ResponsiveContainer width="100%" height={250}>
@@ -288,7 +288,7 @@ export default function AnalyticsPage() {
           </div>
 
           <div className="bg-white border-2 border-monke-border rounded-lg p-8">
-            <h2 className="text-xl font-bold text-monke-primary mb-6">
+            <h2 className="text-xl font-bold text-[#0d2a13] mb-6">
               Category Summary
             </h2>
             <div className="space-y-4">
@@ -299,9 +299,9 @@ export default function AnalyticsPage() {
                       className="w-4 h-4 rounded"
                       style={{ backgroundColor: COLORS[index % COLORS.length] }}
                     />
-                    <span className="text-foreground/80">{category.name}</span>
+                    <span className="text-[#0d2a13] font-semibold">{category.name}</span>
                   </div>
-                  <span className="font-bold text-monke-primary">
+                  <span className="font-bold text-[#0d2a13]">
                     {category.value} {category.value === 1 ? 'deal' : 'deals'}
                   </span>
                 </div>

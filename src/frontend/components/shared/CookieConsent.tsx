@@ -65,14 +65,18 @@ export function CookieConsentBanner() {
               🍪 We use cookies to improve your experience and analyze site traffic.
               By continuing to use this site, you agree to our{' '}
               <Link
-                href="/privacy"
+                href="https://github.com/RECTOR-LABS/web3-deal-discovery-nft-coupons/blob/main/docs/legal/PRIVACY-POLICY.md"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="underline hover:text-[#00ff4d] transition-colors"
               >
                 Privacy Policy
               </Link>{' '}
               and{' '}
               <Link
-                href="/terms"
+                href="https://github.com/RECTOR-LABS/web3-deal-discovery-nft-coupons/blob/main/docs/legal/TERMS-OF-SERVICE.md"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="underline hover:text-[#00ff4d] transition-colors"
               >
                 Terms of Service
