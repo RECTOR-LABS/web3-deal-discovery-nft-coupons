@@ -7,7 +7,8 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript)](https://www.typescriptlang.org)
 [![Tests](https://img.shields.io/badge/Tests-27%2F27%20Passing-success)](https://github.com)
-[![Production Ready](https://img.shields.io/badge/Production%20Ready-95%2F100-success)](https://github.com)
+[![Production Ready](https://img.shields.io/badge/Production%20Ready-v0.3.0-success)](https://github.com)
+[![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF)](https://github.com/features/actions)
 
 **MonkeDAO Cypherpunk Hackathon Submission** | **Prize Pool:** $6,500 USDC + Gen3 Monke NFTs
 
@@ -84,11 +85,12 @@ npm run dev  # → http://localhost:3000
 | **Sentry** | Error monitoring (client/server/edge) | ✅ Configured |
 | **Vercel** | Analytics + Speed Insights | ✅ Integrated |
 
-### Security & DevOps
-- **Security:** CORS headers, rate limiting (3 tiers), security headers, health checks
-- **Testing:** Jest + React Testing Library (27 tests passing)
-- **CI/CD:** Husky + lint-staged (pre-commit hooks)
-- **Quality:** TypeScript strict, ESLint, bundle analyzer
+### Security & DevOps (v0.3.0)
+- **Security:** CORS headers, rate limiting (3 tiers), CSP headers, health checks
+- **Testing:** Jest + React Testing Library (27 tests), Playwright E2E tests
+- **CI/CD:** GitHub Actions 8-job pipeline (lint, test, build, security scan, deploy)
+- **Observability:** Pino structured logging, Sentry custom metrics, request tracing
+- **Quality:** TypeScript strict, ESLint, bundle analyzer, Codecov coverage
 
 ---
 

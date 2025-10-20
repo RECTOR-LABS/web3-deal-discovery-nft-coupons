@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Connection } from '@solana/web3.js';
+import { apiLogger } from '@/lib/logger';
+import { Metrics } from '@/lib/metrics';
 
 /**
  * Health Check Endpoint
@@ -11,8 +13,11 @@ import { Connection } from '@solana/web3.js';
  * GET /api/health - Returns health status
  */
 export async function GET(_request: NextRequest) {
+  const startTime = Date.now();
   const timestamp = Date.now();
   const checks: Record<string, { status: 'healthy' | 'degraded' | 'unhealthy'; latency?: number; error?: string }> = {};
+
+  apiLogger.debug({ endpoint: '/api/health' }, 'Health check started');
 
   try {
     // 1. Database Health Check (Supabase)

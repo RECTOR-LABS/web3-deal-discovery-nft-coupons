@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { randomUUID } from 'crypto';
 
 /**
  * Middleware for CORS headers and API route handling
@@ -15,13 +16,19 @@ import type { NextRequest } from 'next/server';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Generate unique request ID for tracing
+  const requestId = randomUUID();
+
   // Log API requests for debugging
   if (pathname.startsWith('/api')) {
-    console.log(`[Middleware] API request: ${request.method} ${pathname}`);
+    console.log(`[Middleware] [${requestId}] API request: ${request.method} ${pathname}`);
   }
 
   // Create response with CORS and security headers
   const response = NextResponse.next();
+
+  // Add request ID to response headers for tracing
+  response.headers.set('X-Request-ID', requestId);
 
   // CORS Headers - restrict to allowed origins in production
   const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['*'];

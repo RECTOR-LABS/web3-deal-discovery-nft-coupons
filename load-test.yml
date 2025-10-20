@@ -1,0 +1,86 @@
+# Artillery Load Testing Configuration
+# Run with: artillery run load-test.yml
+
+config:
+  target: "http://localhost:3000"  # Change to production URL for prod testing
+  phases:
+    # Phase 1: Warm-up (10 users/sec for 30 seconds)
+    - duration: 30
+      arrivalRate: 10
+      name: "Warm-up"
+
+    # Phase 2: Ramp-up (10 -> 50 users/sec over 60 seconds)
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 50
+      name: "Ramp-up"
+
+    # Phase 3: Sustained load (50 users/sec for 120 seconds)
+    - duration: 120
+      arrivalRate: 50
+      name: "Sustained load"
+
+    # Phase 4: Spike test (100 users/sec for 30 seconds)
+    - duration: 30
+      arrivalRate: 100
+      name: "Spike test"
+
+  # Performance thresholds
+  ensure:
+    maxErrorRate: 1          # Max 1% error rate
+    p95: 500                 # P95 latency < 500ms
+    p99: 1000               # P99 latency < 1000ms
+
+scenarios:
+  # Scenario 1: Homepage browsing
+  - name: "Browse Homepage"
+    weight: 30
+    flow:
+      - get:
+          url: "/"
+      - think: 2  # Wait 2 seconds
+      - get:
+          url: "/marketplace"
+
+  # Scenario 2: Deal listing
+  - name: "View Deals"
+    weight: 40
+    flow:
+      - get:
+          url: "/marketplace"
+      - think: 1
+      - get:
+          url: "/api/deals"
+          expect:
+            - statusCode: 200
+            - contentType: json
+
+  # Scenario 3: Health check (lightweight)
+  - name: "Health Check"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/health"
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: status
+
+  # Scenario 4: Deal details
+  - name: "View Deal Details"
+    weight: 10
+    flow:
+      - get:
+          url: "/marketplace"
+      - think: 2
+      # Note: Would need actual deal ID for real test
+      - get:
+          url: "/api/deals"
+
+# Custom metrics
+plugins:
+  expect: {}
+  metrics-by-endpoint: {}
+
+# After test, view report:
+# artillery report <html-report-file>

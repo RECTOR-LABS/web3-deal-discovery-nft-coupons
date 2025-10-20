@@ -81,10 +81,40 @@ const nextConfig: NextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(self)',
           },
+          {
+            key: 'Content-Security-Policy',
+            value: `
+              default-src 'self';
+              script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live;
+              style-src 'self' 'unsafe-inline';
+              img-src 'self' data: https: blob:;
+              font-src 'self' data:;
+              connect-src 'self' https://api.devnet.solana.com https://api.mainnet-beta.solana.com https://*.supabase.co https://*.sentry.io https://arweave.net https://*.arweave.net;
+              frame-src 'self' https://verify.walletconnect.com;
+              object-src 'none';
+              base-uri 'self';
+              form-action 'self';
+              frame-ancestors 'none';
+            `.replace(/\s{2,}/g, ' ').trim()
+          },
         ],
       },
     ];
   },
+
+  // Optimize package imports for tree shaking
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{member}}',
+    },
+  },
+
+  // Transpile packages for better optimization
+  transpilePackages: [
+    '@solana/wallet-adapter-base',
+    '@solana/wallet-adapter-react',
+    '@solana/wallet-adapter-react-ui',
+  ],
 };
 
 export default withBundleAnalyzer(nextConfig);
