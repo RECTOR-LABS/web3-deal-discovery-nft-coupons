@@ -248,7 +248,7 @@
 
 **Strengths:**
 - ✅ **Vercel-ready** - Next.js optimized for Vercel deployment
-- ✅ **Smart contract deployed** - NFT program on Solana devnet (REC6VwdAzaaNdrUCWbXmqqN8ryoSAphQkft2BX1P1b1)
+- ✅ **Smart contract deployed** - NFT program on Solana devnet (RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7)
 - ✅ **Anchor testing framework** - Contract tests configured
 - ✅ **Environment separation** - devnet vs mainnet configuration
 

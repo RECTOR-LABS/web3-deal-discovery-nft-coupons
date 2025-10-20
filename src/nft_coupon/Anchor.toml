@@ -6,10 +6,10 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-nft_coupon = "REC6VwdAzaaNdrUCWbXmqqN8ryoSAphQkft2BX1P1b1"
+nft_coupon = "RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7"
 
 [programs.localnet]
-nft_coupon = "REC6VwdAzaaNdrUCWbXmqqN8ryoSAphQkft2BX1P1b1"
+nft_coupon = "RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7"
 
 [registry]
 url = "https://api.apr.dev"

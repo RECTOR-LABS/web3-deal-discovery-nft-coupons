@@ -1,15 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useRouter } from 'next/navigation';
 import { Store, Loader2 } from 'lucide-react';
 import { WalletButton } from '@/components/shared/WalletButton';
+import { initializeMerchantDirect, isMerchantInitialized } from '@/lib/solana/merchant-direct';
 
 export default function MerchantRegisterPage() {
-  const { publicKey, connected } = useWallet();
+  const wallet = useWallet();
+  const { publicKey, connected } = wallet;
+  const { connection } = useConnection();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     businessName: '',
@@ -20,8 +24,8 @@ export default function MerchantRegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!publicKey) {
-      setError('Please sign in to your account first');
+    if (!publicKey || !wallet.signTransaction) {
+      setError('Please connect your wallet first');
       return;
     }
 
@@ -34,6 +38,8 @@ export default function MerchantRegisterPage() {
     setError(null);
 
     try {
+      // Step 1: Create database record
+      setLoadingMessage('Creating merchant account...');
       const response = await fetch('/api/merchant/register', {
         method: 'POST',
         headers: {
@@ -51,20 +57,67 @@ export default function MerchantRegisterPage() {
 
       if (!response.ok) {
         if (response.status === 409) {
-          // Merchant already exists, redirect to dashboard
+          // Merchant already exists, check if on-chain initialization is needed
+          setLoadingMessage('Checking on-chain status...');
+          const isInitialized = await isMerchantInitialized(
+            connection,
+            wallet as any
+          );
+
+          if (!isInitialized) {
+            // Database exists but on-chain doesn't - initialize now
+            setLoadingMessage('Initializing on-chain account...');
+            const initResult = await initializeMerchantDirect(
+              connection,
+              wallet as any,
+              formData.businessName
+            );
+
+            if (!initResult.success) {
+              throw new Error(
+                initResult.error || 'Failed to initialize merchant on-chain'
+              );
+            }
+
+            console.log('✅ On-chain initialization complete:', initResult);
+          }
+
           router.push('/dashboard');
           return;
         }
         throw new Error(data.error || 'Failed to register merchant');
       }
 
+      // Step 2: Initialize merchant on-chain
+      setLoadingMessage('Initializing on-chain account (approve in wallet)...');
+      const initResult = await initializeMerchantDirect(
+        connection,
+        wallet as any,
+        formData.businessName
+      );
+
+      if (!initResult.success) {
+        // On-chain initialization failed, but database record exists
+        // User can try again by visiting /register
+        throw new Error(
+          `Merchant account created in database, but on-chain initialization failed: ${initResult.error}. Please try registering again.`
+        );
+      }
+
+      console.log('✅ Merchant registration complete:', {
+        database: data.merchant,
+        onChain: initResult,
+      });
+
       // Success! Redirect to dashboard
+      setLoadingMessage('Registration complete!');
       router.push('/dashboard');
     } catch (err) {
       console.error('Registration error:', err);
       setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {
       setLoading(false);
+      setLoadingMessage('');
     }
   };
 
@@ -200,7 +253,7 @@ export default function MerchantRegisterPage() {
               {loading ? (
                 <>
                   <Loader2 className="animate-spin" size={20} />
-                  <span>Registering...</span>
+                  <span>{loadingMessage || 'Registering...'}</span>
                 </>
               ) : (
                 <span>Register Merchant Account</span>

@@ -15,8 +15,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate vote_type
-    if (vote_type !== 'upvote' && vote_type !== 'downvote') {
+    // Validate vote_type and normalize to database format ('up'/'down')
+    let normalizedVoteType: 'up' | 'down';
+    if (vote_type === 'upvote' || vote_type === 'up') {
+      normalizedVoteType = 'up';
+    } else if (vote_type === 'downvote' || vote_type === 'down') {
+      normalizedVoteType = 'down';
+    } else {
       return NextResponse.json(
         { error: 'vote_type must be "upvote" or "downvote"' },
         { status: 400 }
@@ -33,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     if (existingVote) {
       // If same vote type, remove the vote (toggle off)
-      if (existingVote.vote_type === vote_type) {
+      if (existingVote.vote_type === normalizedVoteType) {
         const { error } = await supabase
           .from('votes')
           .delete()
@@ -57,7 +62,7 @@ export async function POST(request: NextRequest) {
       // If different vote type, update the vote
       const { data, error } = await supabase
         .from('votes')
-        .update({ vote_type })
+        .update({ vote_type: normalizedVoteType })
         .eq('id', existingVote.id)
         .select()
         .single();
@@ -84,7 +89,7 @@ export async function POST(request: NextRequest) {
       .insert({
         deal_id,
         user_wallet,
-        vote_type,
+        vote_type: normalizedVoteType,
       })
       .select()
       .single();
@@ -140,17 +145,18 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Calculate vote counts
-    const upvotes = votes?.filter(v => v.vote_type === 'upvote').length || 0;
-    const downvotes = votes?.filter(v => v.vote_type === 'downvote').length || 0;
+    // Calculate vote counts (database uses 'up'/'down')
+    const upvotes = votes?.filter(v => v.vote_type === 'up').length || 0;
+    const downvotes = votes?.filter(v => v.vote_type === 'down').length || 0;
     const score = upvotes - downvotes;
 
-    // Check user's vote if user_wallet provided
+    // Check user's vote if user_wallet provided (normalize to frontend format)
     let userVote = null;
     if (user_wallet) {
       const userVoteData = votes?.find(v => v.user_wallet === user_wallet);
       if (userVoteData) {
-        userVote = userVoteData.vote_type;
+        // Convert database format ('up'/'down') to frontend format ('upvote'/'downvote')
+        userVote = userVoteData.vote_type === 'up' ? 'upvote' : 'downvote';
       }
     }
 

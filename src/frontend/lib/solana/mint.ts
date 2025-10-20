@@ -9,14 +9,18 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
 } from '@solana/spl-token';
-import { AnchorWallet } from '@solana/wallet-adapter-react';
+import { WalletContextState } from '@solana/wallet-adapter-react';
 import {
-  getProgram,
   getMerchantPDA,
   getCouponDataPDA,
   getMetadataAccount,
   TOKEN_METADATA_PROGRAM_ID,
 } from './program';
+import {
+  createCouponDirect,
+  CouponCategory,
+  CreateCouponArgs,
+} from './merchant-direct';
 import { uploadDealImage } from '@/lib/storage/upload';
 import { createClient } from '@/lib/database/supabase';
 
@@ -191,7 +195,7 @@ async function uploadMetadata(
  */
 export async function mintCoupon(
   connection: Connection,
-  wallet: AnchorWallet,
+  wallet: Pick<WalletContextState, 'publicKey' | 'signTransaction' | 'signAllTransactions' | 'sendTransaction'>,
   dealData: DealData,
   merchantId: string
 ): Promise<MintResult> {
@@ -250,54 +254,39 @@ export async function mintCoupon(
       wallet.publicKey
     );
 
-    // Step 6: Call smart contract to create coupon
-    const program = getProgram(connection, wallet);
-
-    // Map category to enum variant (must match smart contract enum)
-    type CategoryVariant =
-      | { foodBeverage: Record<string, never> }
-      | { retail: Record<string, never> }
-      | { services: Record<string, never> }
-      | { travel: Record<string, never> }
-      | { entertainment: Record<string, never> }
-      | { other: Record<string, never> };
-
-    const categoryMap: Record<string, CategoryVariant> = {
-      'Food & Beverage': { foodBeverage: {} },
-      'Retail': { retail: {} },
-      'Services': { services: {} },
-      'Travel': { travel: {} },
-      'Entertainment': { entertainment: {} },
-      'Other': { other: {} },
+    // Step 6: Call smart contract to create coupon using direct RPC
+    // Map category to enum index
+    const categoryMap: Record<string, CouponCategory> = {
+      'Food & Beverage': CouponCategory.FoodAndBeverage,
+      'Retail': CouponCategory.Retail,
+      'Services': CouponCategory.Services,
+      'Travel': CouponCategory.Travel,
+      'Entertainment': CouponCategory.Entertainment,
+      'Other': CouponCategory.Other,
     };
 
-    const categoryVariant: CategoryVariant = categoryMap[dealData.category] || { other: {} };
+    const category: CouponCategory = categoryMap[dealData.category] || CouponCategory.Other;
 
-    const tx = await program.methods
-      .createCoupon(
-        dealData.title,
-        metadataUri,
-        dealData.discountPercentage,
-        Math.floor(new Date(dealData.expiryDate).getTime() / 1000), // Unix timestamp
-        1, // max_redemptions (single-use)
-        categoryVariant
-      )
-      .accounts({
-        merchant: merchantPDA,
-        couponData: couponDataPDA,
-        nftMint: nftMint.publicKey,
-        metadataAccount: metadataAccount,
-        nftTokenAccount: nftTokenAccount,
-        merchantAuthority: wallet.publicKey,
-        authority: wallet.publicKey,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-        rent: SYSVAR_RENT_PUBKEY,
-      })
-      .signers([nftMint])
-      .rpc();
+    const createCouponArgs: CreateCouponArgs = {
+      title: dealData.title,
+      description: dealData.description,
+      discountPercentage: dealData.discountPercentage,
+      expiryDate: Math.floor(new Date(dealData.expiryDate).getTime() / 1000), // Unix timestamp
+      category,
+      maxRedemptions: 1, // single-use
+      metadataUri,
+      nftMint,
+      metadataAccount,
+      nftTokenAccount,
+    };
+
+    const result = await createCouponDirect(connection, wallet, createCouponArgs);
+
+    if (!result.success) {
+      return { success: false, error: result.error };
+    }
+
+    const tx = result.signature;
 
     // Step 7: Save deal to database
     const supabase = createClient();

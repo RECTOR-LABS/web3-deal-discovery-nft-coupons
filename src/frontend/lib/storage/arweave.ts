@@ -1,7 +1,5 @@
 import Arweave from 'arweave';
 import type { JWKInterface } from 'arweave/node/lib/wallet';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 
 /**
  * Initialize Arweave client
@@ -18,9 +16,14 @@ function getArweaveClient(): Arweave {
 /**
  * Load Arweave wallet from keyfile
  * Keyfile location: ../arweave-wallet.json (project root)
+ * NOTE: This function only works server-side (Node.js environment)
  */
-function loadWallet(): JWKInterface {
+async function loadWallet(): Promise<JWKInterface> {
   try {
+    // Dynamically import Node.js modules (server-side only)
+    const { readFileSync } = await import('fs');
+    const { join } = await import('path');
+
     const keyfilePath = process.env.ARWEAVE_WALLET_PATH || '../arweave-wallet.json';
     const absolutePath = join(process.cwd(), keyfilePath);
     const keyfile = readFileSync(absolutePath, 'utf-8');
@@ -42,7 +45,7 @@ export async function uploadImageToArweave(
 ): Promise<{ url: string; txId: string } | { error: string }> {
   try {
     const arweave = getArweaveClient();
-    const wallet = loadWallet();
+    const wallet = await loadWallet();
 
     // Create transaction
     const transaction = await arweave.createTransaction(
@@ -95,7 +98,7 @@ export async function uploadMetadataToArweave(
 ): Promise<{ url: string; txId: string } | { error: string }> {
   try {
     const arweave = getArweaveClient();
-    const wallet = loadWallet();
+    const wallet = await loadWallet();
 
     const metadataString = JSON.stringify(metadata, null, 2);
 
@@ -143,7 +146,7 @@ export async function uploadMetadataToArweave(
 export async function getWalletBalance(): Promise<string | null> {
   try {
     const arweave = getArweaveClient();
-    const wallet = loadWallet();
+    const wallet = await loadWallet();
     const address = await arweave.wallets.jwkToAddress(wallet);
     const balance = await arweave.wallets.getBalance(address);
     const ar = arweave.ar.winstonToAr(balance);

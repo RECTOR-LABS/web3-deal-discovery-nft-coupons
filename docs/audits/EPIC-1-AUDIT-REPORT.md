@@ -84,7 +84,7 @@ Following the initial audit on October 18, all minor issues were resolved to imp
 
 | Property | Value |
 |----------|-------|
-| **Program ID** | `REC6VwdAzaaNdrUCWbXmqqN8ryoSAphQkft2BX1P1b1` |
+| **Program ID** | `RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7` |
 | **Network** | Solana Devnet |
 | **Owner** | BPFLoaderUpgradeab1e11111111111111111111111 |
 | **Authority** | RECdpxmc8SbnwEbf8iET5Jve6JEfkqMWdrEpkms3P1b |
@@ -96,7 +96,7 @@ Following the initial audit on October 18, all minor issues were resolved to imp
 
 **Verification Command:**
 ```bash
-solana program show REC6VwdAzaaNdrUCWbXmqqN8ryoSAphQkft2BX1P1b1 --url devnet
+solana program show RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7 --url devnet
 ```
 
 ---
@@ -310,7 +310,7 @@ src/nft_coupon/programs/nft_coupon/src/
 | Criterion | Status | Evidence |
 |-----------|--------|----------|
 | NFT metadata schema complete and documented | ✅ PASS | `state.rs:24-69` |
-| Smart contract deployed to Devnet | ✅ PASS | Program ID: REC6VwdAzaaNdrUCWbXmqqN8ryoSAphQkft2BX1P1b1 |
+| Smart contract deployed to Devnet | ✅ PASS | Program ID: RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7 |
 | End-to-end NFT lifecycle (mint → transfer → redeem → burn) | ✅ PASS | All instructions tested |
 | Comprehensive validation (discount %, expiry, redemptions, authorization) | ✅ PASS | See validation table above |
 | All unit and integration tests passing | ✅ PASS | 9 test scenarios, devnet verified |
@@ -370,7 +370,7 @@ src/nft_coupon/programs/nft_coupon/src/
 
 ### Devnet Deployment Verification
 ```bash
-✅ Program deployed: REC6VwdAzaaNdrUCWbXmqqN8ryoSAphQkft2BX1P1b1
+✅ Program deployed: RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7
 ✅ Program owner: BPFLoaderUpgradeab1e11111111111111111111111
 ✅ Authority: RECdpxmc8SbnwEbf8iET5Jve6JEfkqMWdrEpkms3P1b
 ✅ Balance: 2.41443096 SOL (sufficient for operations)
@@ -443,12 +443,12 @@ Epic 1 demonstrates excellent implementation quality with robust validation, sec
 
 ### Program ID
 ```
-REC6VwdAzaaNdrUCWbXmqqN8ryoSAphQkft2BX1P1b1
+RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7
 ```
 
 ### View on Solana Explorer
 ```
-https://explorer.solana.com/address/REC6VwdAzaaNdrUCWbXmqqN8ryoSAphQkft2BX1P1b1?cluster=devnet
+https://explorer.solana.com/address/RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7?cluster=devnet
 ```
 
 ### Test Command

@@ -169,12 +169,18 @@ function HomePage() {
             <div className="flex items-center gap-4">
               {connected ? (
                 <>
+                  <Link href="/marketplace" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium">
+                    Marketplace
+                  </Link>
                   <Link href="/coupons" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium">
                     My Coupons
                   </Link>
                   <Link href="/profile" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium">
                     Profile
                   </Link>
+                  <div className="wallet-adapter-button-container">
+                    <WalletMultiButton />
+                  </div>
                 </>
               ) : (
                 <div className="wallet-adapter-button-container">

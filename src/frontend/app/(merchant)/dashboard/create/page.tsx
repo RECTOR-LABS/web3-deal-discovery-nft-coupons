@@ -41,7 +41,7 @@ const CATEGORIES = [
 ];
 
 export default function CreateDealPage() {
-  const { publicKey, signTransaction, signAllTransactions } = useWallet();
+  const { publicKey, signTransaction, signAllTransactions, sendTransaction } = useWallet();
   const { connection } = useConnection();
   const router = useRouter();
   const [step, setStep] = useState<'form' | 'preview' | 'minting' | 'success'>('form');
@@ -152,7 +152,7 @@ export default function CreateDealPage() {
 
   // Handle minting
   const handleMint = async () => {
-    if (!publicKey || !signTransaction || !signAllTransactions) {
+    if (!publicKey || !signTransaction || !signAllTransactions || !sendTransaction) {
       setError('Please sign in to your account');
       return;
     }
@@ -170,7 +170,7 @@ export default function CreateDealPage() {
       // Create digital coupon
       const result = await mintCoupon(
         connection,
-        { publicKey, signTransaction, signAllTransactions },
+        { publicKey, signTransaction, signAllTransactions, sendTransaction },
         {
           title: formData.title,
           description: formData.description,

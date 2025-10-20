@@ -25,7 +25,10 @@ interface VoteCacheData {
 
 // Request cache to prevent duplicate API calls
 const voteCache = new Map<string, { data: VoteCacheData; timestamp: number }>();
-const CACHE_DURATION = 5000; // 5 seconds
+const CACHE_DURATION = 60000; // 60 seconds (increased from 5s to reduce API spam)
+
+// In-flight request tracker to prevent duplicate simultaneous requests
+const inflightRequests = new Map<string, Promise<VoteCacheData>>();
 
 export default function VoteButtons({ dealId, size = 'md', showScore = true }: VoteButtonsProps) {
   const { publicKey } = useWallet();
@@ -63,17 +66,40 @@ export default function VoteButtons({ dealId, size = 'md', showScore = true }: V
         return;
       }
 
-      const response = await fetch(url);
-
-      if (response.ok) {
-        const data = await response.json();
-
-        // Cache the response
-        voteCache.set(cacheKey, { data, timestamp: Date.now() });
-
+      // Check if there's already an in-flight request for this URL
+      const existingRequest = inflightRequests.get(cacheKey);
+      if (existingRequest) {
+        // Wait for the existing request instead of making a new one
+        const data = await existingRequest;
         setStats(data.stats || { upvotes: 0, downvotes: 0, score: 0, total: 0 });
         setUserVote(data.userVote || null);
+        setLoading(false);
+        return;
       }
+
+      // Create new request and track it
+      const requestPromise = fetch(url)
+        .then(async (response) => {
+          if (response.ok) {
+            const data = await response.json();
+            // Cache the response
+            voteCache.set(cacheKey, { data, timestamp: Date.now() });
+            return data;
+          }
+          throw new Error('Failed to fetch vote stats');
+        })
+        .finally(() => {
+          // Remove from in-flight tracker when complete
+          inflightRequests.delete(cacheKey);
+        });
+
+      // Track this request
+      inflightRequests.set(cacheKey, requestPromise);
+
+      // Await and set state
+      const data = await requestPromise;
+      setStats(data.stats || { upvotes: 0, downvotes: 0, score: 0, total: 0 });
+      setUserVote(data.userVote || null);
     } catch (error) {
       console.error('Error fetching vote stats:', error);
     } finally {
@@ -188,7 +214,11 @@ export default function VoteButtons({ dealId, size = 'md', showScore = true }: V
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => handleVote('upvote')}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleVote('upvote');
+        }}
         disabled={submitting || !publicKey}
         className={`
           ${sizeClasses[size]}
@@ -222,7 +252,11 @@ export default function VoteButtons({ dealId, size = 'md', showScore = true }: V
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => handleVote('downvote')}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleVote('downvote');
+        }}
         disabled={submitting || !publicKey}
         className={`
           ${sizeClasses[size]}

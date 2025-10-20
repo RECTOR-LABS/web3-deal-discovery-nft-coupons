@@ -3,7 +3,7 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { AnchorWallet } from '@solana/wallet-adapter-react';
 import idl from './idl/nft_coupon.json';
 
-export const PROGRAM_ID = new PublicKey('REC6VwdAzaaNdrUCWbXmqqN8ryoSAphQkft2BX1P1b1');
+export const PROGRAM_ID = new PublicKey('RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7');
 
 export const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
   'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
@@ -18,7 +18,7 @@ export function getProgram(connection: Connection, wallet: AnchorWallet) {
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return new Program(idl as any, provider);
+  return new Program(idl as any, PROGRAM_ID, provider);
 }
 
 /**

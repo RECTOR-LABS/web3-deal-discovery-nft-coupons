@@ -1,0 +1,19 @@
+{
+  "name": "Test NFT Coupon",
+  "description": "Testing smart contract - master edition fix verification",
+  "image": "https://via.placeholder.com/400",
+  "attributes": [
+    {
+      "trait_type": "Discount",
+      "value": "85%"
+    },
+    {
+      "trait_type": "Category",
+      "value": "Food & Beverage"
+    },
+    {
+      "trait_type": "Expires",
+      "value": "2025-12-31"
+    }
+  ]
+}

@@ -295,4 +295,11 @@ The key insight: **Guests can see the value** (browse deals) **before committing
 3. Claim a deal - verify NFT minted
 4. Try protected routes - verify redirects work
 
+**Testing Documentation:**
+- Guest User Testing: `docs/testing/GUEST-USER-UI-TEST-RESULTS.md`
+- Regular User Testing: `docs/testing/MANUAL-TESTING-GUIDE-LOGGED-IN.md` (27 tests)
+- Merchant Testing: `docs/testing/MERCHANT-TESTING-GUIDE.md` (10 tests)
+- Automated Testing: `docs/testing/AUTOMATED-TEST-RESULTS.md`
+- Testing Index: `docs/testing/README.md`
+
 **Bismillah! This approach maximizes user acquisition while protecting premium features.** 🎉

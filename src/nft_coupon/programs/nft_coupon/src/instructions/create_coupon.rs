@@ -1,10 +1,10 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::{AssociatedToken, Create},
-    token::{mint_to, MintTo, Token},
+    token::Token,
 };
 use mpl_token_metadata::{
-    instructions::{CreateV1CpiBuilder},
+    instructions::{CreateV1CpiBuilder, MintV1CpiBuilder},
     types::{PrintSupply, TokenStandard},
 };
 use crate::state::*;
@@ -43,6 +43,10 @@ pub struct CreateCoupon<'info> {
     #[account(mut)]
     pub metadata_account: UncheckedAccount<'info>,
 
+    /// CHECK: Master Edition account - Metaplex derives PDA but needs account for writing
+    #[account(mut)]
+    pub master_edition: UncheckedAccount<'info>,
+
     /// CHECK: Associated token account - will be created in instruction
     #[account(mut)]
     pub nft_token_account: UncheckedAccount<'info>,
@@ -61,6 +65,10 @@ pub struct CreateCoupon<'info> {
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>,
+
+    /// CHECK: Sysvar Instructions - required by Metaplex for authorization delegation
+    #[account(address = anchor_lang::solana_program::sysvar::instructions::ID)]
+    pub sysvar_instructions: UncheckedAccount<'info>,
 }
 
 pub fn handler(
@@ -103,24 +111,24 @@ pub fn handler(
     coupon_data.bump = ctx.bumps.coupon_data;
 
     // CPI: Create Metaplex NFT metadata using Token Metadata v5.0.0
-    // This creates both the mint account and metadata account in a single instruction
     // - NonFungible token standard (unique NFT, not semi-fungible)
-    // - PrintSupply::Zero prevents any editions/prints from being created
-    // - URI points to Arweave/IPFS for off-chain metadata (image, description)
+    // - PrintSupply::Limited(1) allows exactly 1 print (the original NFT)
+    // - This preserves mint authority so we can mint the token after creation
     CreateV1CpiBuilder::new(&ctx.accounts.token_metadata_program.to_account_info())
         .metadata(&ctx.accounts.metadata_account.to_account_info())
+        .master_edition(Some(&ctx.accounts.master_edition.to_account_info()))
         .mint(&ctx.accounts.nft_mint.to_account_info(), true)
         .authority(&ctx.accounts.merchant_authority.to_account_info())
         .payer(&ctx.accounts.merchant_authority.to_account_info())
         .update_authority(&ctx.accounts.merchant_authority.to_account_info(), true)
         .system_program(&ctx.accounts.system_program.to_account_info())
-        .sysvar_instructions(&ctx.accounts.rent.to_account_info())
+        .sysvar_instructions(&ctx.accounts.sysvar_instructions.to_account_info())
         .spl_token_program(Some(&ctx.accounts.token_program.to_account_info()))
         .name(title)
         .uri(metadata_uri)
         .seller_fee_basis_points(0)
         .token_standard(TokenStandard::NonFungible)
-        .print_supply(PrintSupply::Zero)
+        .print_supply(PrintSupply::Limited(1))
         .invoke()?;
 
     // CPI: Create associated token account for merchant to hold the NFT
@@ -140,19 +148,23 @@ pub fn handler(
         ),
     )?;
 
-    // CPI: Mint exactly 1 NFT to merchant's token account
-    // Merchant can then transfer to users (claiming) or list on marketplace
-    mint_to(
-        CpiContext::new(
-            ctx.accounts.token_program.to_account_info(),
-            MintTo {
-                mint: ctx.accounts.nft_mint.to_account_info(),
-                to: ctx.accounts.nft_token_account.to_account_info(),
-                authority: ctx.accounts.merchant_authority.to_account_info(),
-            },
-        ),
-        1, // Mint 1 NFT
-    )?;
+    // CPI: Mint exactly 1 NFT to merchant's token account using Metaplex MintV1
+    // This is the correct way to mint NFTs after CreateV1 (not SPL Token mint_to)
+    // MintV1 handles all the token standard logic internally
+    MintV1CpiBuilder::new(&ctx.accounts.token_metadata_program.to_account_info())
+        .token(&ctx.accounts.nft_token_account.to_account_info())
+        .token_owner(Some(&ctx.accounts.merchant_authority.to_account_info()))
+        .metadata(&ctx.accounts.metadata_account.to_account_info())
+        .master_edition(Some(&ctx.accounts.master_edition.to_account_info()))
+        .mint(&ctx.accounts.nft_mint.to_account_info())
+        .authority(&ctx.accounts.merchant_authority.to_account_info())
+        .payer(&ctx.accounts.merchant_authority.to_account_info())
+        .system_program(&ctx.accounts.system_program.to_account_info())
+        .sysvar_instructions(&ctx.accounts.sysvar_instructions.to_account_info())
+        .spl_token_program(&ctx.accounts.token_program.to_account_info())
+        .spl_ata_program(&ctx.accounts.associated_token_program.to_account_info())
+        .amount(1) // Mint 1 NFT
+        .invoke()?;
 
     // Update merchant stats
     let merchant = &mut ctx.accounts.merchant;
