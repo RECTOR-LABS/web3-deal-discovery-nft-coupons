@@ -105,7 +105,40 @@ Create a comprehensive, interactive single-page pitch deck at `/pitch-deck` that
 **T12.1.2: Implement Hero Section**
 - Headline: "Web3 Deal Discovery - Groupon Meets DeFi"
 - Subtitle: "MonkeDAO Cypherpunk Hackathon Submission"
-- YouTube video embed (react-player or iframe)
+- **Premium Video Component** (stunning, professional design):
+  - **Cinematic Container:**
+    - Custom gradient border with neon green glow (`#00ff4d`)
+    - Multi-layer box-shadow for depth (ambient lighting effect)
+    - 16px rounded corners with overflow handling
+    - Backdrop blur effect for premium aesthetic
+  - **Interactive Elements:**
+    - Large centered play button overlay (pulsing animation)
+    - Hover effects (scale transform 1.02, increased glow intensity)
+    - Loading skeleton with shimmer animation
+    - Progress indicator during video load
+  - **Visual Enhancements (Framer Motion):**
+    - Fade-in + scale entrance animation (0.95 → 1.0)
+    - Parallax effect on scroll (subtle depth)
+    - Staggered appearance with hero text (0.2s delay)
+    - Ambient green glow radiating from video container
+    - Decorative jungle-themed SVG corners (MonkeDAO branding)
+  - **MonkeDAO Branding Integration:**
+    - Forest green gradient frame: `linear-gradient(135deg, #0d2a13, #00ff4d)`
+    - Neon accent glow on hover: `box-shadow: 0 0 30px rgba(0, 255, 77, 0.5)`
+    - Jungle texture overlay (subtle, non-intrusive)
+  - **Professional Polish:**
+    - 16:9 aspect ratio lock (responsive across devices)
+    - Custom controls styling (react-player theme override)
+    - Muted autoplay with visible unmute button overlay
+    - Captions/subtitles support for accessibility
+    - High-quality fallback poster image (gradient overlay + "Watch Demo" CTA)
+  - **Performance Optimized:**
+    - Lazy load (Intersection Observer - only when scrolled into view)
+    - YouTube Lite implementation (iframe loads on user interaction)
+    - Mobile-optimized (touch-friendly controls, 44px tap targets)
+  - **Component Structure:**
+    - Dedicated `VideoHero.tsx` component (reusable, modular)
+    - Props: videoUrl, posterImage, autoplay, muted, controls
 - Stats badges:
   - 10/10 Epics Complete ✅
   - 84/84 Tasks Delivered
@@ -126,9 +159,14 @@ Create a comprehensive, interactive single-page pitch deck at `/pitch-deck` that
 - Fixed position (bottom-right on desktop, bottom full-width on mobile)
 
 **Technical Notes:**
-- Use Framer Motion for fade-in animations
-- Video embed: YouTube Lite component for performance
+- Use Framer Motion for fade-in animations + parallax effects
+- Video embed: Custom `VideoHero.tsx` component with YouTube Lite optimization
+  - Ambient glow effect using absolute positioned div with blur-3xl
+  - Custom play overlay with Lucide `PlayCircle` icon
+  - Intersection Observer for lazy loading trigger
+  - React Player with custom wrapper styling
 - Sticky nav: position: sticky with z-index: 50
+- **Competitive Advantage:** Premium video presentation differentiates from basic YouTube embeds used by most hackathon submissions
 
 ---
 
@@ -877,6 +915,7 @@ src/frontend/app/pitch-deck/
 ├── page.tsx (main component)
 ├── components/
 │   ├── HeroSection.tsx
+│   ├── VideoHero.tsx (premium video component - stunning design)
 │   ├── ProblemSolution.tsx
 │   ├── InnovationShowcase.tsx
 │   ├── TechStack.tsx
@@ -929,7 +968,7 @@ src/frontend/app/pitch-deck/
 - ✅ Interactive demos (marketplace embed)
 - ✅ Animated progress indicators
 - ✅ Downloadable PDF write-up
-- ✅ Video embed with fallback
+- ✅ **Premium video component** (stunning design with ambient glow, animations, MonkeDAO branding)
 
 **Nice-to-Have (P2):**
 - Click-through feature tour
