@@ -35,8 +35,8 @@
 
 **Blockchain Layer:**
 - Network: Solana (Devnet for development, Mainnet-beta optional)
-- Framework: Anchor 0.28+ (Rust)
-- Token Standard: Metaplex Token Metadata v1.1
+- Framework: Anchor 0.32.1 (Rust)
+- Token Standard: Metaplex Token Metadata v5.0.0
 - Storage: Arweave or IPFS for NFT metadata/images
 
 **Backend:**

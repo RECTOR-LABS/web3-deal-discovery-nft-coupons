@@ -195,7 +195,7 @@ MOONPAY_SECRET_KEY=<secret-key>
 
 ## Tech Stack
 
-**Blockchain:** Solana + Anchor 0.28+ + Metaplex v5.0.0
+**Blockchain:** Solana + Anchor 0.32.1 + Metaplex v5.0.0
 **Backend:** Next.js 15 API + Supabase PostgreSQL + Privy Auth
 **Frontend:** Next.js 15 + TypeScript strict + Tailwind v4 + React-Leaflet
 **Storage:** Arweave (permanent) + Supabase Storage (fallback)

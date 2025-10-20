@@ -237,7 +237,7 @@ Create a comprehensive, interactive single-page pitch deck at `/pitch-deck` that
 
 **T12.4.1: Tech Stack Visualization**
 - 3-layer diagram:
-  - **Layer 1 - Blockchain:** Solana + Anchor 0.28 + Metaplex v5.0.0
+  - **Layer 1 - Blockchain:** Solana + Anchor 0.32.1 + Metaplex v5.0.0
   - **Layer 2 - Backend:** Next.js 15 API + Supabase PostgreSQL + Wallet Adapter
   - **Layer 3 - Frontend:** Next.js 15 + TypeScript strict + Tailwind v4
 - Integrations badges:
@@ -255,7 +255,7 @@ Create a comprehensive, interactive single-page pitch deck at `/pitch-deck` that
   3. `redeem_coupon` - Burn NFT, emit redemption event
   4. `update_coupon_status` - Modify active/expired status
 - Deployment: Solana Devnet (ready for mainnet)
-- Framework: Anchor 0.28.0 + Metaplex v5.0.0
+- Framework: Anchor 0.32.1 + Metaplex v5.0.0
 
 **T12.4.3: Architecture Diagram**
 - Flowchart showing:

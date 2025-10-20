@@ -243,7 +243,7 @@ Cashback Earned: 10,000 × 0.15 = 1,500 DEAL
 
 **Smart Contract Repository:**
 - Location: `src/contracts/programs/deal_staking/`
-- Framework: Anchor 0.28+
+- Framework: Anchor 0.32.1
 - Language: Rust
 - Tests: Anchor test suite (stake, unstake, rewards)
 

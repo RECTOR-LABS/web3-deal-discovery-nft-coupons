@@ -37,7 +37,7 @@ Traditional discount platforms like Groupon trap value:
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/web3-deal-discovery-nft-coupons.git
+git clone https://github.com/RECTOR-LABS/web3-deal-discovery-nft-coupons.git
 cd web3-deal-discovery-nft-coupons
 
 # Smart Contracts (Anchor/Solana)
@@ -61,7 +61,7 @@ npm run dev  # → http://localhost:3000
 ## 🏗️ Tech Stack
 
 ### Blockchain Layer
-- **Solana** + **Anchor 0.28** + **Metaplex v5.0.0**
+- **Solana** + **Anchor 0.32.1** + **Metaplex v5.0.0**
 - Program ID: `RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7` (vanity address)
 - 4 instructions: initialize, create_coupon, redeem_coupon, update_status
 
@@ -181,32 +181,15 @@ npm run dev  # → http://localhost:3000
 
 ## 📸 Screenshots
 
-<table>
-<tr>
-<td width="50%" align="center">
-<img src=".screenshot/homepage-marketplace.png" alt="Homepage Marketplace" width="400"/>
-<br/>
-<b>Groupon-Style Marketplace</b>
-</td>
-<td width="50%" align="center">
-<img src=".screenshot/merchant-dashboard.png" alt="Merchant Dashboard" width="400"/>
-<br/>
-<b>Merchant Analytics Dashboard</b>
-</td>
-</tr>
-<tr>
-<td width="50%" align="center">
-<img src=".screenshot/my-coupons.png" alt="My Coupons" width="400"/>
-<br/>
-<b>User Wallet - My Coupons</b>
-</td>
-<td width="50%" align="center">
-<img src=".screenshot/qr-redemption.png" alt="QR Redemption" width="400"/>
-<br/>
-<b>QR Code Redemption Flow</b>
-</td>
-</tr>
-</table>
+> **Note:** Professional screenshots will be added as part of Epic 12 (Pitch Deck). Current testing screenshots available in `.screenshot/` directory.
+
+<!--
+Placeholder for pitch deck screenshots:
+- Homepage Marketplace
+- Merchant Analytics Dashboard
+- User Wallet - My Coupons
+- QR Code Redemption Flow
+-->
 
 ---
 
@@ -316,9 +299,9 @@ web3-deal-discovery-nft-coupons/
 ## 🔗 Links & Resources
 
 - **Live Demo:** Coming soon (Vercel deployment pending)
-- **GitHub Repository:** [github.com/yourusername/web3-deal-discovery-nft-coupons](https://github.com)
-- **Solana Explorer:** [explorer.solana.com/address/RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7?cluster=devnet](https://explorer.solana.com/)
-- **Hackathon Page:** [earn.superteam.fun/listing/build-a-web3-deal-discovery-and-loyalty-platform-with-nft-coupons](https://earn.superteam.fun)
+- **GitHub Repository:** [github.com/RECTOR-LABS/web3-deal-discovery-nft-coupons](https://github.com/RECTOR-LABS/web3-deal-discovery-nft-coupons)
+- **Solana Explorer:** [explorer.solana.com/address/RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7?cluster=devnet](https://explorer.solana.com/address/RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7?cluster=devnet)
+- **Hackathon Page:** [earn.superteam.fun/listing/build-a-web3-deal-discovery-and-loyalty-platform-with-nft-coupons](https://earn.superteam.fun/listings/build-a-web3-deal-discovery-and-loyalty-platform-with-nft-coupons-MonkeDAO)
 
 **External Docs:**
 - [Solana Documentation](https://docs.solana.com/)
@@ -359,9 +342,9 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 ## 📞 Contact & Support
 
 - **Developer:** RECTOR (Senior Full-Stack Developer)
-- **GitHub:** [@yourusername](https://github.com/yourusername)
+- **GitHub:** [@RECTOR-LABS](https://github.com/RECTOR-LABS)
 - **Telegram:** [MonkeDAO Support - @moonsettler](https://t.me/moonsettler)
-- **Issues:** [GitHub Issues](https://github.com/yourusername/web3-deal-discovery-nft-coupons/issues)
+- **Issues:** [GitHub Issues](https://github.com/RECTOR-LABS/web3-deal-discovery-nft-coupons/issues)
 
 ---
 
@@ -371,6 +354,6 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 
 **Bismillah! Tawfeeq min Allah.** 🚀
 
-[![Star on GitHub](https://img.shields.io/github/stars/yourusername/web3-deal-discovery-nft-coupons?style=social)](https://github.com/yourusername/web3-deal-discovery-nft-coupons)
+[![Star on GitHub](https://img.shields.io/github/stars/RECTOR-LABS/web3-deal-discovery-nft-coupons?style=social)](https://github.com/RECTOR-LABS/web3-deal-discovery-nft-coupons)
 
 </div>
