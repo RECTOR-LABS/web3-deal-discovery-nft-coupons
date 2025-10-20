@@ -128,25 +128,32 @@ async function uploadMetadata(
 ): Promise<{ url: string; path: string } | { error: string }> {
   try {
     // Try Arweave first (permanent, immutable storage - perfect for NFT metadata)
-    const useArweave = process.env.ARWEAVE_WALLET_PATH !== undefined;
+    // Use API route (server-side) for Arweave access
+    try {
+      const response = await fetch('/api/arweave/upload-metadata', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          metadata,
+          nftMint,
+        }),
+      });
 
-    if (useArweave) {
-      try {
-        const { uploadMetadataToArweave } = await import('@/lib/storage/arweave');
-        const arweaveResult = await uploadMetadataToArweave(metadata, nftMint);
+      const result = await response.json();
 
-        if ('error' in arweaveResult) {
-          console.warn('Arweave metadata upload failed, falling back to Supabase:', arweaveResult.error);
-        } else {
-          console.log('✅ Metadata uploaded to Arweave:', arweaveResult.url);
-          return {
-            url: arweaveResult.url,
-            path: arweaveResult.txId,
-          };
-        }
-      } catch (arweaveError) {
-        console.warn('Arweave metadata upload error, falling back to Supabase:', arweaveError);
+      if (response.ok && result.success) {
+        console.log('✅ Metadata uploaded to Arweave:', result.url);
+        return {
+          url: result.url,
+          path: result.txId,
+        };
+      } else {
+        console.warn('Arweave metadata upload failed, falling back to Supabase:', result.error);
       }
+    } catch (arweaveError) {
+      console.warn('Arweave metadata upload error, falling back to Supabase:', arweaveError);
     }
 
     // Fallback to Supabase Storage

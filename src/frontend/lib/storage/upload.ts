@@ -1,8 +1,7 @@
 import { createClient } from '@/lib/database/supabase';
-import { uploadImageToArweave } from './arweave';
 
 /**
- * Upload image to Arweave (permanent storage)
+ * Upload image to Arweave (permanent storage) via API route
  * Falls back to Supabase if Arweave fails
  */
 export async function uploadDealImage(
@@ -10,33 +9,31 @@ export async function uploadDealImage(
   merchantWallet: string
 ): Promise<{ url: string; path: string } | { error: string }> {
   try {
-    // Try Arweave first (permanent, decentralized storage)
-    const useArweave = process.env.ARWEAVE_WALLET_PATH !== undefined;
+    // Try Arweave first (permanent, decentralized storage) via API route
+    // API route runs server-side and can access wallet keyfile
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('filename', `${merchantWallet.slice(0, 8)}_${Date.now()}.${file.name.split('.').pop()}`);
 
-    if (useArweave) {
-      try {
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        const filename = `${merchantWallet.slice(0, 8)}_${Date.now()}.${file.name.split('.').pop()}`;
+      const response = await fetch('/api/arweave/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
 
-        const arweaveResult = await uploadImageToArweave(
-          buffer,
-          file.type,
-          filename
-        );
+      const result = await response.json();
 
-        if ('error' in arweaveResult) {
-          console.warn('Arweave upload failed, falling back to Supabase:', arweaveResult.error);
-        } else {
-          console.log('✅ Image uploaded to Arweave:', arweaveResult.url);
-          return {
-            url: arweaveResult.url,
-            path: arweaveResult.txId,
-          };
-        }
-      } catch (arweaveError) {
-        console.warn('Arweave upload error, falling back to Supabase:', arweaveError);
+      if (response.ok && result.success) {
+        console.log('✅ Image uploaded to Arweave:', result.url);
+        return {
+          url: result.url,
+          path: result.txId,
+        };
+      } else {
+        console.warn('Arweave upload failed, falling back to Supabase:', result.error);
       }
+    } catch (arweaveError) {
+      console.warn('Arweave upload error, falling back to Supabase:', arweaveError);
     }
 
     // Fallback to Supabase Storage

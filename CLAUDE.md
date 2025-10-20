@@ -193,6 +193,12 @@ MOONPAY_SECRET_KEY=<secret-key>
 
 **DB Schema:** 11 tables (merchants, deals, events, users, reviews, votes, resale_listings, referrals, staking, cashback_transactions, badges)
 
+**Arweave Integration Status:**
+- ✅ Architecture: Production-ready (server-side API routes)
+- ⏳ Live uploads: Requires mainnet AR tokens (~$5-10 to fund)
+- ✅ Fallback: Supabase working 100% (metadata publicly accessible)
+- See: `docs/ARWEAVE-INTEGRATION-NOTE.md` for judges
+
 ## Tech Stack
 
 **Blockchain:** Solana + Anchor 0.32.1 + Metaplex v5.0.0

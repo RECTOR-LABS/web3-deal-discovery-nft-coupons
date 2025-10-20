@@ -48,7 +48,7 @@ Create a comprehensive, interactive single-page pitch deck at `/pitch-deck` that
 - 10/10 Epics completed (100% feature coverage)
 - All core + bonus features implemented
 - Production-ready (95/100 production score)
-- Real API integrations (RapidAPI, Arweave, MoonPay)
+- Real API integrations (RapidAPI ✅, Arweave Architecture ✅, MoonPay ✅)
 - Web3 invisible UX (wallet adapter, no jargon)
 - Professional DevOps (Sentry, rate limiting, security headers)
 
@@ -198,9 +198,10 @@ Create a comprehensive, interactive single-page pitch deck at `/pitch-deck` that
      - No crypto jargon ("Coupon" not "NFT")
      - Guest browsing (login only for claiming)
   4. **Decentralized Storage**
-     - Arweave permanent metadata storage
-     - 10,000 AR funded wallet
-     - Supabase fallback (graceful degradation)
+     - Arweave permanent metadata storage (production-ready architecture)
+     - Server-side API routes for wallet access
+     - Supabase fallback (100% functional)
+     - **Demo Note:** Requires AR tokens (~$5-10) to activate live uploads
 
 **T12.3.2: Web3 Integration Challenges Answered**
 - Table format (Challenge | Our Solution):
@@ -242,7 +243,7 @@ Create a comprehensive, interactive single-page pitch deck at `/pitch-deck` that
   - **Layer 3 - Frontend:** Next.js 15 + TypeScript strict + Tailwind v4
 - Integrations badges:
   - RapidAPI (Get Promo Codes - 1M+ deals)
-  - Arweave (Permanent storage)
+  - Arweave (Architecture ready - see judge's note)
   - MoonPay Commerce (USDC payments)
   - Sentry (Error monitoring)
   - Vercel (Analytics + Speed Insights)
@@ -463,7 +464,7 @@ Create a comprehensive, interactive single-page pitch deck at `/pitch-deck` that
   - Frontend: Vercel (Next.js 15, edge functions)
   - Database: Supabase (PostgreSQL, us-east-1)
   - Blockchain: Solana Devnet (mainnet ready)
-  - Storage: Arweave Testnet (10,000 AR funded)
+  - Storage: Arweave (production-ready) + Supabase (active fallback)
 - Monitoring stack:
   - Sentry (error tracking - client/server/edge)
   - Vercel Analytics (usage metrics)
@@ -494,7 +495,7 @@ Create a comprehensive, interactive single-page pitch deck at `/pitch-deck` that
 - CDN for static assets:
   - Vercel Edge Network (global distribution)
   - Image optimization (Next.js Image component)
-  - Arweave for permanent NFT metadata
+  - Arweave architecture (server-side API) + Supabase fallback for metadata
 - Horizontal scaling:
   - Stateless API routes (Next.js serverless)
   - Database read replicas (Supabase Pro)
@@ -508,10 +509,13 @@ Create a comprehensive, interactive single-page pitch deck at `/pitch-deck` that
      - Mock fallback for dev/testing
      - "Partner Deal" badges in UI
   2. **Arweave (Permanent Storage)**
+     - ✅ Architecture: Production-ready (server-side API routes)
+     - ⏳ Live uploads: Requires mainnet AR tokens (~$5-10 to fund)
+     - ✅ Fallback: Supabase working 100% (metadata publicly accessible)
      - Wallet: `sY6VBEWpDPmN6oL9Zt_8KjJMR1PWexpmWKEAojtbwsc`
-     - 10,000 AR balance (AR.IO Testnet)
-     - NFT metadata + images
-     - Supabase Storage fallback
+     - NFT metadata + images (permanent URLs)
+     - **Judge's Note:** See `docs/ARWEAVE-INTEGRATION-NOTE.md` for technical details
+     - **Why Demo Uses Supabase:** Arweave requires AR tokens to pay for permanent storage (like AWS S3 but permanent). Architecture is complete; adding tokens activates live uploads.
   3. **MoonPay Commerce (USDC Payments)**
      - 8 paylinks ($1, $2, $5, $10, $15, $20, $25, $50)
      - Solana USDC payments
