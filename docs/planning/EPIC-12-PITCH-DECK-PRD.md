@@ -143,7 +143,7 @@ Create a comprehensive, interactive single-page pitch deck at `/pitch-deck` that
   - 10/10 Epics Complete ✅
   - 84/84 Tasks Delivered
   - 95/100 Production Score
-  - 27 Unit Tests Passing
+  - 27 Manual Tests + 5 Unit Tests Passing
 - MonkeDAO logo + forest green gradient background
 
 **T12.1.3: Sticky Navigation Menu**

@@ -19,6 +19,7 @@ const eslintConfig = [
       "build/**",
       "next-env.d.ts",
       "test-arweave.js", // Plain JS test script, not part of TypeScript build
+      "__mocks__/**", // Jest mocks use CommonJS require()
     ],
   },
   {

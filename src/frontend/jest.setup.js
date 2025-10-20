@@ -53,3 +53,5 @@ jest.mock('framer-motion', () => ({
   },
   AnimatePresence: ({ children }) => children,
 }))
+
+// lucide-react is mocked via moduleNameMapper in jest.config.mjs
