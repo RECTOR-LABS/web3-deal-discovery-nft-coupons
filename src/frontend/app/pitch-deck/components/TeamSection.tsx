@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { User, Code, Rocket, CheckCircle, Calendar, GitBranch, TestTube } from 'lucide-react';
+import { Code, Rocket, CheckCircle, Calendar, GitBranch, TestTube } from 'lucide-react';
 
 export default function TeamSection() {
   const timeline = [

@@ -21,7 +21,7 @@ export default function StakingSimulator() {
 
   useEffect(() => {
     setProjectedRewards(calculateRewards());
-  }, [stakeAmount, timePeriod]);
+  }, [stakeAmount, timePeriod, calculateRewards]);
 
   // Calculate daily, monthly, yearly earnings
   const dailyEarnings = (stakeAmount * apyPercentage) / (365 * 100);

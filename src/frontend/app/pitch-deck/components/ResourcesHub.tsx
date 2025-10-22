@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Rocket, Github, Youtube, FileText, Book, Shield, ExternalLink, Mail, MessageCircle } from 'lucide-react';
+import { Rocket, Github, Youtube, FileText, Book, Shield, ExternalLink, MessageCircle } from 'lucide-react';
 
 export default function ResourcesHub() {
   const primaryLinks = [

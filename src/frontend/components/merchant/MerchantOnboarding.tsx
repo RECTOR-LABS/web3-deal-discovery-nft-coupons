@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import {
   Rocket,
-  TrendingUp,
   Users,
   Shield,
   Zap,

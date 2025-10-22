@@ -13,7 +13,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "prepare": "cd .. && husky src/frontend/.husky || true",
+    "prepare": "if [ -d ../.git ]; then cd .. && husky src/frontend/.husky; fi || true",
     "clean": "lsof -ti:3000 | xargs kill -9 2>/dev/null || true && rm -rf .next out .turbo",
     "clean:all": "lsof -ti:3000 | xargs kill -9 2>/dev/null || true && rm -rf .next out .turbo node_modules package-lock.json"
   },
