@@ -98,10 +98,18 @@ export default function MerchantRegisterPage() {
 
       if (!initResult.success) {
         // On-chain initialization failed, but database record exists
-        // User can try again by visiting /register
-        throw new Error(
-          `Merchant account created in database, but on-chain initialization failed: ${initResult.error}. Please try registering again.`
-        );
+        // FOR DEMO: Allow user to proceed anyway (blockchain can be initialized later)
+        console.warn('⚠️ On-chain initialization failed:', initResult.error);
+        console.log('✅ Database registration complete, proceeding to dashboard...');
+
+        // Show warning but don't block - useful for demo
+        setLoadingMessage('Registration complete (blockchain initialization pending)');
+
+        // Still redirect to dashboard - merchant can create deals
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 1500);
+        return;
       }
 
       console.log('✅ Merchant registration complete:', {
