@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, Calendar, DollarSign, Sparkles } from 'lucide-react';
 
@@ -10,14 +10,19 @@ export default function StakingSimulator() {
   const [apyPercentage] = useState(12);
 
   // Calculate rewards based on APY and time
-  const calculateRewards = () => {
+  const calculateRewards = useCallback(() => {
     const secondsPerYear = 365 * 24 * 60 * 60;
     const timeInSeconds = timePeriod * 24 * 60 * 60;
     const rewards = (stakeAmount * apyPercentage * timeInSeconds) / (secondsPerYear * 100);
     return Math.round(rewards * 100) / 100; // Round to 2 decimals
-  };
+  }, [stakeAmount, timePeriod, apyPercentage]);
 
-  const [projectedRewards, setProjectedRewards] = useState(calculateRewards());
+  const [projectedRewards, setProjectedRewards] = useState(() => {
+    const secondsPerYear = 365 * 24 * 60 * 60;
+    const timeInSeconds = 30 * 24 * 60 * 60; // initial timePeriod
+    const rewards = (1000 * 12 * timeInSeconds) / (secondsPerYear * 100); // initial stakeAmount and APY
+    return Math.round(rewards * 100) / 100;
+  });
 
   useEffect(() => {
     setProjectedRewards(calculateRewards());
