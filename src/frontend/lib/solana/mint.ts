@@ -17,7 +17,7 @@ import {
   CreateCouponArgs,
 } from './merchant-direct';
 import { uploadDealImage } from '@/lib/storage/upload';
-import { createClient } from '@/lib/database/supabase';
+import { createClient, createServiceClient } from '@/lib/database/supabase';
 
 export interface DealData {
   title: string;
@@ -291,7 +291,8 @@ export async function mintCoupon(
     const tx = result.signature;
 
     // Step 7: Save deal to database
-    const supabase = createClient();
+    // Use service role to bypass RLS (this is server-side operation)
+    const supabase = createServiceClient();
     const { data: savedDeal, error: dbError } = await supabase.from('deals').insert({
       merchant_id: merchantId,
       nft_mint_address: nftMint.publicKey.toBase58(),
