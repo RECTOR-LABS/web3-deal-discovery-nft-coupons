@@ -5,6 +5,7 @@ import { SolanaWalletProvider } from "@/components/shared/WalletProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import FloatingPitchDeckButton from "@/components/shared/FloatingPitchDeckButton";
+import Footer from "@/components/shared/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,10 +43,13 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
         <SolanaWalletProvider>
-          {children}
+          <div className="flex-grow">
+            {children}
+          </div>
+          <Footer />
         </SolanaWalletProvider>
         <FloatingPitchDeckButton />
         <Analytics />

@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { UserCoupon } from '@/lib/solana/getUserCoupons';
-import { Calendar, Tag, TrendingUp, QrCode, Share2 } from 'lucide-react';
+import { Calendar, Tag, TrendingUp, QrCode, Share2, DollarSign } from 'lucide-react';
 import { motion } from 'framer-motion';
 import QRCodeGenerator from './QRCodeGenerator';
+import ListForResaleModal from './ListForResaleModal';
 
 interface CouponCardProps {
   coupon: UserCoupon;
@@ -12,6 +13,7 @@ interface CouponCardProps {
 
 export default function CouponCard({ coupon }: CouponCardProps) {
   const [showQR, setShowQR] = useState(false);
+  const [showListForResale, setShowListForResale] = useState(false);
 
   const now = new Date();
   const daysUntilExpiry = Math.ceil(
@@ -120,7 +122,14 @@ export default function CouponCard({ coupon }: CouponCardProps) {
                   <QrCode className="w-5 h-5 mr-2" />
                   Show QR to Redeem
                 </button>
-                <button className="w-full bg-[#174622] hover:bg-[#174622]/90 text-[#f2eecb] font-semibold py-2 rounded-lg transition-colors flex items-center justify-center">
+                <button
+                  onClick={() => setShowListForResale(true)}
+                  className="w-full bg-[#174622] hover:bg-[#174622]/90 text-[#f2eecb] font-semibold py-2 rounded-lg transition-colors flex items-center justify-center"
+                >
+                  <DollarSign className="w-4 h-4 mr-2" />
+                  List for Resale
+                </button>
+                <button className="w-full bg-[#0d2a13] hover:bg-[#0d2a13]/90 text-[#f2eecb] font-semibold py-2 rounded-lg transition-colors flex items-center justify-center">
                   <Share2 className="w-4 h-4 mr-2" />
                   Share
                 </button>
@@ -142,6 +151,14 @@ export default function CouponCard({ coupon }: CouponCardProps) {
         <QRCodeGenerator
           coupon={coupon}
           onClose={() => setShowQR(false)}
+        />
+      )}
+
+      {/* List for Resale Modal */}
+      {showListForResale && (
+        <ListForResaleModal
+          coupon={coupon}
+          onClose={() => setShowListForResale(false)}
         />
       )}
     </>

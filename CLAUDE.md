@@ -6,7 +6,7 @@ Web3 deal discovery platform: NFT coupons on Solana. "Groupon meets DeFi."
 
 - **Track:** Cypherpunk - MonkeDAO (Superteam Earn)
 - **Prize:** $6,500 USDC + Gen3 Monke NFTs | **Deadline:** ~Oct 30, 2025
-- **Status:** 100% Feature Complete (Epic 1-10 ✅) | All Epics Audited ✅ | v0.4.0 Pitch Deck Enhanced ✅ | Ready for Vercel Deployment (Epic 11)
+- **Status:** 100% Hackathon Compliance ✅ | Resale Marketplace Complete ✅ | 25 API Endpoints Documented ✅ | Epic 11 Deployed ✅ | v0.5.0
 - **Competition:** 0 submissions yet (high opportunity)
 
 **Stack:** Solana + Anchor | Next.js 15 + Tailwind v4 | Supabase PostgreSQL | Solana Wallet Adapter
@@ -25,7 +25,8 @@ Web3 deal discovery platform: NFT coupons on Solana. "Groupon meets DeFi."
 9. **Loyalty System** - 4 tiers, 8 NFT badges, exclusive deals, auto-minting | Audit: ✅ A- (88/100)
 10. **Geo Discovery** - Geolocation, distance filter (1-50mi), interactive map (Leaflet) | Audit: ✅ A (90/100)
 
-**✅ Completed (Epic 12):**
+**✅ Completed (Epic 11-13):**
+11. **Epic 11 - Deployment** - Vercel production deployment ✅ | Manually deployed by RECTOR
 12. **Epic 12 - Pitch Deck** - Interactive hackathon submission page at `/pitch-deck` | Enhanced ✅
    - 13 components built (VideoHero, Navigation, CTA, ScreenshotCarousel, CodeEvidence, sections)
    - Screenshot carousel with 39 production screenshots organized in 6 categories
@@ -37,12 +38,18 @@ Web3 deal discovery platform: NFT coupons on Solana. "Groupon meets DeFi."
    - Mobile responsive (320px → 1920px)
    - Build successful (27.8 kB bundle size)
    - Documentation: `docs/EPIC-12-PITCH-DECK-IMPLEMENTATION.md`
-
-**⏳ In Progress:**
-11. **Epic 11 - Submission** (Deploy to Vercel ← NEXT, Demo Video, Technical PDF, Submit)
-   - Deployment guides ready: `docs/deployment/VERCEL-DEPLOYMENT-GUIDE.md`
-   - Quick checklist: `docs/deployment/QUICK-DEPLOY-CHECKLIST.md`
-   - Environment prep script: `scripts/prepare-vercel-env.sh`
+13. **Epic 13 - Resale Marketplace** - Secondary NFT marketplace for unused coupons ✅ | 100% Hackathon Compliance
+   - 3 API endpoints: `/api/resale/list`, `/api/resale/listings`, `/api/resale/purchase`
+   - Marketplace page at `/marketplace/resale` with filters (category, price range, sort)
+   - List for Resale modal with real-time fee calculator (2.5% platform fee)
+   - "List for Resale" button integrated in My Coupons
+   - Navigation link added ("Resale" tab)
+   - Empty state with friendly messaging
+   - Stats dashboard (Active Listings, Avg Price, Avg Discount)
+   - OpenAPI 3.0 documentation for 25 endpoints (`public/openapi.yaml`)
+   - Interactive API docs at `/api-docs` with Scalar UI
+   - Build successful (4.41 kB bundle size for resale page)
+   - Documentation: `docs/RESALE-MARKETPLACE-IMPLEMENTATION.md`
 
 ## Audit Reports Status
 
@@ -70,8 +77,10 @@ Web3 deal discovery platform: NFT coupons on Solana. "Groupon meets DeFi."
 **Smart Contracts (Devnet):** `RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7`
 - Metaplex v5.0.0 | 4 instructions (init, create, redeem, update_status)
 
-**Frontend:** Next.js 15.5.6 @ localhost:3000 (v0.4.0)
+**Frontend:** Next.js 15.5.6 @ localhost:3000 (v0.5.0)
 - TypeScript strict | Tailwind v4 | Solana Wallet Adapter | 3 unit tests (Jest) + 27 manual tests ✅
+- **API Endpoints:** 25 REST endpoints documented (OpenAPI 3.0) | Interactive docs at `/api-docs` ✅
+- **Routes:** 19 pages including `/marketplace/resale` (resale marketplace) and `/api-docs` (API documentation) ✅
 - Monitoring: Sentry + Vercel Analytics + Speed Insights ✅
 - Security: CORS, Rate Limiting, Security Headers, CSP ✅
 - DevOps: Health checks, Error boundary, Bundle analyzer ✅

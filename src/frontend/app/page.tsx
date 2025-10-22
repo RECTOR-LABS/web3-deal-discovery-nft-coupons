@@ -14,7 +14,7 @@ import { supabase } from '@/lib/database/supabase';
 import { Database } from '@/lib/database/types';
 import DealCard from '@/components/user/DealCard';
 import { motion } from 'framer-motion';
-import { Search, MapPin, ShoppingBag, Utensils, Plane, Sparkles, TrendingUp, Tag } from 'lucide-react';
+import { Search, MapPin, ShoppingBag, Utensils, Plane, Sparkles, TrendingUp, Tag, Menu, X } from 'lucide-react';
 import { TierLevel } from '@/lib/loyalty/types';
 
 type Deal = Database['public']['Tables']['deals']['Row'];
@@ -62,6 +62,7 @@ function HomePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryOption>('All');
   const [location, setLocation] = useState('Worldwide');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Fetch deals (platform + external)
   useEffect(() => {
@@ -167,31 +168,95 @@ function HomePage() {
             </div>
 
             <div className="flex items-center gap-4">
-              {connected ? (
-                <>
-                  <Link href="/marketplace" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium cursor-pointer">
+              {/* Desktop Navigation - Hidden on Mobile */}
+              {connected && (
+                <div className="hidden md:flex items-center gap-4">
+                  <Link href="/marketplace" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium cursor-pointer whitespace-nowrap">
                     Marketplace
                   </Link>
-                  <Link href="/coupons" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium cursor-pointer">
+                  <Link href="/marketplace/resale" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium cursor-pointer whitespace-nowrap">
+                    Resale
+                  </Link>
+                  <Link href="/coupons" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium cursor-pointer whitespace-nowrap">
                     My Coupons
                   </Link>
-                  <Link href="/dashboard" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium cursor-pointer">
+                  <Link href="/staking" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium cursor-pointer whitespace-nowrap">
+                    Staking
+                  </Link>
+                  <Link href="/dashboard" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium cursor-pointer whitespace-nowrap">
                     Dashboard
                   </Link>
-                  <Link href="/profile" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium cursor-pointer">
+                  <Link href="/profile" className="text-sm text-gray-600 hover:text-[#0d2a13] font-medium cursor-pointer whitespace-nowrap">
                     Profile
                   </Link>
-                  <div className="wallet-adapter-button-container">
-                    <WalletMultiButton />
-                  </div>
-                </>
-              ) : (
-                <div className="wallet-adapter-button-container">
-                  <WalletMultiButton />
                 </div>
+              )}
+
+              {/* Wallet Button */}
+              <div className="wallet-adapter-button-container">
+                <WalletMultiButton />
+              </div>
+
+              {/* Mobile Menu Button - Only show if connected */}
+              {connected && (
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="md:hidden p-2 text-gray-600 hover:text-[#0d2a13] rounded-lg transition-colors"
+                  aria-label="Toggle menu"
+                >
+                  {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </button>
               )}
             </div>
           </div>
+
+          {/* Mobile Navigation Dropdown */}
+          {connected && mobileMenuOpen && (
+            <div className="md:hidden border-t border-gray-200 py-3 space-y-2">
+              <Link
+                href="/marketplace"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#0d2a13] font-medium cursor-pointer rounded-lg"
+              >
+                Marketplace
+              </Link>
+              <Link
+                href="/marketplace/resale"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#0d2a13] font-medium cursor-pointer rounded-lg"
+              >
+                Resale
+              </Link>
+              <Link
+                href="/coupons"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#0d2a13] font-medium cursor-pointer rounded-lg"
+              >
+                My Coupons
+              </Link>
+              <Link
+                href="/staking"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#0d2a13] font-medium cursor-pointer rounded-lg"
+              >
+                Staking
+              </Link>
+              <Link
+                href="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#0d2a13] font-medium cursor-pointer rounded-lg"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/profile"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#0d2a13] font-medium cursor-pointer rounded-lg"
+              >
+                Profile
+              </Link>
+            </div>
+          )}
 
           {/* Search Bar - Groupon Style */}
           <div className="py-4">

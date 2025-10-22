@@ -1,0 +1,798 @@
+openapi: 3.0.3
+info:
+  title: DealCoupon API
+  description: |
+    Web3 Deal Discovery & Loyalty Platform with NFT Coupons on Solana.
+
+    **Features:**
+    - NFT-based coupons (mint, transfer, redeem)
+    - Merchant dashboard and analytics
+    - User marketplace and resale
+    - Staking and cashback rewards
+    - Loyalty tiers and NFT badges
+    - Social features (reviews, votes, referrals)
+    - Geolocation-based discovery
+
+    **Authentication:** Solana wallet signatures required for most endpoints
+
+    **Base URL:** https://your-domain.com/api
+  version: 0.4.0
+  contact:
+    name: DealCoupon Support
+    email: support@dealcoupon.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://your-domain.com/api
+    description: Production server
+  - url: http://localhost:3000/api
+    description: Development server
+
+tags:
+  - name: Health
+    description: System health and status endpoints
+  - name: Deals
+    description: Deal management and aggregation
+  - name: Merchant
+    description: Merchant registration and profile management
+  - name: Resale
+    description: Secondary marketplace for NFT coupons
+  - name: Redemptions
+    description: Coupon redemption tracking
+  - name: Staking
+    description: Staking and rewards system
+  - name: Social
+    description: Reviews, votes, and referrals
+  - name: User
+    description: User profile and loyalty tiers
+  - name: Payments
+    description: Payment processing (MoonPay)
+  - name: Storage
+    description: Arweave permanent storage
+  - name: Badges
+    description: Loyalty NFT badges
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check endpoint
+      description: Check API and database connectivity
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  status:
+                    type: string
+                    example: healthy
+                  timestamp:
+                    type: string
+                    format: date-time
+                  checks:
+                    type: object
+                    properties:
+                      database:
+                        type: string
+                      solana:
+                        type: string
+
+  /deals/aggregated:
+    get:
+      tags:
+        - Deals
+      summary: Get aggregated deals from external APIs
+      description: Fetches deals from RapidAPI "Get Promo Codes" with 1-hour cache
+      responses:
+        '200':
+          description: Deals fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  deals:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ExternalDeal'
+                  count:
+                    type: integer
+
+  /merchant/register:
+    post:
+      tags:
+        - Merchant
+      summary: Register new merchant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_address
+                - business_name
+                - email
+              properties:
+                wallet_address:
+                  type: string
+                business_name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                address:
+                  type: string
+                city:
+                  type: string
+                state:
+                  type: string
+                zip_code:
+                  type: string
+                country:
+                  type: string
+                latitude:
+                  type: number
+                longitude:
+                  type: number
+      responses:
+        '201':
+          description: Merchant registered successfully
+        '409':
+          description: Merchant already exists
+
+  /merchant/profile:
+    get:
+      tags:
+        - Merchant
+      summary: Get merchant profile
+      parameters:
+        - name: wallet
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Profile fetched successfully
+
+    put:
+      tags:
+        - Merchant
+      summary: Update merchant profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                wallet_address:
+                  type: string
+                business_name:
+                  type: string
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Profile updated successfully
+
+  /merchant/check-role:
+    get:
+      tags:
+        - Merchant
+      summary: Check if wallet is a merchant
+      parameters:
+        - name: wallet
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Role checked
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isMerchant:
+                    type: boolean
+
+  /resale/list:
+    post:
+      tags:
+        - Resale
+      summary: List NFT coupon for resale
+      description: Create a resale listing with 2.5% platform fee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nft_mint
+                - seller_wallet
+                - price_sol
+              properties:
+                nft_mint:
+                  type: string
+                seller_wallet:
+                  type: string
+                price_sol:
+                  type: number
+                  minimum: 0.001
+      responses:
+        '200':
+          description: Listing created successfully
+        '409':
+          description: NFT already listed
+
+  /resale/listings:
+    get:
+      tags:
+        - Resale
+      summary: Get all active resale listings
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: min_price
+          in: query
+          schema:
+            type: number
+        - name: max_price
+          in: query
+          schema:
+            type: number
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [newest, price_asc, price_desc, discount_desc]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Listings fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  listings:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ResaleListing'
+                  count:
+                    type: integer
+
+  /resale/purchase:
+    post:
+      tags:
+        - Resale
+      summary: Purchase a resale listing
+      description: Complete resale purchase with 2.5% marketplace fee deduction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - listing_id
+                - buyer_wallet
+                - transaction_signature
+              properties:
+                listing_id:
+                  type: string
+                buyer_wallet:
+                  type: string
+                transaction_signature:
+                  type: string
+      responses:
+        '200':
+          description: Purchase completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  purchase:
+                    type: object
+                    properties:
+                      price_sol:
+                        type: number
+                      marketplace_fee:
+                        type: number
+                      seller_proceeds:
+                        type: number
+        '404':
+          description: Listing not found
+
+  /redemptions:
+    get:
+      tags:
+        - Redemptions
+      summary: Get redemption history
+      parameters:
+        - name: merchant_wallet
+          in: query
+          schema:
+            type: string
+        - name: filter
+          in: query
+          schema:
+            type: string
+            enum: [all, last_7_days, last_30_days]
+      responses:
+        '200':
+          description: Redemptions fetched successfully
+
+    post:
+      tags:
+        - Redemptions
+      summary: Record a redemption
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nft_mint
+                - user_wallet
+                - merchant_wallet
+              properties:
+                nft_mint:
+                  type: string
+                user_wallet:
+                  type: string
+                merchant_wallet:
+                  type: string
+      responses:
+        '200':
+          description: Redemption recorded
+
+  /staking/info:
+    get:
+      tags:
+        - Staking
+      summary: Get staking information
+      parameters:
+        - name: wallet
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Staking info fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_staked:
+                    type: number
+                  pending_rewards:
+                    type: number
+                  apy:
+                    type: number
+                  tier:
+                    type: string
+
+  /staking/stake:
+    post:
+      tags:
+        - Staking
+      summary: Stake SOL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_wallet
+                - amount_sol
+              properties:
+                user_wallet:
+                  type: string
+                amount_sol:
+                  type: number
+      responses:
+        '200':
+          description: Staking successful
+
+  /staking/unstake:
+    post:
+      tags:
+        - Staking
+      summary: Unstake SOL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_wallet
+                - amount_sol
+              properties:
+                user_wallet:
+                  type: string
+                amount_sol:
+                  type: number
+      responses:
+        '200':
+          description: Unstaking successful
+
+  /staking/claim-rewards:
+    post:
+      tags:
+        - Staking
+      summary: Claim staking rewards
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_wallet
+              properties:
+                user_wallet:
+                  type: string
+      responses:
+        '200':
+          description: Rewards claimed
+
+  /reviews:
+    get:
+      tags:
+        - Social
+      summary: Get reviews for a deal
+      parameters:
+        - name: deal_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Reviews fetched
+
+    post:
+      tags:
+        - Social
+      summary: Submit a review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - deal_id
+                - user_wallet
+                - rating
+              properties:
+                deal_id:
+                  type: string
+                user_wallet:
+                  type: string
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                comment:
+                  type: string
+      responses:
+        '201':
+          description: Review submitted
+
+  /votes:
+    post:
+      tags:
+        - Social
+      summary: Vote on a deal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - deal_id
+                - user_wallet
+                - vote_type
+              properties:
+                deal_id:
+                  type: string
+                user_wallet:
+                  type: string
+                vote_type:
+                  type: string
+                  enum: [upvote, downvote]
+      responses:
+        '200':
+          description: Vote recorded
+
+  /referrals:
+    post:
+      tags:
+        - Social
+      summary: Track referral
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - referrer_wallet
+                - referred_wallet
+              properties:
+                referrer_wallet:
+                  type: string
+                referred_wallet:
+                  type: string
+      responses:
+        '200':
+          description: Referral tracked
+
+  /activity-feed:
+    get:
+      tags:
+        - Social
+      summary: Get recent activity feed
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Activity feed fetched
+
+  /user/tier:
+    get:
+      tags:
+        - User
+      summary: Get user loyalty tier
+      parameters:
+        - name: wallet
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tier info fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tierInfo:
+                    type: object
+                    properties:
+                      currentTier:
+                        type: string
+                        enum: [Bronze, Silver, Gold, Diamond]
+                      progress:
+                        type: number
+                      nextTier:
+                        type: string
+
+  /user/badges:
+    get:
+      tags:
+        - User
+      summary: Get user NFT badges
+      parameters:
+        - name: wallet
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Badges fetched
+
+  /badges/mint:
+    post:
+      tags:
+        - Badges
+      summary: Mint a loyalty NFT badge
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_wallet
+                - badge_type
+              properties:
+                user_wallet:
+                  type: string
+                badge_type:
+                  type: string
+                  enum: [first_deal, deal_hunter, social_butterfly, referral_master, staking_champion, whale, merchant_favorite, platinum_member]
+      responses:
+        '200':
+          description: Badge minted
+
+  /payments/create-paylink:
+    post:
+      tags:
+        - Payments
+      summary: Create MoonPay payment link
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+              properties:
+                amount:
+                  type: number
+                  enum: [1, 2, 5, 10, 15, 20, 25, 50]
+      responses:
+        '200':
+          description: Paylink created
+
+  /payments/record:
+    post:
+      tags:
+        - Payments
+      summary: Record payment completion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_wallet
+                - amount
+              properties:
+                user_wallet:
+                  type: string
+                amount:
+                  type: number
+      responses:
+        '200':
+          description: Payment recorded
+
+  /arweave/upload-image:
+    post:
+      tags:
+        - Storage
+      summary: Upload image to Arweave
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Image uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  url:
+                    type: string
+                  txId:
+                    type: string
+
+  /arweave/upload-metadata:
+    post:
+      tags:
+        - Storage
+      summary: Upload NFT metadata to Arweave
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - metadata
+              properties:
+                metadata:
+                  type: object
+      responses:
+        '200':
+          description: Metadata uploaded
+
+components:
+  schemas:
+    ExternalDeal:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        discount_percentage:
+          type: number
+        image_url:
+          type: string
+        category:
+          type: string
+        merchant:
+          type: string
+        is_external:
+          type: boolean
+        source:
+          type: string
+        external_url:
+          type: string
+
+    ResaleListing:
+      type: object
+      properties:
+        id:
+          type: string
+        nft_mint:
+          type: string
+        seller_wallet:
+          type: string
+        price_sol:
+          type: number
+        is_active:
+          type: boolean
+        listed_at:
+          type: string
+          format: date-time
+        deal:
+          type: object
+          description: Associated deal information
+
+  securitySchemes:
+    WalletSignature:
+      type: apiKey
+      in: header
+      name: X-Wallet-Signature
+      description: Solana wallet signature for authentication
+
+security:
+  - WalletSignature: []

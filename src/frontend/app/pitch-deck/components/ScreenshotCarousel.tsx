@@ -103,6 +103,21 @@ const screenshotCategories = [
     ],
   },
   {
+    id: 'navigation-fixes',
+    label: 'Navigation & Legal',
+    icon: Shield,
+    description: 'Oct 22 updates - Mobile responsive navbar & legal pages',
+    screenshots: [
+      { src: '/screenshots/navigation-fixes/01-mobile-marketplace.png', caption: 'Mobile Marketplace - Hamburger menu working' },
+      { src: '/screenshots/navigation-fixes/02-mobile-homepage.png', caption: 'Mobile Homepage - Responsive navigation' },
+      { src: '/screenshots/navigation-fixes/03-tos-page.png', caption: 'Terms of Service - Complete legal page' },
+      { src: '/screenshots/navigation-fixes/04-resale-marketplace.png', caption: 'Resale Marketplace - Empty state UI' },
+      { src: '/screenshots/navigation-fixes/05-api-docs.png', caption: 'API Docs - Homepage button added' },
+      { src: '/screenshots/navigation-fixes/06-marketplace-guest.png', caption: 'Guest Navigation - 4 links visible' },
+      { src: '/screenshots/navigation-fixes/07-dashboard-nav.png', caption: 'Dashboard Navigation - Home/Marketplace links' },
+    ],
+  },
+  {
     id: 'highlights',
     label: 'Highlights',
     icon: Star,
@@ -188,7 +203,7 @@ export default function ScreenshotCarousel() {
           className="text-center mb-8"
         >
           <p className="text-base text-[#f2eecb]/70 mb-6">
-            <span className="text-[#00ff4d] font-semibold">39 Production Screenshots</span> · Browse all 10 Epics below
+            <span className="text-[#00ff4d] font-semibold">46 Production Screenshots</span> · Browse all 10 Epics below
           </p>
         </motion.div>
 
