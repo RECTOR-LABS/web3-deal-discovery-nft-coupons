@@ -256,11 +256,11 @@ export default function MerchantOnboarding() {
                 Registration
               </h3>
               <div className="flex items-baseline gap-2 mb-3">
-                <span className="text-4xl font-black text-[#0d2a13]">0.5</span>
+                <span className="text-4xl font-black text-[#0d2a13]">~0.002</span>
                 <span className="text-xl text-[#174622]">SOL</span>
               </div>
               <p className="text-[#174622] text-sm">
-                Minimum wallet balance required for account creation. Covers Solana blockchain storage and transaction fees.
+                One-time account creation cost (~$0.40 USD). Covers Solana blockchain storage rent and transaction fees.
               </p>
             </div>
 

@@ -4,6 +4,22 @@
 
 This error means your wallet doesn't have enough SOL to pay for the transaction.
 
+**Important:** The actual cost is only ~0.002 SOL (~$0.40 USD), but you need a minimum balance of ~0.5 SOL in your wallet for the transaction to succeed. This is because the wallet adapter pre-checks if you can afford rent + fees before sending.
+
+### Actual Cost Breakdown
+
+Based on transaction `4ZQKS8tv4UygrGHQpXbBRaxTnNS4KH8PLtazj5pw4XSzrN2CDPN2EdqhoPszH2AADMfXZxSd7zBUnMTBM67ktJgg`:
+
+- **Transaction Fee:** 0.00008 SOL
+- **Rent (PDA Storage):** 0.00195576 SOL
+- **Total Cost:** **~0.002 SOL** (approximately $0.40 USD)
+
+**Why you need 0.5 SOL in wallet:**
+- Wallet adapters (Phantom, Solflare) check if you have enough balance before sending
+- They require a safety buffer to prevent failed transactions
+- The 0.5 SOL is NOT spent - it's just the minimum balance needed
+- After registration, you'll still have ~0.498 SOL remaining
+
 ---
 
 ## Quick Fix (2 minutes)
