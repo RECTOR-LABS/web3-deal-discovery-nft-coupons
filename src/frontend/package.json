@@ -86,28 +86,30 @@
     ]
   },
   "overrides": {
-    "@solana-program/compute-budget": {
-      "@solana/kit": "$@solana/kit"
-    },
-    "@solana-program/stake": {
-      "@solana/kit": "$@solana/kit"
-    },
-    "@solana-program/token-2022": {
-      "@solana/kit": "$@solana/kit",
-      "@solana/sysvars": "$@solana/sysvars"
+    "@trezor/blockchain-link": {
+      "@solana-program/compute-budget": {
+        "@solana/kit": "^4.0.0"
+      },
+      "@solana-program/stake": {
+        "@solana/kit": "^4.0.0"
+      },
+      "@solana-program/token-2022": {
+        "@solana/kit": "^4.0.0",
+        "@solana/sysvars": "^4.0.0"
+      }
     },
     "@keystonehq/sdk": {
       "qrcode.react": {
-        "react": "$react"
+        "react": "^19.0.0"
       },
       "react-qr-reader": {
-        "react": "$react",
-        "react-dom": "$react-dom"
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0"
       }
     },
     "valtio": {
       "use-sync-external-store": {
-        "react": "$react"
+        "react": "^19.0.0"
       }
     }
   }
