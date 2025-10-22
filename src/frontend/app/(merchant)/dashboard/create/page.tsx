@@ -429,7 +429,7 @@ export default function CreateDealPage() {
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors"
+                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors text-[#0d2a13] placeholder:text-[#0d2a13]/50"
                 placeholder="e.g., 50% Off All Coffee Beans"
                 maxLength={100}
               />
@@ -452,7 +452,7 @@ export default function CreateDealPage() {
                   setFormData({ ...formData, description: e.target.value })
                 }
                 rows={4}
-                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors resize-none"
+                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors resize-none text-[#0d2a13] placeholder:text-[#0d2a13]/50"
                 placeholder="Describe your deal in detail..."
                 maxLength={500}
               />
@@ -490,7 +490,7 @@ export default function CreateDealPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, discountPercentage: e.target.value })
                   }
-                  className="w-full pl-10 pr-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors"
+                  className="w-full pl-10 pr-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors text-[#0d2a13] placeholder:text-[#0d2a13]/50"
                   placeholder="50"
                   min="1"
                   max="100"
@@ -517,7 +517,7 @@ export default function CreateDealPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, expiryDate: e.target.value })
                   }
-                  className="w-full pl-10 pr-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors"
+                  className="w-full pl-10 pr-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors text-[#0d2a13]"
                   min={new Date().toISOString().split('T')[0]}
                 />
               </div>
@@ -536,7 +536,7 @@ export default function CreateDealPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, category: e.target.value })
                 }
-                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors bg-white"
+                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors bg-white text-[#0d2a13]"
               >
                 <option value="">Select category...</option>
                 {CATEGORIES.map((cat) => (
@@ -561,7 +561,7 @@ export default function CreateDealPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, quantity: e.target.value })
                 }
-                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors"
+                className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors text-[#0d2a13] placeholder:text-[#0d2a13]/50"
                 placeholder="Unlimited"
                 min="1"
               />
