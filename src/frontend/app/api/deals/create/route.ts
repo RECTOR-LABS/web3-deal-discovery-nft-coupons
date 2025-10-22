@@ -18,6 +18,8 @@ import { createServiceClient } from '@/lib/database/supabase';
  *   expiry_date: string (ISO format)
  *   category: string
  *   is_active: boolean
+ *   price?: number (in SOL, optional - NULL for free coupons)
+ *   coupon_type: 'free' | 'paid'
  * }
  */
 export async function POST(request: NextRequest) {
@@ -58,6 +60,7 @@ export async function POST(request: NextRequest) {
         expiry_date: body.expiry_date,
         category: body.category,
         is_active: body.is_active !== false, // default to true
+        price: body.coupon_type === 'paid' ? (body.price || null) : null, // NULL for free coupons
       })
       .select();
 

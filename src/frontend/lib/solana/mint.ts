@@ -27,6 +27,8 @@ export interface DealData {
   category: string;
   quantity: number;
   imageFile: File | null;
+  couponType: 'free' | 'paid';
+  price?: number; // Optional, only for paid coupons (in SOL)
 }
 
 export interface MintResult {
@@ -307,6 +309,8 @@ export async function mintCoupon(
           expiry_date: new Date(dealData.expiryDate).toISOString(),
           category: dealData.category,
           is_active: true,
+          coupon_type: dealData.couponType,
+          price: dealData.couponType === 'paid' ? dealData.price : undefined,
         }),
       });
 

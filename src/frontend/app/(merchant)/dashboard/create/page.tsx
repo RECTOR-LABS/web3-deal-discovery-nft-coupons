@@ -29,6 +29,8 @@ interface DealFormData {
   category: string;
   imageFile: File | null;
   imagePreview: string;
+  couponType: 'free' | 'paid';
+  price: string;
 }
 
 const CATEGORIES = [
@@ -59,6 +61,8 @@ export default function CreateDealPage() {
     category: '',
     imageFile: null,
     imagePreview: '',
+    couponType: 'free',
+    price: '',
   });
 
   // Fetch merchant ID on mount
@@ -103,6 +107,18 @@ export default function CreateDealPage() {
     if (expiryDate <= new Date()) return 'Expiry date must be in the future';
 
     if (!formData.category) return 'Category is required';
+
+    // Validate price for paid coupons
+    if (formData.couponType === 'paid') {
+      if (!formData.price.trim()) return 'Price is required for paid coupons';
+      const price = parseFloat(formData.price);
+      if (isNaN(price) || price <= 0) {
+        return 'Price must be greater than 0';
+      }
+      if (price < 0.001 || price > 999.999) {
+        return 'Price must be between 0.001 and 999.999 SOL';
+      }
+    }
 
     return null;
   };
@@ -179,6 +195,8 @@ export default function CreateDealPage() {
           category: formData.category,
           quantity: parseInt(formData.quantity),
           imageFile: formData.imageFile,
+          couponType: formData.couponType,
+          price: formData.couponType === 'paid' ? parseFloat(formData.price) : undefined,
         },
         merchantId
       );
@@ -279,6 +297,8 @@ export default function CreateDealPage() {
                   category: '',
                   imageFile: null,
                   imagePreview: '',
+                  couponType: 'free',
+                  price: '',
                 });
                 setError(null);
                 setTxSignature('');
@@ -322,9 +342,23 @@ export default function CreateDealPage() {
 
           {/* Deal Details */}
           <div className="p-6 space-y-4">
-            {/* Discount Badge */}
-            <div className="inline-flex items-center px-4 py-2 bg-monke-neon text-white font-bold rounded-lg text-2xl">
-              {formData.discountPercentage}% OFF
+            {/* Badges */}
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Discount Badge */}
+              <div className="inline-flex items-center px-4 py-2 bg-monke-neon text-white font-bold rounded-lg text-2xl">
+                {formData.discountPercentage}% OFF
+              </div>
+
+              {/* Price Badge */}
+              {formData.couponType === 'free' ? (
+                <div className="inline-flex items-center px-4 py-2 bg-green-500 text-white font-bold rounded-lg text-lg">
+                  FREE
+                </div>
+              ) : (
+                <div className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-bold rounded-lg text-lg">
+                  Pay {formData.price} SOL
+                </div>
+              )}
             </div>
 
             {/* Title */}
@@ -460,6 +494,79 @@ export default function CreateDealPage() {
                 {formData.description.length}/500 characters
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* Coupon Type & Pricing */}
+        <div className="bg-white border-2 border-monke-border rounded-lg p-6">
+          <div className="flex items-center space-x-2 mb-4">
+            <Package size={20} className="text-monke-primary" />
+            <h2 className="text-lg font-bold text-monke-primary">Coupon Type</h2>
+          </div>
+
+          <div className="space-y-4">
+            {/* Coupon Type Radio Buttons */}
+            <div>
+              <label className="block text-sm font-medium text-[#0d2a13] font-semibold mb-3">
+                Coupon Type <span className="text-red-500">*</span>
+              </label>
+              <div className="flex space-x-4">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="couponType"
+                    value="free"
+                    checked={formData.couponType === 'free'}
+                    onChange={(e) =>
+                      setFormData({ ...formData, couponType: 'free', price: '' })
+                    }
+                    className="w-5 h-5 text-monke-primary focus:ring-monke-primary cursor-pointer"
+                  />
+                  <span className="text-[#0d2a13] font-medium">Free - Users claim for free</span>
+                </label>
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="couponType"
+                    value="paid"
+                    checked={formData.couponType === 'paid'}
+                    onChange={(e) =>
+                      setFormData({ ...formData, couponType: 'paid' })
+                    }
+                    className="w-5 h-5 text-monke-primary focus:ring-monke-primary cursor-pointer"
+                  />
+                  <span className="text-[#0d2a13] font-medium">Paid - Users pay to claim</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Conditional Price Input */}
+            {formData.couponType === 'paid' && (
+              <div>
+                <label
+                  htmlFor="price"
+                  className="block text-sm font-medium text-[#0d2a13] font-semibold mb-2"
+                >
+                  Price (SOL) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  id="price"
+                  value={formData.price}
+                  onChange={(e) =>
+                    setFormData({ ...formData, price: e.target.value })
+                  }
+                  className="w-full px-4 py-3 border-2 border-monke-border rounded-lg focus:outline-none focus:border-monke-primary transition-colors text-[#0d2a13] placeholder:text-[#0d2a13]/50"
+                  placeholder="0.5"
+                  min="0.001"
+                  max="999.999"
+                  step="0.001"
+                />
+                <p className="text-xs text-[#174622] font-medium mt-1">
+                  Enter price between 0.001 - 999.999 SOL
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
