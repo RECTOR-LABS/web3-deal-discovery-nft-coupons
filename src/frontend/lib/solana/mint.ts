@@ -17,7 +17,7 @@ import {
   CreateCouponArgs,
 } from './merchant-direct';
 import { uploadDealImage } from '@/lib/storage/upload';
-import { createClient, createServiceClient } from '@/lib/database/supabase';
+import { createClient } from '@/lib/database/supabase';
 
 export interface DealData {
   title: string;
@@ -289,33 +289,45 @@ export async function mintCoupon(
     }
 
     const tx = result.signature;
+    const nftMintAddress = nftMint.publicKey.toBase58();
 
-    // Step 7: Save deal to database
-    // Use service role to bypass RLS (this is server-side operation)
-    const supabase = createServiceClient();
-    const { data: savedDeal, error: dbError } = await supabase.from('deals').insert({
-      merchant_id: merchantId,
-      nft_mint_address: nftMint.publicKey.toBase58(),
-      title: dealData.title,
-      description: dealData.description,
-      image_url: imageUrl,
-      discount_percentage: dealData.discountPercentage,
-      expiry_date: new Date(dealData.expiryDate).toISOString(),
-      category: dealData.category,
-      is_active: true,
-    }).select();
+    // Step 7: Save deal to database via API (server-side)
+    // API has access to service role key and can bypass RLS
+    try {
+      const saveResponse = await fetch('/api/deals/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          merchant_id: merchantId,
+          nft_mint_address: nftMintAddress,
+          title: dealData.title,
+          description: dealData.description,
+          image_url: imageUrl,
+          discount_percentage: dealData.discountPercentage,
+          expiry_date: new Date(dealData.expiryDate).toISOString(),
+          category: dealData.category,
+          is_active: true,
+        }),
+      });
 
-    if (dbError) {
-      console.error('❌ Database insert error:', dbError);
-      // NFT was minted successfully but database insert failed
-      // This is a critical error - the NFT exists but won't show in the UI
+      if (!saveResponse.ok) {
+        const errorData = await saveResponse.json();
+        console.error('❌ Database insert error:', errorData);
+        return {
+          success: false,
+          error: `NFT minted successfully (${nftMintAddress}), but failed to save to database: ${errorData.error}. Please contact support.`,
+        };
+      }
+
+      const saveResult = await saveResponse.json();
+      console.log('✅ Deal saved to database:', saveResult.deal);
+    } catch (dbError) {
+      console.error('❌ API request error:', dbError);
       return {
         success: false,
-        error: `NFT minted successfully (${nftMint.publicKey.toBase58()}), but failed to save to database: ${dbError.message}. Please contact support.`,
+        error: `NFT minted successfully (${nftMintAddress}), but failed to save to database. Please contact support.`,
       };
     }
-
-    console.log('✅ Deal saved to database:', savedDeal);
 
     return {
       success: true,
