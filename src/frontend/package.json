@@ -84,5 +84,31 @@
     "*.{json,md}": [
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "@solana-program/compute-budget": {
+      "@solana/kit": "$@solana/kit"
+    },
+    "@solana-program/stake": {
+      "@solana/kit": "$@solana/kit"
+    },
+    "@solana-program/token-2022": {
+      "@solana/kit": "$@solana/kit",
+      "@solana/sysvars": "$@solana/sysvars"
+    },
+    "@keystonehq/sdk": {
+      "qrcode.react": {
+        "react": "$react"
+      },
+      "react-qr-reader": {
+        "react": "$react",
+        "react-dom": "$react-dom"
+      }
+    },
+    "valtio": {
+      "use-sync-external-store": {
+        "react": "$react"
+      }
+    }
   }
 }
