@@ -49,7 +49,7 @@
   ],
   "regions": ["iad1"],
   "functions": {
-    "api/**/*.ts": {
+    "app/api/**/route.ts": {
       "maxDuration": 30
     }
   }
