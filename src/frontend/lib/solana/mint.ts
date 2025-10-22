@@ -292,7 +292,7 @@ export async function mintCoupon(
 
     // Step 7: Save deal to database
     const supabase = createClient();
-    const { data: dealData, error: dbError } = await supabase.from('deals').insert({
+    const { data: savedDeal, error: dbError } = await supabase.from('deals').insert({
       merchant_id: merchantId,
       nft_mint_address: nftMint.publicKey.toBase58(),
       title: dealData.title,
@@ -314,7 +314,7 @@ export async function mintCoupon(
       };
     }
 
-    console.log('✅ Deal saved to database:', dealData);
+    console.log('✅ Deal saved to database:', savedDeal);
 
     return {
       success: true,
