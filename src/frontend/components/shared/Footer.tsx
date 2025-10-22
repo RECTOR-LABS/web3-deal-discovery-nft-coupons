@@ -15,7 +15,7 @@ export default function Footer() {
               <span className="text-xl font-bold">DealCoupon</span>
             </div>
             <p className="text-sm text-[#f2eecb]/70">
-              Web3 deal discovery platform. "Groupon meets DeFi" - NFT coupons on Solana.
+              Web3 deal discovery platform. &quot;Groupon meets DeFi&quot; - NFT coupons on Solana.
             </p>
             <div className="flex items-center gap-2 text-xs text-[#f2eecb]/60">
               <span>Built for MonkeDAO 🐵</span>

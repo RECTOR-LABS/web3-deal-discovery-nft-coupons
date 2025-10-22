@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Link from 'next/link';
 
 export default function ApiDocsPage() {
   useEffect(() => {
@@ -27,12 +28,12 @@ export default function ApiDocsPage() {
             Complete REST API reference for Web3 Deal Discovery & Loyalty Platform
           </p>
           <div className="mt-6 flex gap-4">
-            <a
+            <Link
               href="/"
               className="px-6 py-3 bg-[#f2eecb] text-[#0d2a13] font-bold rounded-lg hover:bg-[#f2eecb]/90 transition-colors"
             >
               ← Back to Homepage
-            </a>
+            </Link>
             <a
               href="/openapi.yaml"
               download
