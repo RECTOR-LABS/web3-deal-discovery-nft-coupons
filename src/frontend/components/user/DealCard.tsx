@@ -11,7 +11,7 @@ import { hasAccessToDeal } from '@/lib/loyalty/tiers';
 
 type Deal = Database['public']['Tables']['deals']['Row'];
 
-// Extended Deal type to support external deals
+// Extended Deal type to support external deals, paid coupons, and resale
 export type ExtendedDeal = Deal & {
   is_external?: boolean;
   source?: string;
@@ -19,6 +19,11 @@ export type ExtendedDeal = Deal & {
   merchant?: string;
   min_tier?: TierLevel | null;
   is_exclusive?: boolean | null;
+  is_resale?: boolean;
+  resale_price?: number | null;
+  resale_listing_id?: string;
+  resale_seller?: string;
+  price?: number | null; // Price in SOL for paid coupons (NULL = free)
 };
 
 interface DealCardProps {
@@ -172,9 +177,17 @@ export default function DealCard({ deal, userTier = 'Bronze' }: DealCardProps) {
             <button className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors">
               View Partner Deal
             </button>
+          ) : deal.is_resale && deal.resale_price ? (
+            <button className="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+              Buy Now - {deal.resale_price.toFixed(3)} SOL
+            </button>
+          ) : deal.price ? (
+            <button className="mt-4 w-full bg-[#00ff4d] hover:bg-[#00cc3d] text-[#0d2a13] font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+              Buy Coupon - {Number(deal.price).toFixed(3)} SOL
+            </button>
           ) : (
             <button className="mt-4 w-full bg-[#0d2a13] hover:bg-[#174622] text-[#f2eecb] font-semibold py-3 rounded-lg transition-colors">
-              View Deal
+              Get Coupon (FREE)
             </button>
           )}
         </div>

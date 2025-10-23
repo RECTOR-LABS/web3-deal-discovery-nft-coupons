@@ -37,6 +37,7 @@ export enum MetricType {
   CASHBACK_EARNED = 'cashback.earned',
   STAKE_CREATED = 'stake.created',
   STAKE_WITHDRAWN = 'stake.withdrawn',
+  PAYMENT_COMPLETED = 'payment.completed',
 
   // Errors
   ERROR_NFT_MINT_FAILED = 'error.nft_mint_failed',

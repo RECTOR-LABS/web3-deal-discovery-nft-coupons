@@ -7,6 +7,7 @@ import { Database } from '@/lib/database/types';
 import DealCard, { ExtendedDeal as DealCardExtendedDeal } from '@/components/user/DealCard';
 import { TierLevel } from '@/lib/loyalty/types';
 import { ShoppingCart, TrendingUp, Repeat } from 'lucide-react';
+import PurchaseModal from '@/components/payments/PurchaseModal';
 
 type Deal = Database['public']['Tables']['deals']['Row'];
 type ResaleListing = Database['public']['Tables']['resale_listings']['Row'];
@@ -36,6 +37,8 @@ export default function ResaleMarketplacePage() {
   const [userTier, setUserTier] = useState<TierLevel>('Bronze');
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
+  const [selectedListing, setSelectedListing] = useState<ResaleListingWithDeal | null>(null);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   // Fetch user's tier
   useEffect(() => {
@@ -347,6 +350,11 @@ export default function ResaleMarketplacePage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: Math.min(index * 0.05, 0.3) }}
+                  onClick={() => {
+                    setSelectedListing(listing);
+                    setShowPurchaseModal(true);
+                  }}
+                  className="cursor-pointer"
                 >
                   {dealForCard && (
                     <div className="relative">
@@ -363,6 +371,30 @@ export default function ResaleMarketplacePage() {
           </motion.div>
         )}
       </div>
+
+      {/* Purchase Modal for Resale */}
+      {selectedListing && selectedListing.deal && (
+        <PurchaseModal
+          isOpen={showPurchaseModal}
+          onClose={() => {
+            setShowPurchaseModal(false);
+            setSelectedListing(null);
+          }}
+          dealTitle={selectedListing.deal.title}
+          priceSOL={selectedListing.price_sol || 0}
+          discountPercentage={selectedListing.deal.discount_percentage || 0}
+          imageUrl={selectedListing.deal.image_url || undefined}
+          isResale={true}
+          resaleListingId={selectedListing.id}
+          sellerWallet={selectedListing.seller_wallet}
+          onSuccess={() => {
+            // Refresh listings
+            setShowPurchaseModal(false);
+            setSelectedListing(null);
+            window.location.reload();
+          }}
+        />
+      )}
     </div>
   );
 }

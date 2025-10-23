@@ -93,6 +93,7 @@ export type Database = {
           merchant_id: string | null
           min_tier: string | null
           nft_mint_address: string
+          price_sol: number | null
           quantity: number | null
           title: string
           updated_at: string | null
@@ -110,6 +111,7 @@ export type Database = {
           merchant_id?: string | null
           min_tier?: string | null
           nft_mint_address: string
+          price_sol?: number | null
           quantity?: number | null
           title: string
           updated_at?: string | null
@@ -127,6 +129,7 @@ export type Database = {
           merchant_id?: string | null
           min_tier?: string | null
           nft_mint_address?: string
+          price_sol?: number | null
           quantity?: number | null
           title?: string
           updated_at?: string | null

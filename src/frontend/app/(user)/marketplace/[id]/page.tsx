@@ -12,6 +12,7 @@ import { claimCoupon } from '@/lib/solana/purchase';
 import RatingSystem from '@/components/user/RatingSystem';
 import VoteButtons from '@/components/user/VoteButtons';
 import ShareButtons from '@/components/user/ShareButtons';
+import PurchaseModal from '@/components/payments/PurchaseModal';
 
 type Deal = Database['public']['Tables']['deals']['Row'];
 type Merchant = Database['public']['Tables']['merchants']['Row'];
@@ -26,6 +27,7 @@ export default function DealDetailPage() {
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   // Get referrer wallet from URL params (if shared via referral link)
   const referrerWallet = searchParams.get('ref');
@@ -285,7 +287,16 @@ export default function DealDetailPage() {
                 >
                   Deal Expired
                 </button>
+              ) : deal.price_sol ? (
+                // Paid coupon - show purchase button
+                <button
+                  onClick={() => setShowPurchaseModal(true)}
+                  className="w-full bg-[#00ff4d] hover:bg-[#00cc3d] text-[#0d2a13] font-bold py-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  Buy Coupon - {deal.price_sol.toFixed(3)} SOL
+                </button>
               ) : (
+                // Free coupon - show claim button
                 <button
                   onClick={() => setShowConfirmModal(true)}
                   disabled={claiming}
@@ -350,6 +361,23 @@ export default function DealDetailPage() {
             </div>
           </motion.div>
         </div>
+      )}
+
+      {/* Purchase Modal for Paid Coupons */}
+      {deal && (
+        <PurchaseModal
+          isOpen={showPurchaseModal}
+          onClose={() => setShowPurchaseModal(false)}
+          dealTitle={deal.title}
+          priceSOL={deal.price_sol || 0}
+          discountPercentage={deal.discount_percentage || 0}
+          imageUrl={deal.image_url || undefined}
+          dealId={deal.id}
+          isResale={false}
+          onSuccess={() => {
+            router.push('/coupons');
+          }}
+        />
       )}
     </div>
   );
