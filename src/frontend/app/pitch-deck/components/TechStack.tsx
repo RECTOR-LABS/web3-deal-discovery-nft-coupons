@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Layers, Code, Database, Shield, CheckCircle, ExternalLink, Zap } from 'lucide-react';
 import CodeEvidence from './CodeEvidence';
+import SmartContractCarousel from './SmartContractCarousel';
 
 export default function TechStack() {
   const layers = [
@@ -47,45 +48,6 @@ export default function TechStack() {
     { name: 'MoonPay', status: 'USDC payments (8 paylinks)', badge: '✅' },
     { name: 'Sentry', status: 'Error monitoring', badge: '✅' },
     { name: 'Vercel', status: 'Analytics + Speed Insights', badge: '✅' },
-  ];
-
-  const contractInstructions = [
-    {
-      name: 'initialize_merchant',
-      description: 'Register merchant account on-chain',
-    },
-    {
-      name: 'create_coupon',
-      description: 'Mint NFT coupon with metadata (Metaplex v5)',
-    },
-    {
-      name: 'claim_coupon',
-      description: 'Claim FREE coupon (mints to user wallet)',
-    },
-    {
-      name: 'purchase_coupon',
-      description: 'Purchase PAID coupon with escrow PDA custody',
-    },
-    {
-      name: 'redeem_coupon',
-      description: 'Burn NFT, emit redemption event',
-    },
-    {
-      name: 'update_coupon_status',
-      description: 'Modify active/expired status',
-    },
-    {
-      name: 'list_for_resale',
-      description: 'List NFT for resale (transfers to escrow PDA)',
-    },
-    {
-      name: 'purchase_from_resale',
-      description: 'Buy from resale (atomic: payment + NFT from escrow)',
-    },
-    {
-      name: 'transfer_coupon',
-      description: 'P2P transfer (deprecated - replaced by escrow model)',
-    },
   ];
 
   const qualityMetrics = [
@@ -197,10 +159,6 @@ export default function TechStack() {
           transition={{ duration: 0.6 }}
           className="mb-20"
         >
-          <h3 className="text-4xl font-bold text-[#f2eecb] mb-8 text-center">
-            Smart Contract Architecture
-          </h3>
-
           {/* Program Info Card */}
           <div className="bg-gradient-to-br from-[#f2eecb]/10 to-[#00ff4d]/5 backdrop-blur-sm rounded-2xl p-8 border-2 border-[#00ff4d]/30 mb-8">
             <div className="grid md:grid-cols-3 gap-6">
@@ -224,52 +182,9 @@ export default function TechStack() {
             </div>
           </div>
 
-          {/* Code Snippet - Redemption Logic */}
-          <div className="bg-[#0d2a13] rounded-2xl overflow-hidden border-2 border-[#00ff4d]/30 mb-8">
-            <div className="bg-[#00ff4d]/20 px-6 py-3 border-b border-[#00ff4d]/30">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Code className="w-5 h-5 text-[#00ff4d]" />
-                  <span className="font-mono text-sm text-[#f2eecb] font-semibold">redeem_coupon.rs</span>
-                </div>
-                <span className="text-xs text-[#f2eecb]/60">Core redemption logic with NFT burn</span>
-              </div>
-            </div>
-            <pre className="p-6 overflow-x-auto text-sm leading-relaxed">
-              <code className="text-[#f2eecb]/90 font-mono">
-{`pub fn redeem_coupon(ctx: Context<RedeemCoupon>) -> Result<()> {
-    let coupon = &ctx.accounts.coupon;
-
-    // Verify ownership & expiration
-    require!(
-        coupon.owner == ctx.accounts.user.key(),
-        ErrorCode::Unauthorized
-    );
-    require!(
-        Clock::get()?.unix_timestamp < coupon.expiry,
-        ErrorCode::CouponExpired
-    );
-
-    // Burn NFT (Metaplex v5 integration)
-    burn_nft(
-        CpiContext::new(
-            ctx.accounts.token_program.to_account_info(),
-            BurnNft { /* ... */ }
-        )
-    )?;
-
-    // Emit redemption event for off-chain indexing
-    emit!(RedemptionEvent {
-        merchant: coupon.merchant,
-        user: ctx.accounts.user.key(),
-        coupon_id: coupon.id,
-        timestamp: Clock::get()?.unix_timestamp,
-    });
-
-    Ok(())
-}`}
-              </code>
-            </pre>
+          {/* Smart Contract Carousel - Interactive Code Display */}
+          <div className="mb-8">
+            <SmartContractCarousel />
           </div>
 
           {/* Key Innovation Points */}
@@ -298,19 +213,6 @@ export default function TechStack() {
                 <li className="flex gap-2"><span className="text-[#00ff4d]">✓</span> <span>Error codes for precise failure handling</span></li>
                 <li className="flex gap-2"><span className="text-[#00ff4d]">✓</span> <span>No re-entrancy vulnerabilities (Solana model)</span></li>
               </ul>
-            </div>
-          </div>
-
-          {/* Instructions Overview */}
-          <div className="bg-gradient-to-br from-[#f2eecb]/5 to-transparent rounded-xl p-6 border border-[#00ff4d]/20 mb-6">
-            <h4 className="text-xl font-bold text-[#f2eecb] mb-4">9 Production Instructions (Including Resale Marketplace)</h4>
-            <div className="grid md:grid-cols-3 gap-4">
-              {contractInstructions.map((instruction, i) => (
-                <div key={i} className="bg-[#0d2a13]/50 rounded-lg p-4 border border-[#00ff4d]/10">
-                  <code className="text-[#00ff4d] font-mono text-xs font-semibold block mb-2">{instruction.name}</code>
-                  <p className="text-[#f2eecb]/70 text-xs">{instruction.description}</p>
-                </div>
-              ))}
             </div>
           </div>
 
