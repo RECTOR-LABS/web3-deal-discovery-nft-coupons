@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { PublicKey } from '@solana/web3.js';
 import { UserCoupon } from '@/lib/solana/getUserCoupons';
+import { listCouponForResale } from '@/lib/solana/coupon-marketplace';
 import { motion } from 'framer-motion';
 import { X, DollarSign, TrendingUp, Info } from 'lucide-react';
 
@@ -12,7 +14,9 @@ interface ListForResaleModalProps {
 }
 
 export default function ListForResaleModal({ coupon, onClose }: ListForResaleModalProps) {
-  const { publicKey } = useWallet();
+  const wallet = useWallet();
+  const { publicKey } = wallet;
+  const { connection } = useConnection();
   const [price, setPrice] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -36,6 +40,24 @@ export default function ListForResaleModal({ coupon, onClose }: ListForResaleMod
       setLoading(true);
       setError(null);
 
+      console.log('[ListForResaleModal] Starting listing process...');
+      console.log('[ListForResaleModal] Step 1: Transfer NFT to Resale Escrow PDA');
+
+      // STEP 1: Transfer NFT to Resale Escrow PDA (blockchain)
+      const escrowResult = await listCouponForResale(
+        connection,
+        wallet,
+        new PublicKey(coupon.mint)
+      );
+
+      if (!escrowResult.success) {
+        throw new Error(escrowResult.error || 'Failed to transfer NFT to escrow');
+      }
+
+      console.log('[ListForResaleModal] ✅ NFT transferred to escrow:', escrowResult.signature);
+      console.log('[ListForResaleModal] Step 2: Create database record');
+
+      // STEP 2: Create database record (off-chain metadata)
       const response = await fetch('/api/resale/list', {
         method: 'POST',
         headers: {
@@ -51,8 +73,12 @@ export default function ListForResaleModal({ coupon, onClose }: ListForResaleMod
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.error || 'Failed to list coupon for resale');
+        throw new Error(data.error || 'Failed to create listing record');
       }
+
+      console.log('[ListForResaleModal] ✅ Database record created');
+      console.log('[ListForResaleModal] 🎉 Listing complete!');
+      console.log('[ListForResaleModal] Transaction:', escrowResult.solscanUrl);
 
       setSuccess(true);
       setTimeout(() => {
@@ -61,6 +87,7 @@ export default function ListForResaleModal({ coupon, onClose }: ListForResaleMod
         window.location.reload();
       }, 2000);
     } catch (err) {
+      console.error('[ListForResaleModal] Error:', err);
       setError(err instanceof Error ? err.message : 'Failed to list coupon');
     } finally {
       setLoading(false);

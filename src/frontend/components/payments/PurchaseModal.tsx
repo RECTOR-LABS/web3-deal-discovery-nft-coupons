@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
-import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { Connection as _Connection, PublicKey, Transaction as _Transaction, SystemProgram as _SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { X, Loader2, CheckCircle2, XCircle, Wallet } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { purchaseCouponDirect } from '@/lib/solana/coupon-marketplace';
+import { purchaseCouponDirect, purchaseResaleCoupon } from '@/lib/solana/coupon-marketplace';
 
 interface PurchaseModalProps {
   isOpen: boolean;
@@ -23,7 +23,7 @@ interface PurchaseModalProps {
   onSuccess?: () => void;
 }
 
-const PLATFORM_WALLET = process.env.NEXT_PUBLIC_PLATFORM_WALLET || 'HAtDqhYd52qhbRRwZG8xVJVJu3Mfp23xK7vdW5Ube5'; // Platform fee collection wallet
+const _PLATFORM_WALLET = process.env.NEXT_PUBLIC_PLATFORM_WALLET || 'HAtDqhYd52qhbRRwZG8xVJVJu3Mfp23xK7vdW5Ube5'; // Platform fee collection wallet
 const MARKETPLACE_FEE_PERCENTAGE = 0.025; // 2.5% platform fee
 
 export default function PurchaseModal({
@@ -65,28 +65,9 @@ export default function PurchaseModal({
       return;
     }
 
-    if (isResale) {
-      setStatus('error');
-      setErrorMessage('Resale purchases not yet implemented with Escrow PDA');
-      return;
-    }
-
-    if (!merchantWallet) {
-      setStatus('error');
-      setErrorMessage('Merchant wallet address is missing');
-      return;
-    }
-
     if (!nftMintAddress) {
       setStatus('error');
       setErrorMessage('NFT mint address is missing');
-      return;
-    }
-
-    // Prevent merchants from purchasing their own coupons
-    if (publicKey.toBase58() === merchantWallet) {
-      setStatus('error');
-      setErrorMessage('Merchants cannot purchase their own coupons. Please use a different wallet.');
       return;
     }
 
@@ -94,19 +75,66 @@ export default function PurchaseModal({
       setStatus('processing');
       setErrorMessage('');
 
-      console.log('[PurchaseModal] Starting atomic purchase (payment + NFT transfer)...');
-      console.log('[PurchaseModal] Price:', priceSOL, 'SOL');
-      console.log('[PurchaseModal] Merchant:', merchantWallet);
-      console.log('[PurchaseModal] NFT Mint:', nftMintAddress);
-      console.log('[PurchaseModal] Buyer:', publicKey.toBase58());
+      let result;
 
-      // ONE ATOMIC TRANSACTION: Payment + NFT transfer
-      const result = await purchaseCouponDirect(
-        connection,
-        wallet,
-        new PublicKey(nftMintAddress),
-        new PublicKey(merchantWallet)
-      );
+      if (isResale) {
+        // RESALE PURCHASE (P2P Atomic Swap)
+        if (!sellerWallet) {
+          setStatus('error');
+          setErrorMessage('Seller wallet address is missing');
+          return;
+        }
+
+        // Prevent self-purchase
+        if (publicKey.toBase58() === sellerWallet) {
+          setStatus('error');
+          setErrorMessage('Cannot purchase your own listing. Please use a different wallet.');
+          return;
+        }
+
+        console.log('[PurchaseModal] Starting P2P resale purchase (atomic swap)...');
+        console.log('[PurchaseModal] Price:', priceSOL, 'SOL');
+        console.log('[PurchaseModal] Seller:', sellerWallet);
+        console.log('[PurchaseModal] NFT Mint:', nftMintAddress);
+        console.log('[PurchaseModal] Buyer:', publicKey.toBase58());
+
+        // ONE ATOMIC TRANSACTION: SOL payment + NFT transfer (seller → buyer)
+        result = await purchaseResaleCoupon(
+          connection,
+          wallet,
+          new PublicKey(nftMintAddress),
+          new PublicKey(sellerWallet),
+          Math.floor(priceSOL * LAMPORTS_PER_SOL)
+        );
+      } else {
+        // PRIMARY PURCHASE (From Merchant)
+        if (!merchantWallet) {
+          setStatus('error');
+          setErrorMessage('Merchant wallet address is missing');
+          return;
+        }
+
+        // Prevent merchants from purchasing their own coupons
+        if (publicKey.toBase58() === merchantWallet) {
+          setStatus('error');
+          setErrorMessage('Merchants cannot purchase their own coupons. Please use a different wallet.');
+          return;
+        }
+
+        console.log('[PurchaseModal] Starting atomic purchase (payment + NFT transfer)...');
+        console.log('[PurchaseModal] Price:', priceSOL, 'SOL');
+        console.log('[PurchaseModal] Merchant:', merchantWallet);
+        console.log('[PurchaseModal] NFT Mint:', nftMintAddress);
+        console.log('[PurchaseModal] Buyer:', publicKey.toBase58());
+
+        // ONE ATOMIC TRANSACTION: Payment + NFT transfer (escrow → buyer)
+        result = await purchaseCouponDirect(
+          connection,
+          wallet,
+          new PublicKey(nftMintAddress),
+          new PublicKey(merchantWallet)
+        );
+      }
 
       if (!result.success) {
         throw new Error(result.error || 'Purchase failed');
@@ -115,14 +143,37 @@ export default function PurchaseModal({
       console.log('[PurchaseModal] ✅ Atomic purchase complete!');
       console.log('[PurchaseModal] Transaction:', result.signature);
       console.log('[PurchaseModal] Solscan:', result.solscanUrl);
-      console.log('[PurchaseModal] - SOL payment to merchant (97.5%)');
-      console.log('[PurchaseModal] - SOL payment to platform (2.5%)');
-      console.log('[PurchaseModal] - NFT transferred from Escrow PDA to buyer');
+
+      if (isResale) {
+        console.log('[PurchaseModal] - SOL payment to seller (97.5%)');
+        console.log('[PurchaseModal] - SOL payment to platform (2.5%)');
+        console.log('[PurchaseModal] - NFT transferred from seller to buyer');
+      } else {
+        console.log('[PurchaseModal] - SOL payment to merchant (97.5%)');
+        console.log('[PurchaseModal] - SOL payment to platform (2.5%)');
+        console.log('[PurchaseModal] - NFT transferred from Escrow PDA to buyer');
+      }
 
       setTxSignature(result.signature || '');
 
       // Record purchase in database (non-critical)
-      if (dealId) {
+      if (isResale && resaleListingId) {
+        // Record resale purchase
+        try {
+          await fetch('/api/resale/purchase', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              listing_id: resaleListingId,
+              buyer_wallet: publicKey.toBase58(),
+              transaction_signature: result.signature,
+            }),
+          });
+        } catch (dbError) {
+          console.error('[PurchaseModal] Failed to record resale purchase (non-critical):', dbError);
+        }
+      } else if (dealId) {
+        // Record primary purchase
         try {
           await fetch('/api/payments/record', {
             method: 'POST',

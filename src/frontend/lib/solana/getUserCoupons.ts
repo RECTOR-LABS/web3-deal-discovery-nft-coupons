@@ -1,6 +1,8 @@
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, Connection as _Connection } from '@solana/web3.js';
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { supabase } from '@/lib/database/supabase';
 import { Database } from '@/lib/database/types';
+import { getConnection } from './connection';
 
 type Deal = Database['public']['Tables']['deals']['Row'];
 type Merchant = Database['public']['Tables']['merchants']['Row'];
@@ -23,39 +25,49 @@ export interface UserCoupon {
   redemptionsRemaining: number;
 }
 
+/**
+ * Fetch user's coupons from blockchain (source of truth for ownership)
+ * Then enrich with metadata from database
+ */
 export async function getUserCoupons(userPublicKey: PublicKey): Promise<UserCoupon[]> {
   try {
-    // In a production implementation, this would:
-    // 1. Query all token accounts owned by the user
-    // 2. Filter for NFTs from our coupon program
-    // 3. Fetch metadata for each NFT
-    // 4. Parse and return coupon data
+    const connection = getConnection();
 
-    // For MVP, we'll fetch coupons from the database that the user has claimed
-    // This is tracked via the events table
+    // 1. Get all token accounts owned by user
+    const tokenAccounts = await connection.getTokenAccountsByOwner(
+      userPublicKey,
+      { programId: TOKEN_PROGRAM_ID }
+    );
 
-    const { data: purchaseEvents, error } = await supabase
-      .from('events')
-      .select('deal_id, metadata')
-      .eq('event_type', 'purchase')
-      .eq('user_wallet', userPublicKey.toBase58());
+    console.log(`[getUserCoupons] Found ${tokenAccounts.value.length} token accounts for user`);
 
-    if (error) throw error;
-
-    if (!purchaseEvents || purchaseEvents.length === 0) {
+    if (tokenAccounts.value.length === 0) {
       return [];
     }
 
-    // Get deal IDs from purchase events (filter out null values)
-    const dealIds = purchaseEvents
-      .map((event) => event.deal_id)
-      .filter((id): id is string => id !== null);
+    // 2. Parse token accounts to get mint addresses (filter for NFTs: amount = 1, decimals = 0)
+    const mintAddresses: string[] = [];
 
-    if (dealIds.length === 0) {
+    for (const { account } of tokenAccounts.value) {
+      // Parse token account data
+      // Layout: mint (32 bytes) + owner (32 bytes) + amount (8 bytes) + ...
+      const data = account.data;
+      const mint = new PublicKey(data.slice(0, 32));
+      const amount = data.readBigUInt64LE(64); // Amount at offset 64
+
+      // NFTs have amount = 1
+      if (amount === BigInt(1)) {
+        mintAddresses.push(mint.toBase58());
+      }
+    }
+
+    console.log(`[getUserCoupons] Found ${mintAddresses.length} NFTs (amount = 1)`);
+
+    if (mintAddresses.length === 0) {
       return [];
     }
 
-    // Fetch deal details
+    // 3. Fetch deal details from database for these mints
     const { data: deals, error: dealsError } = await supabase
       .from('deals')
       .select(`
@@ -64,11 +76,18 @@ export async function getUserCoupons(userPublicKey: PublicKey): Promise<UserCoup
           business_name
         )
       `)
-      .in('id', dealIds);
+      .in('nft_mint_address', mintAddresses);
 
     if (dealsError) throw dealsError;
 
-    // Check for redemptions
+    if (!deals || deals.length === 0) {
+      console.log('[getUserCoupons] No matching deals found in database for these NFT mints');
+      return [];
+    }
+
+    console.log(`[getUserCoupons] Found ${deals.length} matching deals in database`);
+
+    // 4. Check for redemptions (redeemed NFTs are burned on-chain, but check events for historical data)
     const { data: redemptions } = await supabase
       .from('events')
       .select('deal_id')
@@ -77,7 +96,7 @@ export async function getUserCoupons(userPublicKey: PublicKey): Promise<UserCoup
 
     const redeemedDealIds = new Set(redemptions?.map((r) => r.deal_id) || []);
 
-    // Transform deals into UserCoupon format
+    // 5. Transform deals into UserCoupon format
     const coupons: UserCoupon[] = ((deals || []) as DealWithMerchant[]).map((deal) => {
       const expiryDate = new Date(deal.expiry_date!);
       const now = new Date();

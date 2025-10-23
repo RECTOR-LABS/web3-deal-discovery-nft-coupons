@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Link from 'next/link';
-import { PlusCircle, Package, Loader2 } from 'lucide-react';
+import { PlusCircle, Package, Loader2, Users, CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/database/supabase';
 
 interface Deal {
@@ -17,6 +17,8 @@ interface Deal {
   category: string | null;
   is_active: boolean | null;
   created_at: string | null;
+  claim_count?: number;
+  redemption_count?: number;
 }
 
 export default function MyDealsPage() {
@@ -61,8 +63,33 @@ export default function MyDealsPage() {
 
         if (error) {
           console.error('Error fetching deals:', error);
-        } else {
-          setDeals(data || []);
+        } else if (data) {
+          // Fetch claim and redemption counts for each deal
+          const dealsWithStats = await Promise.all(
+            data.map(async (deal) => {
+              // Count claims (purchase events)
+              const { count: claimCount } = await supabase
+                .from('events')
+                .select('*', { count: 'exact', head: true })
+                .eq('deal_id', deal.id)
+                .eq('event_type', 'purchase');
+
+              // Count redemptions
+              const { count: redemptionCount } = await supabase
+                .from('events')
+                .select('*', { count: 'exact', head: true })
+                .eq('deal_id', deal.id)
+                .eq('event_type', 'redemption');
+
+              return {
+                ...deal,
+                claim_count: claimCount || 0,
+                redemption_count: redemptionCount || 0,
+              };
+            })
+          );
+
+          setDeals(dealsWithStats);
         }
       } catch (error) {
         console.error('Error:', error);
@@ -183,6 +210,24 @@ export default function MyDealsPage() {
                       <span className="text-[#174622] font-medium">Category</span>
                       <span className="font-bold text-[#0d2a13]">
                         {deal.category}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-[#174622] font-medium flex items-center gap-1">
+                        <Users size={14} />
+                        Claims
+                      </span>
+                      <span className="font-bold text-blue-600">
+                        {deal.claim_count || 0}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-[#174622] font-medium flex items-center gap-1">
+                        <CheckCircle2 size={14} />
+                        Redemptions
+                      </span>
+                      <span className="font-bold text-green-600">
+                        {deal.redemption_count || 0}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm">

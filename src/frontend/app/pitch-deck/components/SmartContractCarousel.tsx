@@ -376,10 +376,10 @@ export default function SmartContractCarousel() {
         viewport={{ once: true }}
         className="text-center mb-8"
       >
-        <h3 className="text-3xl md:text-4xl font-bold text-[#0d2a13] mb-3">
+        <h3 className="text-3xl md:text-4xl font-bold text-[#f2eecb] mb-3">
           Smart Contract Architecture
         </h3>
-        <p className="text-[#0d2a13]/70 text-lg">
+        <p className="text-[#f2eecb]/70 text-lg">
           9 production instructions powering the entire NFT coupon lifecycle
         </p>
       </motion.div>
@@ -528,20 +528,20 @@ export default function SmartContractCarousel() {
         transition={{ duration: 0.3 }}
         className="mt-6 bg-gradient-to-br from-[#00ff4d]/10 to-[#0d2a13]/5 rounded-xl p-6 border border-[#00ff4d]/20"
       >
-        <h4 className="text-lg font-bold text-[#0d2a13] mb-2">
+        <h4 className="text-lg font-bold text-[#f2eecb] mb-2">
           {currentInstruction.title}
         </h4>
-        <p className="text-sm text-[#0d2a13]/70 mb-4">
+        <p className="text-sm text-[#f2eecb]/70 mb-4">
           {currentInstruction.description}
         </p>
-        <div className="flex items-center gap-2 text-xs text-[#0d2a13]/60">
-          <span className="px-2 py-1 bg-[#0d2a13]/10 rounded">
+        <div className="flex items-center gap-2 text-xs text-[#f2eecb]/60">
+          <span className="px-2 py-1 bg-[#f2eecb]/10 rounded">
             Category: {currentInstruction.category}
           </span>
-          <span className="px-2 py-1 bg-[#0d2a13]/10 rounded">
+          <span className="px-2 py-1 bg-[#f2eecb]/10 rounded">
             Instruction {currentIndex + 1} of 9
           </span>
-          <span className="px-2 py-1 bg-[#0d2a13]/10 rounded">
+          <span className="px-2 py-1 bg-[#f2eecb]/10 rounded">
             Anchor Framework 0.32.1
           </span>
         </div>

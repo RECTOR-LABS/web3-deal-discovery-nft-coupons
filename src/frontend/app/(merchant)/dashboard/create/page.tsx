@@ -517,7 +517,7 @@ export default function CreateDealPage() {
                     name="couponType"
                     value="free"
                     checked={formData.couponType === 'free'}
-                    onChange={(e) =>
+                    onChange={(_e) =>
                       setFormData({ ...formData, couponType: 'free', price: '' })
                     }
                     className="w-5 h-5 text-monke-primary focus:ring-monke-primary cursor-pointer"
@@ -530,7 +530,7 @@ export default function CreateDealPage() {
                     name="couponType"
                     value="paid"
                     checked={formData.couponType === 'paid'}
-                    onChange={(e) =>
+                    onChange={(_e) =>
                       setFormData({ ...formData, couponType: 'paid' })
                     }
                     className="w-5 h-5 text-monke-primary focus:ring-monke-primary cursor-pointer"

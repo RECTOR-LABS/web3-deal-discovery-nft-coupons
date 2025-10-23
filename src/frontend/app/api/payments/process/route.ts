@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { Connection as _Connection, PublicKey as _PublicKey, Transaction as _Transaction, SystemProgram as _SystemProgram, LAMPORTS_PER_SOL as _LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { createServiceClient } from '@/lib/database/supabase';
 import { trackMetric, MetricType } from '@/lib/metrics';
 

@@ -4,7 +4,7 @@ import {
   LAMPORTS_PER_SOL,
 } from '@solana/web3.js';
 import {
-  getAssociatedTokenAddressSync,
+  getAssociatedTokenAddressSync as _getAssociatedTokenAddressSync,
 } from '@solana/spl-token';
 import { WalletContextState } from '@solana/wallet-adapter-react';
 import {

@@ -1,5 +1,7 @@
-const { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } = require('@solana/web3.js');
-const fs = require('fs');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { Connection, Keypair: _Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram: _SystemProgram, Transaction: _Transaction } = require('@solana/web3.js');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const _fs = require('fs');
 
 const PLATFORM_WALLET = 'Hi35R3Z3qkjxRLXS1wacx3ZmXPc6MwJiQY4aWvRNm9L8';
 const RPC_ENDPOINT = 'https://devnet.helius-rpc.com/?api-key=142fb48a-aa24-4083-99c8-249df5400b30';

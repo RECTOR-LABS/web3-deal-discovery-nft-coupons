@@ -492,6 +492,100 @@
       ]
     },
     {
+      "name": "list_for_resale",
+      "docs": [
+        "List NFT coupon for resale (Step 1 of escrow-based resale)",
+        "Transfers NFT from seller's wallet to Resale Escrow PDA",
+        "Seller signs this transaction",
+        "Industry-standard approach used by Magic Eden, OpenSea, Tensor"
+      ],
+      "discriminator": [
+        235,
+        101,
+        201,
+        204,
+        83,
+        163,
+        213,
+        243
+      ],
+      "accounts": [
+        {
+          "name": "nft_mint",
+          "docs": [
+            "NFT mint account"
+          ]
+        },
+        {
+          "name": "seller_token_account",
+          "docs": [
+            "Seller's token account (source) - must have amount = 1 (owns NFT)"
+          ],
+          "writable": true
+        },
+        {
+          "name": "resale_escrow",
+          "docs": [
+            "Resale Escrow PDA - holds NFT until purchased or delisted",
+            "Seeds: [\"resale_escrow\", nft_mint, seller]",
+            "Authority: Resale Escrow PDA itself (self-custodial)"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  115,
+                  97,
+                  108,
+                  101,
+                  95,
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "nft_mint"
+              },
+              {
+                "kind": "account",
+                "path": "seller"
+              }
+            ]
+          }
+        },
+        {
+          "name": "seller",
+          "docs": [
+            "Seller - owns the NFT and lists it for resale"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "purchase_coupon",
       "docs": [
         "Purchase a paid coupon (price > 0)",
@@ -592,7 +686,7 @@
           "docs": [
             "NFT Escrow PDA - holds NFTs minted by create_coupon",
             "Seeds: [\"nft_escrow\", merchant_pda, nft_mint]",
-            "Authority: The PDA itself (self-custodial)"
+            "Authority: Merchant PDA (program-controlled via merchant)"
           ],
           "writable": true,
           "pda": {
@@ -748,6 +842,207 @@
       "args": []
     },
     {
+      "name": "purchase_from_resale",
+      "docs": [
+        "Purchase NFT coupon from resale marketplace (Step 2 of escrow-based resale)",
+        "Atomic transaction: SOL payment + NFT transfer from escrow",
+        "- Buyer pays SOL (97.5% to seller, 2.5% to platform)",
+        "- NFT transferred from Resale Escrow PDA to buyer",
+        "- Seller does NOT need to sign (NFT already in escrow)",
+        "- All or nothing (transaction fails if any step fails)"
+      ],
+      "discriminator": [
+        143,
+        182,
+        123,
+        16,
+        21,
+        61,
+        245,
+        176
+      ],
+      "accounts": [
+        {
+          "name": "nft_mint",
+          "docs": [
+            "NFT mint account"
+          ]
+        },
+        {
+          "name": "resale_escrow",
+          "docs": [
+            "Resale Escrow PDA - holds NFT until purchased",
+            "Seeds: [\"resale_escrow\", nft_mint, seller]",
+            "Authority: Resale Escrow PDA itself (self-custodial, can sign via PDA)"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  115,
+                  97,
+                  108,
+                  101,
+                  95,
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "nft_mint"
+              },
+              {
+                "kind": "account",
+                "path": "seller"
+              }
+            ]
+          }
+        },
+        {
+          "name": "buyer_token_account",
+          "docs": [
+            "Buyer's token account (destination) - created if not exists"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "buyer"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "nft_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "seller",
+          "docs": [
+            "Seller - receives 97.5% of payment"
+          ],
+          "writable": true
+        },
+        {
+          "name": "buyer",
+          "docs": [
+            "Buyer - pays for NFT + token account creation + transaction fees"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "platform_wallet",
+          "docs": [
+            "Platform fee wallet - receives 2.5% of payment"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "price_lamports",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "redeem_coupon",
       "docs": [
         "Redeem a coupon",
@@ -851,6 +1146,175 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "transfer_coupon",
+      "docs": [
+        "Transfer NFT coupon between users (P2P resale)",
+        "Atomic transaction: SOL payment + NFT transfer",
+        "- Buyer pays SOL (97.5% to seller, 2.5% to platform)",
+        "- Seller transfers NFT to buyer",
+        "- All or nothing (transaction fails if any step fails)",
+        "- No escrow PDA required (direct P2P swap)"
+      ],
+      "discriminator": [
+        144,
+        38,
+        18,
+        1,
+        196,
+        64,
+        73,
+        74
+      ],
+      "accounts": [
+        {
+          "name": "nft_mint",
+          "docs": [
+            "NFT mint account"
+          ]
+        },
+        {
+          "name": "seller_token_account",
+          "docs": [
+            "Seller's token account (source) - must have amount = 1 (owns NFT)"
+          ],
+          "writable": true
+        },
+        {
+          "name": "buyer_token_account",
+          "docs": [
+            "Buyer's token account (destination) - created if not exists"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "buyer"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "nft_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "seller",
+          "docs": [
+            "Seller - receives 97.5% of payment"
+          ],
+          "writable": true
+        },
+        {
+          "name": "buyer",
+          "docs": [
+            "Buyer - pays for NFT + token account creation + transaction fees"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "platform_wallet",
+          "docs": [
+            "Platform fee wallet - receives 2.5% of payment"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "price_lamports",
+          "type": "u64"
+        }
+      ]
     },
     {
       "name": "update_coupon_status",
@@ -1054,6 +1518,16 @@
       "code": 6014,
       "name": "NoRedemptionsRemaining",
       "msg": "No redemptions remaining for this coupon"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidPrice",
+      "msg": "Invalid price - must be greater than 0"
+    },
+    {
+      "code": 6016,
+      "name": "InvalidNFTAmount",
+      "msg": "Invalid NFT amount - seller must own exactly 1 NFT"
     }
   ],
   "types": [

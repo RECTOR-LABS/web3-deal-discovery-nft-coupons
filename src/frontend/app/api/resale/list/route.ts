@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { PublicKey } from '@solana/web3.js';
+import { TOKEN_PROGRAM_ID as _TOKEN_PROGRAM_ID, getAssociatedTokenAddress } from '@solana/spl-token';
 import { supabase } from '@/lib/database/supabase';
 import { logger } from '@/lib/logger';
+import { getConnection } from '@/lib/solana/connection';
 
 const apiLogger = logger.child({ module: 'API:Resale:List' });
 
@@ -33,6 +36,61 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { success: false, error: 'Price must be greater than 0 SOL' },
         { status: 400 }
+      );
+    }
+
+    // ✅ BLOCKCHAIN VERIFICATION: Verify seller owns the NFT
+    try {
+      const connection = getConnection();
+      const sellerPubkey = new PublicKey(seller_wallet);
+      const mintPubkey = new PublicKey(nft_mint);
+
+      // Get seller's token account for this NFT
+      const tokenAccount = await getAssociatedTokenAddress(
+        mintPubkey,
+        sellerPubkey
+      );
+
+      // Verify the token account exists and has amount = 1 (NFT ownership)
+      const accountInfo = await connection.getAccountInfo(tokenAccount);
+
+      if (!accountInfo) {
+        apiLogger.warn('Seller does not own NFT (no token account)', {
+          seller_wallet,
+          nft_mint,
+        });
+        return NextResponse.json(
+          { success: false, error: 'You do not own this NFT coupon' },
+          { status: 403 }
+        );
+      }
+
+      // Parse token account to verify amount = 1
+      const data = accountInfo.data;
+      const amount = data.readBigUInt64LE(64); // Amount at offset 64
+
+      if (amount !== BigInt(1)) {
+        apiLogger.warn('Seller does not own NFT (amount != 1)', {
+          seller_wallet,
+          nft_mint,
+          amount: amount.toString(),
+        });
+        return NextResponse.json(
+          { success: false, error: 'You do not own this NFT coupon' },
+          { status: 403 }
+        );
+      }
+
+      apiLogger.info('NFT ownership verified on-chain', {
+        seller_wallet,
+        nft_mint,
+        token_account: tokenAccount.toBase58(),
+      });
+    } catch (error) {
+      apiLogger.error('Error verifying NFT ownership on-chain', { error });
+      return NextResponse.json(
+        { success: false, error: 'Failed to verify NFT ownership on blockchain' },
+        { status: 500 }
       );
     }
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Connection, Keypair, PublicKey, Transaction, SystemProgram } from '@solana/web3.js';
+import { Connection, Keypair, PublicKey, Transaction, SystemProgram as _SystemProgram } from '@solana/web3.js';
 import {
   createTransferInstruction,
   getAssociatedTokenAddress,
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
     try {
       await getAccount(connection, toATA);
       apiLogger.info('Recipient token account already exists');
-    } catch (error) {
+    } catch {
       apiLogger.info('Recipient token account does not exist, will create');
       recipientAccountExists = false;
     }
