@@ -92,7 +92,7 @@
           "docs": [
             "NFT Escrow PDA - holds NFTs minted by create_coupon",
             "Seeds: [\"nft_escrow\", merchant_pda, nft_mint]",
-            "Authority: The PDA itself (self-custodial)"
+            "Authority: Merchant PDA (program-controlled via merchant)"
           ],
           "writable": true,
           "pda": {
