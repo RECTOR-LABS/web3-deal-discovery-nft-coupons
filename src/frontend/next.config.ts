@@ -90,7 +90,7 @@ const nextConfig: NextConfig = {
               img-src 'self' data: https: blob:;
               font-src 'self' data:;
               connect-src 'self' https: wss: https://api.devnet.solana.com https://api.mainnet-beta.solana.com wss://api.devnet.solana.com wss://api.mainnet-beta.solana.com https://devnet.helius-rpc.com wss://devnet.helius-rpc.com https://mainnet.helius-rpc.com wss://mainnet.helius-rpc.com https://*.supabase.co https://*.sentry.io https://arweave.net https://*.arweave.net;
-              frame-src 'self' https://verify.walletconnect.com;
+              frame-src 'self' https://verify.walletconnect.com https://www.youtube.com https://www.youtube-nocookie.com;
               object-src 'none';
               base-uri 'self';
               form-action 'self';

@@ -8,7 +8,7 @@ import {
 import { useState, useEffect } from 'react';
 
 // Import section components
-// import VideoHero from './components/VideoHero'; // Hidden until video is ready
+import VideoCarousel from './components/VideoCarousel';
 import StickyNavigation from './components/StickyNavigation';
 import FloatingCTA from './components/FloatingCTA';
 import ProblemSolution from './components/ProblemSolution';
@@ -125,10 +125,10 @@ export default function PitchDeckPage() {
               transition={{ delay: 0.4, duration: 0.6 }}
               className="flex flex-wrap justify-center gap-4 mb-12"
             >
-              <StatBadge icon={CheckCircle} label="10/10 Epics Complete" highlight />
-              <StatBadge icon={Target} label="84/84 Tasks Delivered" />
+              <StatBadge icon={CheckCircle} label="13/13 Epics Complete" highlight />
+              <StatBadge icon={Target} label="95/95 Tasks Delivered" />
               <StatBadge icon={Award} label="95/100 Production Score" />
-              <StatBadge icon={Code} label="32 Tests Passing" />
+              <StatBadge icon={Code} label="34 Tests Passing" />
             </motion.div>
 
             {/* Scroll Indicator */}
@@ -144,19 +144,16 @@ export default function PitchDeckPage() {
             </motion.div>
           </motion.div>
 
-          {/* Video Demo - Hidden until ready */}
-          {/* <motion.div
+          {/* Video Demo Carousel - 5 Demo Videos */}
+          <motion.div
             id="video"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.6, duration: 0.8 }}
             className="scroll-mt-20"
           >
-            <VideoHero
-              videoUrl="https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Replace with actual demo video
-              posterImage="/og-image.png"
-            />
-          </motion.div> */}
+            <VideoCarousel />
+          </motion.div>
 
           {/* Visual Divider */}
           <motion.div

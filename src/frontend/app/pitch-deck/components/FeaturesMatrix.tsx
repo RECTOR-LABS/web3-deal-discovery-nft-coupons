@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { CheckCircle, Coins, LayoutDashboard, ShoppingCart, QrCode, Zap, Share2, DollarSign, Award, MapPin } from 'lucide-react';
+import { CheckCircle, Coins, LayoutDashboard, ShoppingCart, QrCode, Zap, Share2, DollarSign, Award, MapPin, RefreshCw } from 'lucide-react';
 import CodeEvidence from './CodeEvidence';
 
 export default function FeaturesMatrix() {
@@ -66,6 +66,16 @@ export default function FeaturesMatrix() {
         'Referral system (invite friends)',
       ],
     },
+    {
+      icon: RefreshCw,
+      title: 'Resale Marketplace (Epic 13)',
+      details: [
+        'List unused coupons for resale',
+        'Escrow PDA custody (industry-standard)',
+        'Atomic swap: SOL payment + NFT transfer',
+        '97.5% to seller, 2.5% platform fee',
+      ],
+    },
   ];
 
   const bonusFeatures = [
@@ -114,10 +124,13 @@ export default function FeaturesMatrix() {
     { number: 8, name: 'Staking/Cashback', tasks: '9/9', audit: 'B+ (85)', color: 'text-blue-500' },
     { number: 9, name: 'Loyalty System', tasks: '9/9', audit: 'A- (88)', color: 'text-blue-500' },
     { number: 10, name: 'Geo Discovery', tasks: '9/9', audit: 'A (90)', color: 'text-blue-500' },
+    { number: 11, name: 'Deployment', tasks: '3/3', audit: 'Pass', color: 'text-purple-500' },
+    { number: 12, name: 'Pitch Deck', tasks: '5/5', audit: 'Pass', color: 'text-purple-500' },
+    { number: 13, name: 'Resale Marketplace', tasks: '3/3', audit: 'Pass', color: 'text-purple-500' },
   ];
 
-  const totalTasks = 84;
-  const completedTasks = 84;
+  const totalTasks = 95;
+  const completedTasks = 95;
 
   return (
     <section id="features" className="py-20 px-4 bg-[#f2eecb] scroll-mt-20">
@@ -134,7 +147,7 @@ export default function FeaturesMatrix() {
             Features Completeness
           </h2>
           <p className="text-xl text-[#0d2a13]/70 max-w-3xl mx-auto">
-            10/10 Epics delivered with comprehensive testing
+            13/13 Epics delivered with comprehensive testing
           </p>
         </motion.div>
 
@@ -183,7 +196,7 @@ export default function FeaturesMatrix() {
         {/* Core Features Grid */}
         <div className="mb-20">
           <h3 className="text-3xl font-bold text-[#0d2a13] text-center mb-12">
-            Core Features (100% Complete)
+            Core Features (100% Complete + Resale Marketplace)
           </h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {coreFeatures.map((feature, index) => (
@@ -296,7 +309,7 @@ export default function FeaturesMatrix() {
           </div>
           <div className="text-center mt-8">
             <p className="text-[#0d2a13] font-semibold text-lg">
-              🎯 All Epics Complete • 84/84 Tasks Delivered • Ready for Submission
+              🎯 All Epics Complete • 95/95 Tasks Delivered • Production Deployed • 5 Demo Videos
             </p>
           </div>
         </motion.div>

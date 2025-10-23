@@ -56,7 +56,15 @@ export default function TechStack() {
     },
     {
       name: 'create_coupon',
-      description: 'Mint NFT coupon with metadata',
+      description: 'Mint NFT coupon with metadata (Metaplex v5)',
+    },
+    {
+      name: 'claim_coupon',
+      description: 'Claim FREE coupon (mints to user wallet)',
+    },
+    {
+      name: 'purchase_coupon',
+      description: 'Purchase PAID coupon with escrow PDA custody',
     },
     {
       name: 'redeem_coupon',
@@ -66,12 +74,24 @@ export default function TechStack() {
       name: 'update_coupon_status',
       description: 'Modify active/expired status',
     },
+    {
+      name: 'list_for_resale',
+      description: 'List NFT for resale (transfers to escrow PDA)',
+    },
+    {
+      name: 'purchase_from_resale',
+      description: 'Buy from resale (atomic: payment + NFT from escrow)',
+    },
+    {
+      name: 'transfer_coupon',
+      description: 'P2P transfer (deprecated - replaced by escrow model)',
+    },
   ];
 
   const qualityMetrics = [
     { metric: 'TypeScript strict mode', status: true },
     { metric: 'ESLint compliance', status: true },
-    { metric: '32 tests passing (3 unit + 27 manual + 2 E2E)', status: true },
+    { metric: '34 tests passing (3 unit + 27 manual + 4 E2E)', status: true },
     { metric: 'Production readiness', score: '95/100' },
     { metric: 'CORS headers', status: true },
     { metric: 'Rate limiting', status: true },
@@ -283,8 +303,8 @@ export default function TechStack() {
 
           {/* Instructions Overview */}
           <div className="bg-gradient-to-br from-[#f2eecb]/5 to-transparent rounded-xl p-6 border border-[#00ff4d]/20 mb-6">
-            <h4 className="text-xl font-bold text-[#f2eecb] mb-4">4 Core Instructions</h4>
-            <div className="grid md:grid-cols-4 gap-4">
+            <h4 className="text-xl font-bold text-[#f2eecb] mb-4">9 Production Instructions (Including Resale Marketplace)</h4>
+            <div className="grid md:grid-cols-3 gap-4">
               {contractInstructions.map((instruction, i) => (
                 <div key={i} className="bg-[#0d2a13]/50 rounded-lg p-4 border border-[#00ff4d]/10">
                   <code className="text-[#00ff4d] font-mono text-xs font-semibold block mb-2">{instruction.name}</code>

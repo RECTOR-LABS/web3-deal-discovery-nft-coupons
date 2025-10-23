@@ -21,9 +21,9 @@ export default function ResourcesHub() {
     },
     {
       icon: Youtube,
-      label: 'Demo Video',
-      url: 'https://youtube.com/watch?v=demo', // Replace with actual video
-      description: '3-5 minute walkthrough',
+      label: 'Demo Videos (5)',
+      url: 'https://www.youtube.com/watch?v=Z53dbXadgjY',
+      description: 'Resale Marketplace E2E + 4 more demos',
       color: 'from-red-500 to-red-600',
     },
     {
