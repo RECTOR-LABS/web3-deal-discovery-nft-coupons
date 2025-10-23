@@ -222,6 +222,7 @@ export default function DealCard({ deal, userTier = 'Bronze' }: DealCardProps) {
         imageUrl={deal.image_url || undefined}
         dealId={deal.id}
         merchantWallet={deal.merchant_wallet}
+        nftMintAddress={deal.nft_mint_address}
         isResale={deal.is_resale || false}
         resaleListingId={deal.resale_listing_id}
         sellerWallet={deal.resale_seller}
