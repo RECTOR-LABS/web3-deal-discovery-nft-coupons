@@ -41,14 +41,17 @@ pub struct CouponData {
     pub max_redemptions: u8,
     /// Whether the coupon is still active
     pub is_active: bool,
+    /// Price in lamports (0 = free coupon, >0 = paid coupon)
+    /// 1 SOL = 1,000,000,000 lamports
+    pub price: u64,
     /// Bump seed for PDA
     pub bump: u8,
 }
 
 impl CouponData {
     /// Calculate space needed for CouponData account
-    /// 8 (discriminator) + 32 (mint) + 32 (merchant) + 1 (u8) + 8 (i64) + 1 (enum) + 1 (u8) + 1 (u8) + 1 (bool) + 1 (bump)
-    pub const LEN: usize = 8 + 32 + 32 + 1 + 8 + 1 + 1 + 1 + 1 + 1;
+    /// 8 (discriminator) + 32 (mint) + 32 (merchant) + 1 (u8) + 8 (i64) + 1 (enum) + 1 (u8) + 1 (u8) + 1 (bool) + 8 (price) + 1 (bump)
+    pub const LEN: usize = 8 + 32 + 32 + 1 + 8 + 1 + 1 + 1 + 1 + 8 + 1;
 }
 
 /// Coupon categories for filtering and organization

@@ -31,4 +31,19 @@ pub enum CouponError {
 
     #[msg("Arithmetic overflow occurred")]
     ArithmeticOverflow,
+
+    #[msg("This coupon is not free - payment required")]
+    NotFreeCoupon,
+
+    #[msg("This coupon is not paid - cannot purchase")]
+    NotPaidCoupon,
+
+    #[msg("Insufficient payment amount")]
+    InsufficientPayment,
+
+    #[msg("Coupon is inactive")]
+    CouponInactive,
+
+    #[msg("No redemptions remaining for this coupon")]
+    NoRedemptionsRemaining,
 }

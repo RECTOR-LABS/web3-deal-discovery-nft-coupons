@@ -21,7 +21,7 @@ import {
   SYSVAR_RENT_PUBKEY,
   SYSVAR_INSTRUCTIONS_PUBKEY,
 } from '@solana/web3.js';
-import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddressSync } from '@solana/spl-token';
 import { WalletContextState } from '@solana/wallet-adapter-react';
 import { PROGRAM_ID, getMerchantPDA, getCouponDataPDA, getMasterEdition, TOKEN_METADATA_PROGRAM_ID } from './program';
 
@@ -54,6 +54,15 @@ function encodeBorshI64(value: number): Buffer {
   const buffer = Buffer.allocUnsafe(8);
   // JavaScript's Number is 64-bit float, need to handle large integers carefully
   buffer.writeBigInt64LE(BigInt(value), 0);
+  return buffer;
+}
+
+/**
+ * Encode a u64 (8 bytes unsigned integer, little-endian)
+ */
+function encodeBorshU64(value: number): Buffer {
+  const buffer = Buffer.allocUnsafe(8);
+  buffer.writeBigUInt64LE(BigInt(value), 0);
   return buffer;
 }
 
@@ -304,9 +313,10 @@ export interface CreateCouponArgs {
   category: CouponCategory;
   maxRedemptions: number;
   metadataUri: string;
+  price: number; // NEW: Price in lamports (0 = free, >0 = paid)
   nftMint: Keypair;
   metadataAccount: PublicKey;
-  nftTokenAccount: PublicKey;
+  nftEscrowAccount: PublicKey; // NEW: Escrow PDA token account
 }
 
 export interface CreateCouponResult {
@@ -343,7 +353,7 @@ export async function createCouponDirect(
     console.log('Master Edition:', masterEdition.toBase58());
 
     // Serialize instruction arguments using manual Borsh encoding
-    // Order: title, description, discount_percentage, expiry_date, category, max_redemptions, metadata_uri
+    // Order: title, description, discount_percentage, expiry_date, category, max_redemptions, metadata_uri, price
     const serializedArgs = Buffer.concat([
       encodeBorshString(args.title),
       encodeBorshString(args.description),
@@ -352,6 +362,7 @@ export async function createCouponDirect(
       encodeBorshEnum(args.category),
       encodeBorshU8(args.maxRedemptions),
       encodeBorshString(args.metadataUri),
+      encodeBorshU64(args.price), // NEW: Price in lamports (0 = free, >0 = paid)
     ]);
 
     // Construct instruction data: discriminator + serialized arguments
@@ -361,6 +372,12 @@ export async function createCouponDirect(
     console.log('Instruction data length:', data.length);
     console.log('Discriminator:', discriminator.toString('hex'));
     console.log('Args length:', serializedArgs.length);
+
+    // Calculate merchant's token account (ATA) for the NFT mint
+    const merchantTokenAccount = getAssociatedTokenAddressSync(
+      args.nftMint.publicKey,
+      wallet.publicKey
+    );
 
     // Build transaction instruction manually
     // Account order must match IDL exactly
@@ -377,7 +394,17 @@ export async function createCouponDirect(
           isWritable: true,
         },
         {
-          pubkey: args.nftMint.publicKey,
+          pubkey: merchantTokenAccount, // Merchant's ATA - receives NFT initially
+          isSigner: false,
+          isWritable: true,
+        },
+        {
+          pubkey: args.nftEscrowAccount, // NFT Escrow PDA - receives NFT via transfer
+          isSigner: false,
+          isWritable: true,
+        },
+        {
+          pubkey: args.nftMint.publicKey, // NFT Mint - MUST BE 4TH (after nft_escrow)
           isSigner: true,
           isWritable: true,
         },
@@ -392,12 +419,7 @@ export async function createCouponDirect(
           isWritable: true,
         },
         {
-          pubkey: args.nftTokenAccount,
-          isSigner: false,
-          isWritable: true,
-        },
-        {
-          pubkey: wallet.publicKey,
+          pubkey: wallet.publicKey, // merchant_authority
           isSigner: true,
           isWritable: true,
         },

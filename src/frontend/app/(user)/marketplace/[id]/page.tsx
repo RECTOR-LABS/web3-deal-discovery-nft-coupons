@@ -4,15 +4,16 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/database/supabase';
 import { Database } from '@/lib/database/types';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { PublicKey } from '@solana/web3.js';
 import { Calendar, Tag, TrendingUp, ArrowLeft, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { claimCoupon } from '@/lib/solana/purchase';
 import RatingSystem from '@/components/user/RatingSystem';
 import VoteButtons from '@/components/user/VoteButtons';
 import ShareButtons from '@/components/user/ShareButtons';
 import PurchaseModal from '@/components/payments/PurchaseModal';
+import { claimCouponDirect } from '@/lib/solana/coupon-marketplace';
 
 type Deal = Database['public']['Tables']['deals']['Row'];
 type Merchant = Database['public']['Tables']['merchants']['Row'];
@@ -21,7 +22,9 @@ export default function DealDetailPage() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { publicKey, signTransaction } = useWallet();
+  const wallet = useWallet();
+  const { publicKey, signTransaction } = wallet;
+  const { connection } = useConnection();
   const [deal, setDeal] = useState<Deal | null>(null);
   const [merchant, setMerchant] = useState<Merchant | null>(null);
   const [loading, setLoading] = useState(true);
@@ -73,19 +76,30 @@ export default function DealDetailPage() {
   }, [params.id]);
 
   const handleClaimCoupon = async () => {
-    if (!publicKey || !signTransaction || !deal) return;
+    if (!publicKey || !signTransaction || !deal || !merchant) return;
 
     try {
       setClaiming(true);
-      const signature = await claimCoupon(deal, publicKey, signTransaction);
 
-      // Record purchase event
-      await supabase.from('events').insert({
-        event_type: 'purchase',
-        deal_id: deal.id,
-        user_wallet: publicKey.toBase58(),
-        metadata: { signature },
-      });
+      console.log('[handleClaimCoupon] Starting free coupon claim...');
+      console.log('[handleClaimCoupon] Deal:', deal.id, deal.title);
+      console.log('[handleClaimCoupon] NFT Mint:', deal.nft_mint_address);
+      console.log('[handleClaimCoupon] Merchant:', merchant.wallet_address);
+
+      // Call smart contract directly (Escrow PDA → User)
+      const result = await claimCouponDirect(
+        connection,
+        wallet,
+        new PublicKey(deal.nft_mint_address),
+        new PublicKey(merchant.wallet_address)
+      );
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to claim coupon');
+      }
+
+      console.log('[handleClaimCoupon] ✅ Coupon claimed on-chain:', result.signature);
+      console.log('[handleClaimCoupon] 🔗 Solscan:', result.solscanUrl);
 
       // Record referral if user came via referral link
       if (referrerWallet && referrerWallet !== publicKey.toBase58()) {
@@ -99,17 +113,37 @@ export default function DealDetailPage() {
               referee_wallet: publicKey.toBase58(),
             }),
           });
-          // Silently continue even if referral recording fails
         } catch (referralError) {
           console.error('Failed to record referral:', referralError);
         }
       }
 
-      alert('Coupon added successfully! Check My Coupons to view it.');
+      // Record claim event in database (non-critical)
+      try {
+        await fetch('/api/events', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event_type: 'purchase',
+            deal_id: deal.id,
+            user_wallet: publicKey.toBase58(),
+            metadata: {
+              nft_mint: deal.nft_mint_address,
+              claim_signature: result.signature,
+              transfer_type: 'claim',
+              timestamp: new Date().toISOString(),
+            },
+          }),
+        });
+      } catch (dbError) {
+        console.error('Failed to record claim in database (non-critical):', dbError);
+      }
+
+      alert(`Coupon claimed successfully!\n\nNFT transferred to your wallet from Escrow PDA.\nView on Solscan: ${result.solscanUrl}`);
       router.push('/coupons');
     } catch (error) {
-      console.error('Error claiming coupon:', error);
-      alert('Failed to get coupon. Please try again.');
+      console.error('[handleClaimCoupon] Error:', error);
+      alert(`Failed to claim coupon: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setClaiming(false);
       setShowConfirmModal(false);
@@ -364,7 +398,7 @@ export default function DealDetailPage() {
       )}
 
       {/* Purchase Modal for Paid Coupons */}
-      {deal && (
+      {deal && merchant && (
         <PurchaseModal
           isOpen={showPurchaseModal}
           onClose={() => setShowPurchaseModal(false)}
@@ -373,6 +407,8 @@ export default function DealDetailPage() {
           discountPercentage={deal.discount_percentage || 0}
           imageUrl={deal.image_url || undefined}
           dealId={deal.id}
+          merchantWallet={merchant.wallet_address}
+          nftMintAddress={deal.nft_mint_address}
           isResale={false}
           onSuccess={() => {
             router.push('/coupons');

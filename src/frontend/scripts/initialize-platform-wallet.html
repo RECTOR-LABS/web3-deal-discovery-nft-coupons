@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Initialize Platform Wallet</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #0d2a13;
+      margin-bottom: 10px;
+    }
+    .info {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    .success {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+      padding: 15px;
+      margin: 20px 0;
+      display: none;
+    }
+    .error {
+      background: #f8d7da;
+      border-left: 4px solid #dc3545;
+      padding: 15px;
+      margin: 20px 0;
+      display: none;
+    }
+    button {
+      background: #0d2a13;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
+    }
+    button:hover {
+      background: #174622;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .wallet-addr {
+      font-family: monospace;
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 4px;
+      word-break: break-all;
+      margin: 10px 0;
+    }
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Initialize Platform Wallet</h1>
+    <p>This script will initialize the platform wallet on Solana devnet by sending it the minimum rent-exempt balance.</p>
+
+    <div class="info">
+      <strong>⚠️ Issue Found:</strong> The platform wallet does not exist on devnet yet, causing transaction failures.
+      <br><br>
+      <strong>Platform Wallet:</strong>
+      <div class="wallet-addr">Hi35R3Z3qkjxRLXS1wacx3ZmXPc6MwJiQY4aWvRNm9L8</div>
+      <strong>Amount to Send:</strong> 0.001 SOL (covers rent-exempt minimum + buffer)
+    </div>
+
+    <div id="status" class="status"></div>
+    <div id="success" class="success"></div>
+    <div id="error" class="error"></div>
+
+    <button id="connectBtn" onclick="initializePlatformWallet()">
+      Connect Wallet & Initialize Platform Wallet
+    </button>
+
+    <div style="margin-top: 20px; font-size: 12px; color: #666;">
+      <strong>What this does:</strong>
+      <ol>
+        <li>Connects to your Phantom wallet</li>
+        <li>Sends 0.001 SOL to the platform wallet to initialize it</li>
+        <li>After this, paid coupon purchases will work correctly</li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    const PLATFORM_WALLET = 'Hi35R3Z3qkjxRLXS1wacx3ZmXPc6MwJiQY4aWvRNm9L8';
+    const RPC_ENDPOINT = 'https://devnet.helius-rpc.com/?api-key=142fb48a-aa24-4083-99c8-249df5400b30';
+
+    async function initializePlatformWallet() {
+      const statusDiv = document.getElementById('status');
+      const successDiv = document.getElementById('success');
+      const errorDiv = document.getElementById('error');
+      const connectBtn = document.getElementById('connectBtn');
+
+      try {
+        // Reset messages
+        statusDiv.style.display = 'none';
+        successDiv.style.display = 'none';
+        errorDiv.style.display = 'none';
+        connectBtn.disabled = true;
+
+        // Check for Phantom
+        if (!window.solana?.isPhantom) {
+          throw new Error('Phantom wallet not found! Please install Phantom wallet extension.');
+        }
+
+        statusDiv.innerHTML = '🔄 Connecting to Phantom wallet...';
+        statusDiv.style.display = 'block';
+
+        // Connect to Phantom
+        const resp = await window.solana.connect();
+        const publicKey = resp.publicKey;
+
+        statusDiv.innerHTML = `✅ Connected: ${publicKey.toString()}<br><br>🔄 Creating initialization transaction...`;
+
+        // Load Solana Web3.js from CDN
+        if (!window.solanaWeb3) {
+          await loadSolanaWeb3();
+        }
+
+        const connection = new solanaWeb3.Connection(RPC_ENDPOINT, 'confirmed');
+        const platformPubkey = new solanaWeb3.PublicKey(PLATFORM_WALLET);
+
+        // Create transaction to send 0.001 SOL
+        const transaction = new solanaWeb3.Transaction().add(
+          solanaWeb3.SystemProgram.transfer({
+            fromPubkey: publicKey,
+            toPubkey: platformPubkey,
+            lamports: 0.001 * solanaWeb3.LAMPORTS_PER_SOL // 0.001 SOL
+          })
+        );
+
+        // Get recent blockhash
+        const { blockhash } = await connection.getLatestBlockhash();
+        transaction.recentBlockhash = blockhash;
+        transaction.feePayer = publicKey;
+
+        statusDiv.innerHTML += '<br>🔄 Requesting wallet approval...';
+
+        // Send transaction
+        const { signature } = await window.solana.signAndSendTransaction(transaction);
+
+        statusDiv.innerHTML += '<br>🔄 Confirming transaction...';
+
+        // Confirm transaction
+        await connection.confirmTransaction(signature);
+
+        // Success!
+        successDiv.innerHTML = `
+          <strong>✅ Platform Wallet Initialized Successfully!</strong><br><br>
+          <strong>Transaction Signature:</strong><br>
+          <div class="wallet-addr">${signature}</div>
+          <a href="https://solscan.io/tx/${signature}?cluster=devnet" target="_blank">View on Solscan</a>
+          <br><br>
+          <strong>✅ Paid coupon purchases should now work correctly!</strong><br>
+          You can close this page and retry the purchase.
+        `;
+        successDiv.style.display = 'block';
+        statusDiv.style.display = 'none';
+
+      } catch (error) {
+        console.error('Initialization error:', error);
+        errorDiv.innerHTML = `<strong>❌ Error:</strong> ${error.message}`;
+        errorDiv.style.display = 'block';
+        statusDiv.style.display = 'none';
+        connectBtn.disabled = false;
+      }
+    }
+
+    async function loadSolanaWeb3() {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js';
+        script.onload = () => {
+          window.solanaWeb3 = window.solanaWeb3 || window.solana;
+          resolve();
+        };
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
+    // Auto-load Solana Web3.js on page load
+    window.addEventListener('load', loadSolanaWeb3);
+  </script>
+</body>
+</html>

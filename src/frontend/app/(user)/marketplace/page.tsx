@@ -24,6 +24,7 @@ type DealWithMerchant = Deal & {
     city?: string | null;
     state?: string | null;
     business_name?: string | null;
+    wallet_address?: string;
   } | null;
 };
 
@@ -33,6 +34,7 @@ export type ExtendedDeal = Deal & {
   source?: string;
   external_url?: string;
   merchant?: string;
+  merchant_wallet?: string;
   min_tier?: TierLevel | null;
   is_exclusive?: boolean | null;
   latitude?: number | null;
@@ -119,7 +121,8 @@ export default function MarketplacePage() {
               longitude,
               city,
               state,
-              business_name
+              business_name,
+              wallet_address
             )
           `, { count: 'exact' })
           .eq('is_active', true)
@@ -136,6 +139,7 @@ export default function MarketplacePage() {
         const dealsWithLocation: ExtendedDeal[] = (platformDeals || []).map((deal: DealWithMerchant) => ({
           ...deal,
           min_tier: deal.min_tier as TierLevel | null,
+          merchant_wallet: deal.merchants?.wallet_address || undefined,
           latitude: deal.merchants?.latitude || null,
           longitude: deal.merchants?.longitude || null,
           merchant_city: deal.merchants?.city || null,

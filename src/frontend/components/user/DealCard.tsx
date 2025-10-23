@@ -19,6 +19,7 @@ export type ExtendedDeal = Deal & {
   source?: string;
   external_url?: string;
   merchant?: string;
+  merchant_wallet?: string; // Merchant's wallet address for payment distribution
   min_tier?: TierLevel | null;
   is_exclusive?: boolean | null;
   is_resale?: boolean;
@@ -58,6 +59,8 @@ export default function DealCard({ deal, userTier = 'Bronze' }: DealCardProps) {
   const handlePurchaseClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
+    // DEBUG: Log merchant wallet before opening modal
+    console.log('[DealCard] Opening modal for:', deal.title, '| merchant_wallet:', deal.merchant_wallet);
     setIsPurchaseModalOpen(true);
   };
 
@@ -218,6 +221,7 @@ export default function DealCard({ deal, userTier = 'Bronze' }: DealCardProps) {
         discountPercentage={deal.discount_percentage || undefined}
         imageUrl={deal.image_url || undefined}
         dealId={deal.id}
+        merchantWallet={deal.merchant_wallet}
         isResale={deal.is_resale || false}
         resaleListingId={deal.resale_listing_id}
         sellerWallet={deal.resale_seller}

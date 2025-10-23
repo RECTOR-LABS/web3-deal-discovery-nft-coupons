@@ -24,6 +24,7 @@ pub mod nft_coupon {
 
     /// Create a new NFT coupon
     /// Mints an NFT with Metaplex metadata and creates coupon data
+    /// NFT is minted to Escrow PDA (program-controlled)
     pub fn create_coupon(
         ctx: Context<CreateCoupon>,
         title: String,
@@ -33,6 +34,7 @@ pub mod nft_coupon {
         category: CouponCategory,
         max_redemptions: u8,
         metadata_uri: String,
+        price: u64, // NEW: Price in lamports (0 = free, >0 = paid)
     ) -> Result<()> {
         instructions::create_coupon::handler(
             ctx,
@@ -43,7 +45,24 @@ pub mod nft_coupon {
             category,
             max_redemptions,
             metadata_uri,
+            price,
         )
+    }
+
+    /// Claim a free coupon (price = 0)
+    /// Transfers NFT from Escrow PDA to user
+    /// Magic Eden style: Program-controlled transfer, no backend signature
+    pub fn claim_coupon(ctx: Context<ClaimCoupon>) -> Result<()> {
+        instructions::claim_coupon::handler(ctx)
+    }
+
+    /// Purchase a paid coupon (price > 0)
+    /// Atomic transaction: SOL payment + NFT transfer
+    /// - User pays SOL (97.5% merchant, 2.5% platform)
+    /// - NFT transferred from Escrow PDA to buyer
+    /// - All or nothing (transaction fails if any step fails)
+    pub fn purchase_coupon(ctx: Context<PurchaseCoupon>) -> Result<()> {
+        instructions::purchase_coupon::handler(ctx)
     }
 
     /// Redeem a coupon

@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     const { data: existing } = await supabase
       .from('events')
       .select('id')
-      .eq('event_type', transactionSignature ? 'purchase_paid' : 'payment_received')
+      .eq('event_type', 'purchase')
       .eq('user_wallet', userWallet)
       .eq('deal_id', dealId)
       .contains('metadata', { [searchField]: txId })
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Determine event type and payment method
-    const eventType = transactionSignature ? 'purchase_paid' : 'payment_received';
+    const eventType = 'purchase'; // Using standard 'purchase' event type for both paid and free
     const paymentMethod = transactionSignature ? 'solana_direct' : 'moonpay';
 
     // Record payment event in database
@@ -102,8 +102,13 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       apiLogger.error('Database error', { error });
+      console.error('[Payment API] Database error details:', error);
       return NextResponse.json(
-        { error: 'Failed to record payment' },
+        {
+          error: 'Failed to record payment',
+          details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+          code: error.code,
+        },
         { status: 500 }
       );
     }

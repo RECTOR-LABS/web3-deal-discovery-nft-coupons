@@ -1,6 +1,7 @@
 import {
   Connection,
   Keypair,
+  LAMPORTS_PER_SOL,
 } from '@solana/web3.js';
 import {
   getAssociatedTokenAddressSync,
@@ -16,6 +17,7 @@ import {
   CouponCategory,
   CreateCouponArgs,
 } from './merchant-direct';
+import { getNFTEscrowPDA } from './coupon-marketplace';
 import { uploadDealImage } from '@/lib/storage/upload';
 import { createClient } from '@/lib/database/supabase';
 
@@ -250,15 +252,24 @@ export async function mintCoupon(
     const metadataUri = metadataUploadResult.url;
 
     // Step 5: Get PDAs
-    const [_merchantPDA] = getMerchantPDA(wallet.publicKey);
+    const [merchantPDA] = getMerchantPDA(wallet.publicKey);
     const [_couponDataPDA] = getCouponDataPDA(nftMint.publicKey);
+    const [nftEscrowPDA] = getNFTEscrowPDA(merchantPDA, nftMint.publicKey);
     const metadataAccount = getMetadataAccount(nftMint.publicKey);
-    const nftTokenAccount = getAssociatedTokenAddressSync(
-      nftMint.publicKey,
-      wallet.publicKey
-    );
 
-    // Step 6: Call smart contract to create coupon using direct RPC
+    console.log('[mintCoupon] Merchant PDA:', merchantPDA.toBase58());
+    console.log('[mintCoupon] NFT Escrow PDA:', nftEscrowPDA.toBase58());
+
+    // Step 6: Calculate price in lamports
+    const priceInLamports = dealData.couponType === 'paid' && dealData.price
+      ? Math.floor(dealData.price * LAMPORTS_PER_SOL)
+      : 0;
+
+    console.log('[mintCoupon] Coupon Type:', dealData.couponType);
+    console.log('[mintCoupon] Price (SOL):', dealData.price || 0);
+    console.log('[mintCoupon] Price (lamports):', priceInLamports);
+
+    // Step 7: Call smart contract to create coupon using direct RPC
     // Map category to enum index
     const categoryMap: Record<string, CouponCategory> = {
       'Food & Beverage': CouponCategory.FoodAndBeverage,
@@ -279,9 +290,10 @@ export async function mintCoupon(
       category,
       maxRedemptions: 1, // single-use
       metadataUri,
+      price: priceInLamports, // NEW: Price in lamports (0 = free, >0 = paid)
       nftMint,
       metadataAccount,
-      nftTokenAccount,
+      nftEscrowAccount: nftEscrowPDA, // NEW: Escrow PDA for NFT custody
     };
 
     const result = await createCouponDirect(connection, wallet, createCouponArgs);
