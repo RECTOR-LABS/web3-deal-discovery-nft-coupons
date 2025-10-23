@@ -287,13 +287,13 @@ export default function DealDetailPage() {
                 >
                   Deal Expired
                 </button>
-              ) : deal.price_sol ? (
+              ) : deal.price ? (
                 // Paid coupon - show purchase button
                 <button
                   onClick={() => setShowPurchaseModal(true)}
                   className="w-full bg-[#00ff4d] hover:bg-[#00cc3d] text-[#0d2a13] font-bold py-4 rounded-lg transition-colors flex items-center justify-center gap-2"
                 >
-                  Buy Coupon - {deal.price_sol.toFixed(3)} SOL
+                  Buy Coupon - {deal.price.toFixed(3)} SOL
                 </button>
               ) : (
                 // Free coupon - show claim button
@@ -369,7 +369,7 @@ export default function DealDetailPage() {
           isOpen={showPurchaseModal}
           onClose={() => setShowPurchaseModal(false)}
           dealTitle={deal.title}
-          priceSOL={deal.price_sol || 0}
+          priceSOL={deal.price || 0}
           discountPercentage={deal.discount_percentage || 0}
           imageUrl={deal.image_url || undefined}
           dealId={deal.id}

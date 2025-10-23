@@ -93,7 +93,7 @@ export type Database = {
           merchant_id: string | null
           min_tier: string | null
           nft_mint_address: string
-          price_sol: number | null
+          price: number | null
           quantity: number | null
           title: string
           updated_at: string | null
@@ -111,7 +111,7 @@ export type Database = {
           merchant_id?: string | null
           min_tier?: string | null
           nft_mint_address: string
-          price_sol?: number | null
+          price?: number | null
           quantity?: number | null
           title: string
           updated_at?: string | null
@@ -129,7 +129,7 @@ export type Database = {
           merchant_id?: string | null
           min_tier?: string | null
           nft_mint_address?: string
-          price_sol?: number | null
+          price?: number | null
           quantity?: number | null
           title?: string
           updated_at?: string | null
@@ -236,6 +236,69 @@ export type Database = {
           wallet_address?: string
         }
         Relationships: []
+      }
+      payments: {
+        Row: {
+          amount_sol: number
+          buyer_wallet: string
+          completed_at: string | null
+          created_at: string | null
+          deal_id: string | null
+          id: string
+          nft_mint_address: string | null
+          payment_type: string
+          platform_fee_sol: number
+          resale_listing_id: string | null
+          seller_wallet: string
+          status: string
+          transaction_signature: string | null
+        }
+        Insert: {
+          amount_sol: number
+          buyer_wallet: string
+          completed_at?: string | null
+          created_at?: string | null
+          deal_id?: string | null
+          id?: string
+          nft_mint_address?: string | null
+          payment_type: string
+          platform_fee_sol: number
+          resale_listing_id?: string | null
+          seller_wallet: string
+          status?: string
+          transaction_signature?: string | null
+        }
+        Update: {
+          amount_sol?: number
+          buyer_wallet?: string
+          completed_at?: string | null
+          created_at?: string | null
+          deal_id?: string | null
+          id?: string
+          nft_mint_address?: string | null
+          payment_type?: string
+          platform_fee_sol?: number
+          resale_listing_id?: string | null
+          seller_wallet?: string
+          status?: string
+          transaction_signature?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_resale_listing_id_fkey"
+            columns: ["resale_listing_id"]
+            isOneToOne: false
+            referencedRelation: "resale_listings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       referrals: {
         Row: {

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { Database } from '@/lib/database/types';
 import { Calendar, Tag, TrendingUp, ExternalLink, Lock } from 'lucide-react';
@@ -8,6 +9,7 @@ import VoteButtons from './VoteButtons';
 import TierBadge from './TierBadge';
 import { TierLevel } from '@/lib/loyalty/types';
 import { hasAccessToDeal } from '@/lib/loyalty/tiers';
+import PurchaseModal from '../payments/PurchaseModal';
 
 type Deal = Database['public']['Tables']['deals']['Row'];
 
@@ -32,6 +34,8 @@ interface DealCardProps {
 }
 
 export default function DealCard({ deal, userTier = 'Bronze' }: DealCardProps) {
+  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
+
   const expiryDate = new Date(deal.expiry_date!);
   const now = new Date();
   const daysUntilExpiry = Math.ceil(
@@ -44,12 +48,18 @@ export default function DealCard({ deal, userTier = 'Bronze' }: DealCardProps) {
   const hasAccess = hasAccessToDeal(userTier, requiredTier);
 
   // For external deals or locked deals, handle differently
-  const shouldLink = !deal.is_external && hasAccess;
+  const shouldLink = !deal.is_external && hasAccess && !deal.price && !deal.is_resale;
   const CardWrapper = shouldLink
     ? ({ children }: { children: React.ReactNode }) => (
         <Link href={`/marketplace/${deal.id}`}>{children}</Link>
       )
     : ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
+
+  const handlePurchaseClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsPurchaseModalOpen(true);
+  };
 
   return (
     <CardWrapper>
@@ -178,11 +188,17 @@ export default function DealCard({ deal, userTier = 'Bronze' }: DealCardProps) {
               View Partner Deal
             </button>
           ) : deal.is_resale && deal.resale_price ? (
-            <button className="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+            <button
+              onClick={handlePurchaseClick}
+              className="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
               Buy Now - {deal.resale_price.toFixed(3)} SOL
             </button>
           ) : deal.price ? (
-            <button className="mt-4 w-full bg-[#00ff4d] hover:bg-[#00cc3d] text-[#0d2a13] font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+            <button
+              onClick={handlePurchaseClick}
+              className="mt-4 w-full bg-[#00ff4d] hover:bg-[#00cc3d] text-[#0d2a13] font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
               Buy Coupon - {Number(deal.price).toFixed(3)} SOL
             </button>
           ) : (
@@ -192,6 +208,24 @@ export default function DealCard({ deal, userTier = 'Bronze' }: DealCardProps) {
           )}
         </div>
       </motion.div>
+
+      {/* Purchase Modal */}
+      <PurchaseModal
+        isOpen={isPurchaseModalOpen}
+        onClose={() => setIsPurchaseModalOpen(false)}
+        dealTitle={deal.title}
+        priceSOL={deal.is_resale && deal.resale_price ? deal.resale_price : (deal.price ? Number(deal.price) : 0)}
+        discountPercentage={deal.discount_percentage || undefined}
+        imageUrl={deal.image_url || undefined}
+        dealId={deal.id}
+        isResale={deal.is_resale || false}
+        resaleListingId={deal.resale_listing_id}
+        sellerWallet={deal.resale_seller}
+        onSuccess={() => {
+          // Optionally refresh the page or show success message
+          window.location.reload();
+        }}
+      />
     </CardWrapper>
   );
 }

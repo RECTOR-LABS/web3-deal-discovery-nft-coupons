@@ -40,14 +40,14 @@ export async function POST(request: NextRequest) {
     // Fetch deal to verify price (for paid coupons)
     const { data: deal } = await supabase
       .from('deals')
-      .select('price_sol, merchant_id, title')
+      .select('price, merchant_id, title')
       .eq('id', dealId)
       .single();
 
-    if (deal?.price_sol && Math.abs(amount - deal.price_sol) > 0.001) {
+    if (deal?.price && Math.abs(amount - deal.price) > 0.001) {
       apiLogger.warn('Payment amount mismatch', {
         dealId,
-        expected: deal.price_sol,
+        expected: deal.price,
         received: amount,
       });
     }
