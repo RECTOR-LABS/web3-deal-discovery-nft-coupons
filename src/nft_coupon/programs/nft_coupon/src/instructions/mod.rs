@@ -4,6 +4,9 @@ pub mod claim_coupon;
 pub mod purchase_coupon;
 pub mod redeem_coupon;
 pub mod update_coupon_status;
+pub mod transfer_coupon;
+pub mod list_for_resale;
+pub mod purchase_from_resale;
 
 pub use initialize_merchant::*;
 pub use create_coupon::*;
@@ -11,3 +14,6 @@ pub use claim_coupon::*;
 pub use purchase_coupon::*;
 pub use redeem_coupon::*;
 pub use update_coupon_status::*;
+pub use transfer_coupon::*;
+pub use list_for_resale::*;
+pub use purchase_from_resale::*;

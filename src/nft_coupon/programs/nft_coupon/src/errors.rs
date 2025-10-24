@@ -46,4 +46,10 @@ pub enum CouponError {
 
     #[msg("No redemptions remaining for this coupon")]
     NoRedemptionsRemaining,
+
+    #[msg("Invalid price - must be greater than 0")]
+    InvalidPrice,
+
+    #[msg("Invalid NFT amount - seller must own exactly 1 NFT")]
+    InvalidNFTAmount,
 }

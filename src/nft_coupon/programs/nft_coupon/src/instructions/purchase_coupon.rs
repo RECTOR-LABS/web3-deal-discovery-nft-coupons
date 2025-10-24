@@ -51,13 +51,13 @@ pub struct PurchaseCoupon<'info> {
 
     /// NFT Escrow PDA - holds NFTs minted by create_coupon
     /// Seeds: ["nft_escrow", merchant_pda, nft_mint]
-    /// Authority: The PDA itself (self-custodial)
+    /// Authority: Merchant PDA (program-controlled via merchant)
     #[account(
         mut,
         seeds = [b"nft_escrow", merchant.key().as_ref(), nft_mint.key().as_ref()],
         bump,
         token::mint = nft_mint,
-        token::authority = nft_escrow,
+        token::authority = merchant,
     )]
     pub nft_escrow: Account<'info, TokenAccount>,
 
@@ -154,23 +154,22 @@ pub fn handler(ctx: Context<PurchaseCoupon>) -> Result<()> {
     }
 
     // ATOMIC TRANSACTION STEP 3: Transfer NFT from Escrow PDA to Buyer
-    // Get PDA signer seeds for escrow
-    let merchant_key = ctx.accounts.merchant.key();
-    let mint_key = ctx.accounts.nft_mint.key();
-    let bump = ctx.bumps.nft_escrow;
-    let seeds = &[
-        b"nft_escrow".as_ref(),
-        merchant_key.as_ref(),
-        mint_key.as_ref(),
-        &[bump],
+    // Get PDA signer seeds for merchant (the escrow's authority)
+    let authority_key = ctx.accounts.merchant.authority.key();
+    let merchant_bump = ctx.bumps.merchant;
+    let merchant_seeds = &[
+        b"merchant".as_ref(),
+        authority_key.as_ref(),
+        &[merchant_bump],
     ];
-    let signer = &[&seeds[..]];
+    let signer = &[&merchant_seeds[..]];
 
-    // Transfer NFT using PDA authority
+    // Transfer NFT from Escrow PDA to Buyer's wallet
+    // This uses the Merchant PDA as authority (program-controlled transfer)
     let cpi_accounts = Transfer {
         from: ctx.accounts.nft_escrow.to_account_info(),
         to: ctx.accounts.buyer_token_account.to_account_info(),
-        authority: ctx.accounts.nft_escrow.to_account_info(),
+        authority: ctx.accounts.merchant.to_account_info(),
     };
     let cpi_program = ctx.accounts.token_program.to_account_info();
     let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);

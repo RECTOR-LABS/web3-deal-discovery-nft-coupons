@@ -79,4 +79,38 @@ pub mod nft_coupon {
     ) -> Result<()> {
         instructions::update_coupon_status::handler(ctx, is_active)
     }
+
+    /// Transfer NFT coupon between users (P2P resale)
+    /// Atomic transaction: SOL payment + NFT transfer
+    /// - Buyer pays SOL (97.5% to seller, 2.5% to platform)
+    /// - Seller transfers NFT to buyer
+    /// - All or nothing (transaction fails if any step fails)
+    /// - No escrow PDA required (direct P2P swap)
+    pub fn transfer_coupon(
+        ctx: Context<TransferCoupon>,
+        price_lamports: u64,
+    ) -> Result<()> {
+        instructions::transfer_coupon::handler(ctx, price_lamports)
+    }
+
+    /// List NFT coupon for resale (Step 1 of escrow-based resale)
+    /// Transfers NFT from seller's wallet to Resale Escrow PDA
+    /// Seller signs this transaction
+    /// Industry-standard approach used by Magic Eden, OpenSea, Tensor
+    pub fn list_for_resale(ctx: Context<ListForResale>) -> Result<()> {
+        instructions::list_for_resale::handler(ctx)
+    }
+
+    /// Purchase NFT coupon from resale marketplace (Step 2 of escrow-based resale)
+    /// Atomic transaction: SOL payment + NFT transfer from escrow
+    /// - Buyer pays SOL (97.5% to seller, 2.5% to platform)
+    /// - NFT transferred from Resale Escrow PDA to buyer
+    /// - Seller does NOT need to sign (NFT already in escrow)
+    /// - All or nothing (transaction fails if any step fails)
+    pub fn purchase_from_resale(
+        ctx: Context<PurchaseFromResale>,
+        price_lamports: u64,
+    ) -> Result<()> {
+        instructions::purchase_from_resale::handler(ctx, price_lamports)
+    }
 }
