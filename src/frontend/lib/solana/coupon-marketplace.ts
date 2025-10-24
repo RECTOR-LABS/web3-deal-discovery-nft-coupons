@@ -25,8 +25,9 @@ import idl from '@/lib/idl/nft_coupon.json';
 export const PROGRAM_ID = new PublicKey('RECcAGSNVfAdGeTsR92jMUM2DBuedSqpAn9W8pNrLi7');
 
 // Platform wallet for fee collection (2.5%)
+// Uses RECTOR's dev wallet for platform fees on devnet
 export const PLATFORM_WALLET = new PublicKey(
-  (process.env.NEXT_PUBLIC_PLATFORM_WALLET && process.env.NEXT_PUBLIC_PLATFORM_WALLET.trim()) || 'HAtDqhYd52qhbRRwZG8xVJVJu3Mfp23xK7vdW5Ube5'
+  (process.env.NEXT_PUBLIC_PLATFORM_WALLET && process.env.NEXT_PUBLIC_PLATFORM_WALLET.trim()) || 'RECdpxmc8SbnwEbf8iET5Jve6JEfkqMWdrEpkms3P1b'
 );
 
 /**

@@ -23,7 +23,7 @@ interface PurchaseModalProps {
   onSuccess?: () => void;
 }
 
-const _PLATFORM_WALLET = process.env.NEXT_PUBLIC_PLATFORM_WALLET || 'HAtDqhYd52qhbRRwZG8xVJVJu3Mfp23xK7vdW5Ube5'; // Platform fee collection wallet
+const _PLATFORM_WALLET = process.env.NEXT_PUBLIC_PLATFORM_WALLET || 'RECdpxmc8SbnwEbf8iET5Jve6JEfkqMWdrEpkms3P1b'; // Platform fee collection wallet (RECTOR dev wallet)
 const MARKETPLACE_FEE_PERCENTAGE = 0.025; // 2.5% platform fee
 
 export default function PurchaseModal({
