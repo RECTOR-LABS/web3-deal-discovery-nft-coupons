@@ -16,7 +16,7 @@ info:
     **Authentication:** Solana wallet signatures required for most endpoints
 
     **Base URL:** https://your-domain.com/api
-  version: 0.4.0
+  version: 0.5.0
   contact:
     name: DealCoupon Support
     email: support@dealcoupon.com
@@ -53,6 +53,8 @@ tags:
     description: Arweave permanent storage
   - name: Badges
     description: Loyalty NFT badges
+  - name: NFT
+    description: NFT transfer operations
 
 paths:
   /health:
@@ -107,6 +109,59 @@ paths:
                       $ref: '#/components/schemas/ExternalDeal'
                   count:
                     type: integer
+
+  /deals/create:
+    post:
+      tags:
+        - Deals
+      summary: Create a new deal
+      description: Save NFT coupon deal to database (server-side, bypasses RLS)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - merchant_id
+                - nft_mint_address
+                - title
+                - description
+                - discount_percentage
+                - expiry_date
+                - category
+              properties:
+                merchant_id:
+                  type: string
+                nft_mint_address:
+                  type: string
+                title:
+                  type: string
+                description:
+                  type: string
+                image_url:
+                  type: string
+                discount_percentage:
+                  type: number
+                expiry_date:
+                  type: string
+                  format: date-time
+                category:
+                  type: string
+                is_active:
+                  type: boolean
+                  default: true
+                price:
+                  type: number
+                  description: Price in SOL (null for free coupons)
+                coupon_type:
+                  type: string
+                  enum: [free, paid]
+      responses:
+        '201':
+          description: Deal created successfully
+        '400':
+          description: Missing required fields
 
   /merchant/register:
     post:
@@ -691,6 +746,87 @@ paths:
         '200':
           description: Payment recorded
 
+  /payments/process:
+    post:
+      tags:
+        - Payments
+      summary: Process payments for coupons and resale
+      description: |
+        Handles payment processing for:
+        - Paid coupon claims (payment to merchant)
+        - Resale NFT purchases (payment to seller + 2.5% platform fee)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - payment_type
+                - buyer_wallet
+                - amount_sol
+              properties:
+                payment_type:
+                  type: string
+                  enum: [coupon_claim, resale_purchase]
+                buyer_wallet:
+                  type: string
+                amount_sol:
+                  type: number
+                deal_id:
+                  type: string
+                  description: Required for coupon_claim
+                merchant_wallet:
+                  type: string
+                  description: Required for coupon_claim
+                resale_listing_id:
+                  type: string
+                  description: Required for resale_purchase
+                seller_wallet:
+                  type: string
+                  description: Required for resale_purchase
+                nft_mint_address:
+                  type: string
+                  description: Required for resale_purchase
+      responses:
+        '200':
+          description: Payment processed successfully
+        '400':
+          description: Missing required fields
+        '404':
+          description: Deal or listing not found
+
+  /events:
+    post:
+      tags:
+        - Social
+      summary: Track platform events
+      description: Record user actions and system events (claims, purchases, redemptions)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - event_type
+              properties:
+                event_type:
+                  type: string
+                  description: Type of event (claim, purchase, redemption, etc.)
+                deal_id:
+                  type: string
+                user_wallet:
+                  type: string
+                metadata:
+                  type: object
+                  description: Additional event data
+      responses:
+        '201':
+          description: Event recorded successfully
+        '400':
+          description: Missing event_type
+
   /arweave/upload-image:
     post:
       tags:
@@ -740,6 +876,65 @@ paths:
       responses:
         '200':
           description: Metadata uploaded
+
+  /nft/transfer:
+    post:
+      tags:
+        - NFT
+      summary: Transfer NFT coupon (legacy route)
+      description: |
+        Transfer NFT from one wallet to another.
+        Handles free claims, paid purchases, and resale transfers.
+        Note: This is a legacy route - new code should use on-chain instructions directly.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nftMint
+                - fromWallet
+                - toWallet
+                - dealId
+                - transferType
+              properties:
+                nftMint:
+                  type: string
+                fromWallet:
+                  type: string
+                toWallet:
+                  type: string
+                dealId:
+                  type: string
+                transferType:
+                  type: string
+                  enum: [claim, purchase, resale]
+                paymentSignature:
+                  type: string
+                  description: Required for paid coupons
+      responses:
+        '200':
+          description: NFT transferred successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  signature:
+                    type: string
+                  message:
+                    type: string
+                  solscanUrl:
+                    type: string
+        '400':
+          description: Invalid request or ownership verification failed
+        '500':
+          description: Transfer failed
+        '501':
+          description: Resale transfers require seller signature (not implemented)
 
 components:
   schemas:
