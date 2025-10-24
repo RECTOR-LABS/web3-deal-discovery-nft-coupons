@@ -24,9 +24,20 @@ export default function ApiDocsPage() {
           <h1 className="text-5xl font-black mb-4">
             DealCoupon API Documentation
           </h1>
-          <p className="text-xl text-[#f2eecb]">
+          <p className="text-xl text-[#f2eecb] mb-3">
             Complete REST API reference for Web3 Deal Discovery & Loyalty Platform
           </p>
+          <div className="flex gap-3 items-center">
+            <span className="px-3 py-1 bg-[#00ff4d] text-[#0d2a13] font-bold text-sm rounded">
+              v0.5.0
+            </span>
+            <span className="px-3 py-1 bg-white/10 backdrop-blur-sm text-white font-semibold text-sm rounded">
+              29 Endpoints
+            </span>
+            <span className="px-3 py-1 bg-white/10 backdrop-blur-sm text-white font-semibold text-sm rounded">
+              OpenAPI 3.0
+            </span>
+          </div>
           <div className="mt-6 flex gap-4">
             <Link
               href="/"
@@ -63,9 +74,11 @@ export default function ApiDocsPage() {
               spec: {
                 url: '/openapi.yaml',
               },
-              theme: 'purple',
+              theme: 'default',
               layout: 'modern',
               showSidebar: true,
+              searchHotKey: 'k',
+              darkMode: false,
             }),
           }}
         />
@@ -86,7 +99,7 @@ export default function ApiDocsPage() {
               </h3>
               <div className="bg-[#0d2a13] text-[#f2eecb] p-4 rounded-lg font-mono text-sm overflow-x-auto">
                 <pre>{`// Fetch active resale listings
-const response = await fetch('https://your-domain.com/api/resale/listings?category=Food&sort=price_asc');
+const response = await fetch('https://dealcoupon.rectorspace.com/api/resale/listings?category=Food&sort=price_asc');
 const data = await response.json();
 
 console.log(data.listings); // Array of resale listings`}</pre>
@@ -101,7 +114,7 @@ console.log(data.listings); // Array of resale listings`}</pre>
 
 # Get user loyalty tier
 response = requests.get(
-    'https://your-domain.com/api/user/tier',
+    'https://dealcoupon.rectorspace.com/api/user/tier',
     params={'wallet': 'YOUR_WALLET_ADDRESS'}
 )
 tier_info = response.json()
@@ -114,7 +127,7 @@ print(tier_info['tierInfo']['currentTier'])  # Bronze, Silver, Gold, or Diamond`
               <h3 className="text-xl font-bold text-[#174622] mb-3">cURL</h3>
               <div className="bg-[#0d2a13] text-[#f2eecb] p-4 rounded-lg font-mono text-sm overflow-x-auto">
                 <pre>{`# List NFT coupon for resale
-curl -X POST https://your-domain.com/api/resale/list \\
+curl -X POST https://dealcoupon.rectorspace.com/api/resale/list \\
   -H "Content-Type: application/json" \\
   -d '{
     "nft_mint": "YOUR_NFT_MINT_ADDRESS",

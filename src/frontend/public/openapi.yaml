@@ -15,20 +15,20 @@ info:
 
     **Authentication:** Solana wallet signatures required for most endpoints
 
-    **Base URL:** https://your-domain.com/api
+    **Base URL:** https://dealcoupon.rectorspace.com/api
   version: 0.5.0
   contact:
     name: DealCoupon Support
-    email: support@dealcoupon.com
+    email: rector@rectorspace.com
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
 
 servers:
-  - url: https://your-domain.com/api
+  - url: https://dealcoupon.rectorspace.com/api
     description: Production server
   - url: http://localhost:3000/api
-    description: Development server
+    description: Local development
 
 tags:
   - name: Health
