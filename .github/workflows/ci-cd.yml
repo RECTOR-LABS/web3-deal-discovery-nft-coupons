@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, dev, submission]
   pull_request:
-    branches: [main, dev]
+    branches: [main, dev, submission]
 
 jobs:
   # Job 1: Lint and Type Check
@@ -205,7 +205,7 @@ jobs:
     name: Deploy Preview
     runs-on: ubuntu-latest
     needs: [build-frontend]
-    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/dev')
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/submission'))
     environment:
       name: preview
 
