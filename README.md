@@ -6,7 +6,7 @@
 
 ## 🏆 1ST PLACE WINNER - MonkeDAO Cypherpunk Track
 
-**$5,000 USDC + Gen3 Monke NFT**
+**$5,000 USDC + Gen3 Monke NFT (12-month locked)**
 
 [![1st Place](https://img.shields.io/badge/🏆_1ST_PLACE-MonkeDAO_Cypherpunk-gold?style=for-the-badge)](https://superteam.fun)
 [![Stars](https://img.shields.io/github/stars/RECTOR-LABS/web3-deal-discovery-nft-coupons?style=social)](https://github.com/RECTOR-LABS/web3-deal-discovery-nft-coupons/stargazers)
@@ -186,11 +186,11 @@ Merchant Creates Deal → Smart Contract Mints NFTs → User Purchases NFT
 **Competition:** MonkeDAO Cypherpunk Track (Superteam Earn)
 **Result:** 🥇 **1ST PLACE** - $5,000 USDC + Gen3 Monke NFT
 
-| Rank | Builder | Prize |
-|------|---------|-------|
-| 🥇 **1st** | **RECTOR SOL** | **$5,000 USDC** |
-| 🥈 2nd | Andrea Chello | $1,000 USDC |
-| 🥉 3rd | Aneesha Rama | $500 USDC |
+| Rank | Builder | USDC | NFT Prize |
+|------|---------|------|-----------|
+| 🥇 **1st** | **RECTOR SOL** | **$5,000** | **Gen3 Monke (12-mo locked)** |
+| 🥈 2nd | Andrea Chello | $1,000 | Gen3 Monke (12-mo locked) |
+| 🥉 3rd | Aneesha Rama | $500 | Gen3 Monke (12-mo locked) |
 
 ### Why We Won
 

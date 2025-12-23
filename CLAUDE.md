@@ -6,16 +6,16 @@ Web3 deal discovery platform: NFT coupons on Solana. "Groupon meets DeFi."
 
 **MonkeDAO Cypherpunk Track (Superteam Earn) - December 2025**
 
-| Rank | Builder | Prize |
-|------|---------|-------|
-| 🥇 **1st** | **RECTOR SOL** | **$5,000 USDC** |
-| 🥈 2nd | Andrea Chello | $1,000 USDC |
-| 🥉 3rd | Aneesha Rama | $500 USDC |
+| Rank | Builder | USDC | NFT Prize |
+|------|---------|------|-----------|
+| 🥇 **1st** | **RECTOR SOL** | **$5,000** | **Gen3 Monke (12-mo locked)** |
+| 🥈 2nd | Andrea Chello | $1,000 | Gen3 Monke (12-mo locked) |
+| 🥉 3rd | Aneesha Rama | $500 | Gen3 Monke (12-mo locked) |
 
 ## Quick Facts
 
 - **Track:** Cypherpunk - MonkeDAO (Superteam Earn)
-- **Result:** 🏆 **1ST PLACE** - $5,000 USDC + Gen3 Monke NFT
+- **Result:** 🏆 **1ST PLACE** - $5,000 USDC + Gen3 Monke NFT (12-month locked)
 - **Status:** WINNER ✅ | 100% Complete | 13 Epics | 95 Tasks | v0.5.0
 
 **Stack:** Solana + Anchor | Next.js 15 + Tailwind v4 | Supabase PostgreSQL | Solana Wallet Adapter
