@@ -4,11 +4,16 @@
 
 **Reimagining Groupon with tradable NFT coupons on Solana**
 
+## 🏆 1ST PLACE WINNER - MonkeDAO Cypherpunk Track
+
+**$5,000 USDC + Gen3 Monke NFT**
+
+[![1st Place](https://img.shields.io/badge/🏆_1ST_PLACE-MonkeDAO_Cypherpunk-gold?style=for-the-badge)](https://superteam.fun)
 [![Stars](https://img.shields.io/github/stars/RECTOR-LABS/web3-deal-discovery-nft-coupons?style=social)](https://github.com/RECTOR-LABS/web3-deal-discovery-nft-coupons/stargazers)
 [![Solana](https://img.shields.io/badge/Solana-14F195?style=for-the-badge&logo=solana&logoColor=black)](https://solana.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
 
-🏆 **Web3 Innovation Hackathon** | 🌏 **Built in Indonesia** | 🕌 **Built with Ihsan**
+🥇 **Superteam Earn Winner** | 🌏 **Built in Indonesia** | 🕌 **Built with Ihsan**
 
 [📦 Demo](#) • [📖 Docs](#) • [🏛️ RECTOR LABS](https://github.com/RECTOR-LABS)
 
@@ -176,20 +181,25 @@ Merchant Creates Deal → Smart Contract Mints NFTs → User Purchases NFT
 
 ---
 
-## 🏆 Hackathon Context
+## 🏆 Hackathon Result: 1ST PLACE WINNER
 
-**Competition:** Web3 Innovation Hackathon 2025
-**Track:** Consumer Applications
-**Result:** 2 ⭐ Featured Project
+**Competition:** MonkeDAO Cypherpunk Track (Superteam Earn)
+**Result:** 🥇 **1ST PLACE** - $5,000 USDC + Gen3 Monke NFT
 
-### Our Innovation
+| Rank | Builder | Prize |
+|------|---------|-------|
+| 🥇 **1st** | **RECTOR SOL** | **$5,000 USDC** |
+| 🥈 2nd | Andrea Chello | $1,000 USDC |
+| 🥉 3rd | Aneesha Rama | $500 USDC |
 
-**Why NFT coupons work:**
-1. **Scarcity** - Limited supply creates urgency
-2. **Liquidity** - Secondary market unlocks value
-3. **Composability** - Coupons can be bundled, fractionalized
-4. **Trust** - On-chain verification prevents fraud
-5. **Flexibility** - Market finds true coupon value
+### Why We Won
+
+**What made us stand out:**
+1. **Web3 Invisible UX** - No crypto jargon, seamless wallet integration
+2. **Escrow-Based Resale** - Industry-first for NFT coupons
+3. **Professional Demo Videos** - 5 comprehensive video walkthroughs
+4. **Production-Ready Code** - 13 epics, 95 tasks, 34 tests
+5. **Complete Feature Set** - Everything from minting to redemption to resale
 
 **Real-world use case:**
 Bought a restaurant coupon but can't make it? List it at 80% discount—someone else gets a deal, you recover value. Everyone wins.
@@ -274,14 +284,19 @@ MIT License
 
 <div align="center">
 
+**🏆 1ST PLACE WINNER - MonkeDAO Cypherpunk Track**
+
 **Built with Bismillah** 🕌
 
 *"Waste not, for Allah loves not the wasteful." - Quran 7:31*
+
+*Alhamdulillah - From Bismillah to victory.*
 
 ---
 
 [🏛️ RECTOR LABS](https://github.com/RECTOR-LABS) | Building for Eternity | 2025
 
+[![1st Place](https://img.shields.io/badge/🏆_1ST_PLACE-$5,000_USDC-gold?style=flat)](https://superteam.fun)
 [![Solana](https://img.shields.io/badge/Solana-14F195?style=flat&logo=solana&logoColor=black)](https://solana.com)
 [![NFT](https://img.shields.io/badge/NFT-Utility-F9C846?style=flat)](https://github.com/RECTOR-LABS)
 
