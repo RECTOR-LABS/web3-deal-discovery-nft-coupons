@@ -4,7 +4,7 @@ const { Connection, Keypair: _Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgra
 const _fs = require('fs');
 
 const PLATFORM_WALLET = 'Hi35R3Z3qkjxRLXS1wacx3ZmXPc6MwJiQY4aWvRNm9L8';
-const RPC_ENDPOINT = 'https://devnet.helius-rpc.com/?api-key=142fb48a-aa24-4083-99c8-249df5400b30';
+const RPC_ENDPOINT = process.env.HELIUS_API_KEY ? `https://devnet.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}` : 'https://api.devnet.solana.com';
 
 async function fundPlatformWallet() {
   try {

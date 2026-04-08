@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { Connection, PublicKey: _PublicKey } = require('@solana/web3.js');
 
-const RPC_ENDPOINT = 'https://devnet.helius-rpc.com/?api-key=142fb48a-aa24-4083-99c8-249df5400b30';
+const RPC_ENDPOINT = process.env.HELIUS_API_KEY ? `https://devnet.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}` : 'https://api.devnet.solana.com';
 const _BUYER_WALLET = '2jLo7yCWuEQLXSvC5Q4yrzwSWQi6MkTDe7LWBuh1MaLk';
 const MERCHANT_WALLET = 'HAtD7rZQCsQNLKegFuKZLEjm45qqvXj5nmHTqswRUbz5';
 const PLATFORM_WALLET = 'Hi35R3Z3qkjxRLXS1wacx3ZmXPc6MwJiQY4aWvRNm9L8';
